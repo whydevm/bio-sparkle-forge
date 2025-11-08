@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import FileUpload from "@/components/FileUpload";
 
 interface MusicEditorProps {
   profileId: string;
@@ -114,13 +115,23 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
             </div>
 
             <div>
-              <Label>URL</Label>
-              <Input
-                value={track.url}
-                onChange={(e) => updateMusic(track.id, "url", e.target.value)}
-                placeholder="https://..."
-                className="mt-1"
-              />
+              <Label>Audio File</Label>
+              <div className="mt-1 space-y-2">
+                {track.type === "mp3" && (
+                  <FileUpload
+                    bucket="music"
+                    onUpload={(url) => updateMusic(track.id, "url", url)}
+                    accept="audio/*"
+                    label="Upload MP3"
+                  />
+                )}
+                <Input
+                  value={track.url}
+                  onChange={(e) => updateMusic(track.id, "url", e.target.value)}
+                  placeholder={track.type === "youtube" ? "YouTube URL" : "MP3 URL"}
+                  className="mt-1"
+                />
+              </div>
             </div>
 
             <Button

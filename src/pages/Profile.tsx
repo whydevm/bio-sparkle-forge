@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import ProfileAvatar from "@/components/profile/ProfileAvatar";
@@ -6,6 +6,7 @@ import ProfileUsername from "@/components/profile/ProfileUsername";
 import SocialLinks from "@/components/profile/SocialLinks";
 import MusicPlayer from "@/components/profile/MusicPlayer";
 import ViewCounter from "@/components/profile/ViewCounter";
+import CustomCursor from "@/components/CustomCursor";
 
 const Profile = () => {
   const { username } = useParams();
@@ -13,6 +14,7 @@ const Profile = () => {
   const [music, setMusic] = useState<any[]>([]);
   const [links, setLinks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (username) {
@@ -20,6 +22,21 @@ const Profile = () => {
       incrementViewCount();
     }
   }, [username]);
+
+  useEffect(() => {
+    // Auto-play video when profile loads or updates
+    if (videoRef.current && profile?.background_type === "video") {
+      const playVideo = async () => {
+        try {
+          videoRef.current!.muted = false;
+          await videoRef.current!.play();
+        } catch (error) {
+          console.log("Autoplay prevented:", error);
+        }
+      };
+      playVideo();
+    }
+  }, [profile]);
 
   const loadProfile = async () => {
     const { data: profileData } = await supabase
@@ -84,11 +101,13 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={getBackgroundStyle()}>
+      <CustomCursor cursorUrl={profile.custom_cursor} />
+      
       {profile.background_type === "video" && profile.background_url && (
         <video
+          ref={videoRef}
           autoPlay
           loop
-          muted={false}
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >

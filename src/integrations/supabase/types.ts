@@ -133,6 +133,7 @@ export type Database = {
       social_links: {
         Row: {
           created_at: string | null
+          custom_icon_url: string | null
           icon: string | null
           id: string
           label: string
@@ -143,6 +144,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          custom_icon_url?: string | null
           icon?: string | null
           id?: string
           label: string
@@ -153,6 +155,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          custom_icon_url?: string | null
           icon?: string | null
           id?: string
           label?: string

@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SocialLinksEditor from "@/components/dashboard/SocialLinksEditor";
 import MusicEditor from "@/components/dashboard/MusicEditor";
+import FileUpload from "@/components/FileUpload";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -114,13 +115,18 @@ const Dashboard = () => {
                 />
               </div>
               <div>
-                <Label>Avatar URL</Label>
-                <Input
-                  value={profile?.avatar_url || ""}
-                  onChange={(e) => setProfile({ ...profile, avatar_url: e.target.value })}
-                  className="mt-1"
-                  placeholder="https://..."
-                />
+                <Label>Avatar</Label>
+                <div className="mt-1 flex items-center gap-3">
+                  {profile?.avatar_url && (
+                    <img src={profile.avatar_url} alt="Avatar" className="w-16 h-16 rounded-full object-cover" />
+                  )}
+                  <FileUpload
+                    bucket="avatars"
+                    onUpload={(url) => setProfile({ ...profile, avatar_url: url })}
+                    accept="image/*"
+                    label="Upload Avatar"
+                  />
+                </div>
               </div>
               <Button onClick={handleSave} className="w-full">Save Changes</Button>
             </div>
@@ -146,13 +152,22 @@ const Dashboard = () => {
               </div>
 
               <div>
-                <Label>Background URL</Label>
-                <Input
-                  value={profile?.background_url || ""}
-                  onChange={(e) => setProfile({ ...profile, background_url: e.target.value })}
-                  className="mt-1"
-                  placeholder="https://..."
-                />
+                <Label>Background</Label>
+                <div className="mt-1 flex items-center gap-3">
+                  {profile?.background_url && (
+                    profile?.background_type === "video" ? (
+                      <video src={profile.background_url} className="w-32 h-20 object-cover rounded" />
+                    ) : (
+                      <img src={profile.background_url} alt="Background" className="w-32 h-20 object-cover rounded" />
+                    )
+                  )}
+                  <FileUpload
+                    bucket="backgrounds"
+                    onUpload={(url) => setProfile({ ...profile, background_url: url })}
+                    accept={profile?.background_type === "video" ? "video/mp4" : "image/*"}
+                    label="Upload Background"
+                  />
+                </div>
               </div>
 
               <div>
@@ -212,6 +227,21 @@ const Dashboard = () => {
                   checked={profile?.glow_socials}
                   onCheckedChange={(checked) => setProfile({ ...profile, glow_socials: checked })}
                 />
+              </div>
+
+              <div>
+                <Label>Custom Cursor</Label>
+                <div className="mt-1 flex items-center gap-3">
+                  {profile?.custom_cursor && (
+                    <img src={profile.custom_cursor} alt="Cursor" className="w-8 h-8 object-contain" />
+                  )}
+                  <FileUpload
+                    bucket="cursors"
+                    onUpload={(url) => setProfile({ ...profile, custom_cursor: url })}
+                    accept="image/*"
+                    label="Upload Cursor"
+                  />
+                </div>
               </div>
 
               <Button onClick={handleSave} className="w-full">Save Changes</Button>
