@@ -123,6 +123,7 @@ const Profile = () => {
       {shouldShowSplash && (
         <EntrySplash
           entryText={profile.entry_text || "Click to Enter"}
+          entryTextFont={profile.entry_text_font || "font-sans"}
           onEnter={() => setHasEntered(true)}
         />
       )}
@@ -170,6 +171,9 @@ const Profile = () => {
                 />
                 {profile.bio && (
                   <p className={`mt-2 ${profile.bio_font} ${profile.bio_color}`}>{profile.bio}</p>
+                )}
+                {profile.location && (
+                  <p className="mt-1 text-sm text-muted-foreground">{profile.location}</p>
                 )}
               </div>
 

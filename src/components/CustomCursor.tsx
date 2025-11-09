@@ -8,7 +8,13 @@ const CustomCursor = ({ cursorUrl }: CustomCursorProps) => {
   const cursorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!cursorUrl) return;
+    if (!cursorUrl) {
+      document.body.style.cursor = "auto";
+      return;
+    }
+
+    // Hide default cursor when custom cursor is active
+    document.body.style.cursor = "none";
 
     const moveCursor = (e: MouseEvent | TouchEvent) => {
       if (!cursorRef.current) return;
@@ -32,6 +38,7 @@ const CustomCursor = ({ cursorUrl }: CustomCursorProps) => {
     return () => {
       document.removeEventListener("mousemove", moveCursor);
       document.removeEventListener("touchmove", moveCursor);
+      document.body.style.cursor = "auto";
     };
   }, [cursorUrl]);
 

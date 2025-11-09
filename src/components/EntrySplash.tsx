@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 
 interface EntrySplashProps {
   entryText: string;
+  entryTextFont: string;
   onEnter: () => void;
 }
 
-const EntrySplash = ({ entryText, onEnter }: EntrySplashProps) => {
+const EntrySplash = ({ entryText, entryTextFont, onEnter }: EntrySplashProps) => {
   const [isEntering, setIsEntering] = useState(false);
 
   const handleEnter = () => {
@@ -18,15 +18,14 @@ const EntrySplash = ({ entryText, onEnter }: EntrySplashProps) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-background transition-opacity duration-300 ${
+      onClick={handleEnter}
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-background transition-opacity duration-300 cursor-pointer ${
         isEntering ? "opacity-0" : "opacity-100"
       }`}
     >
-      <div className="text-center space-y-6 animate-fade-in">
-        <h1 className="text-4xl font-bold glow-text">{entryText}</h1>
-        <Button onClick={handleEnter} size="lg" className="glow-border">
-          Enter
-        </Button>
+      <div className="text-center space-y-6 animate-fade-in pointer-events-none">
+        <h1 className={`text-4xl font-bold ${entryTextFont}`}>{entryText}</h1>
+        <p className="text-muted-foreground">Click anywhere to enter</p>
       </div>
     </div>
   );

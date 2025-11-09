@@ -52,6 +52,35 @@ export type Database = {
           },
         ]
       }
+      profile_views: {
+        Row: {
+          id: string
+          profile_id: string
+          viewed_at: string
+          viewer_id: string
+        }
+        Insert: {
+          id?: string
+          profile_id: string
+          viewed_at?: string
+          viewer_id: string
+        }
+        Update: {
+          id?: string
+          profile_id?: string
+          viewed_at?: string
+          viewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_views_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_decoration_url: string | null
@@ -71,10 +100,12 @@ export type Database = {
           display_name_color: string | null
           display_name_font: string | null
           entry_text: string | null
+          entry_text_font: string | null
           glow_badges: boolean | null
           glow_socials: boolean | null
           glow_username: boolean | null
           id: string
+          location: string | null
           profile_blur: number | null
           profile_opacity: number | null
           updated_at: string | null
@@ -101,10 +132,12 @@ export type Database = {
           display_name_color?: string | null
           display_name_font?: string | null
           entry_text?: string | null
+          entry_text_font?: string | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
           glow_username?: boolean | null
           id?: string
+          location?: string | null
           profile_blur?: number | null
           profile_opacity?: number | null
           updated_at?: string | null
@@ -131,10 +164,12 @@ export type Database = {
           display_name_color?: string | null
           display_name_font?: string | null
           entry_text?: string | null
+          entry_text_font?: string | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
           glow_username?: boolean | null
           id?: string
+          location?: string | null
           profile_blur?: number | null
           profile_opacity?: number | null
           updated_at?: string | null

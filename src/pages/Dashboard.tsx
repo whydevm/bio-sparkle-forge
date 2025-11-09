@@ -115,6 +115,15 @@ const Dashboard = () => {
                 />
               </div>
               <div>
+                <Label>Location</Label>
+                <Input
+                  value={profile?.location || ""}
+                  onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+                  placeholder="e.g., San Francisco, CA"
+                  className="mt-1"
+                />
+              </div>
+              <div>
                 <Label>Avatar</Label>
                 <div className="mt-1 flex items-center gap-3">
                   {profile?.avatar_url && (
@@ -142,6 +151,23 @@ const Dashboard = () => {
                   placeholder="Click to Enter"
                   className="mt-1"
                 />
+              </div>
+              
+              <div>
+                <Label>Entry Text Font</Label>
+                <Select
+                  value={profile?.entry_text_font || "font-sans"}
+                  onValueChange={(value) => setProfile({ ...profile, entry_text_font: value })}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="font-sans">Sans Serif</SelectItem>
+                    <SelectItem value="font-serif">Serif</SelectItem>
+                    <SelectItem value="font-mono">Monospace</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
