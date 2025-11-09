@@ -12,13 +12,15 @@ interface Music {
 
 interface MusicPlayerProps {
   music: Music[];
+  audioRef?: React.RefObject<HTMLAudioElement>;
 }
 
-const MusicPlayer = ({ music }: MusicPlayerProps) => {
+const MusicPlayer = ({ music, audioRef: externalAudioRef }: MusicPlayerProps) => {
   const [currentTrack, setCurrentTrack] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState([50]);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const internalAudioRef = useRef<HTMLAudioElement>(null);
+  const audioRef = externalAudioRef || internalAudioRef;
 
   useEffect(() => {
     if (audioRef.current) {

@@ -59,6 +59,8 @@ export type Database = {
           background_type: string | null
           background_url: string | null
           bio: string | null
+          bio_color: string | null
+          bio_font: string | null
           border_enabled: boolean | null
           created_at: string | null
           custom_cursor: string | null
@@ -66,6 +68,9 @@ export type Database = {
           discord_avatar_url: string | null
           discord_decoration_url: string | null
           display_name: string | null
+          display_name_color: string | null
+          display_name_font: string | null
+          entry_text: string | null
           glow_badges: boolean | null
           glow_socials: boolean | null
           glow_username: boolean | null
@@ -84,6 +89,8 @@ export type Database = {
           background_type?: string | null
           background_url?: string | null
           bio?: string | null
+          bio_color?: string | null
+          bio_font?: string | null
           border_enabled?: boolean | null
           created_at?: string | null
           custom_cursor?: string | null
@@ -91,6 +98,9 @@ export type Database = {
           discord_avatar_url?: string | null
           discord_decoration_url?: string | null
           display_name?: string | null
+          display_name_color?: string | null
+          display_name_font?: string | null
+          entry_text?: string | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
           glow_username?: boolean | null
@@ -109,6 +119,8 @@ export type Database = {
           background_type?: string | null
           background_url?: string | null
           bio?: string | null
+          bio_color?: string | null
+          bio_font?: string | null
           border_enabled?: boolean | null
           created_at?: string | null
           custom_cursor?: string | null
@@ -116,6 +128,9 @@ export type Database = {
           discord_avatar_url?: string | null
           discord_decoration_url?: string | null
           display_name?: string | null
+          display_name_color?: string | null
+          display_name_font?: string | null
+          entry_text?: string | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
           glow_username?: boolean | null

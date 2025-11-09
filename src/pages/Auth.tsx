@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import PasswordStrength from "@/components/PasswordStrength";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -106,6 +107,7 @@ const Auth = () => {
               required
               className="mt-1"
             />
+            {!isLogin && <PasswordStrength password={password} />}
           </div>
           
           <Button type="submit" className="w-full" disabled={loading}>

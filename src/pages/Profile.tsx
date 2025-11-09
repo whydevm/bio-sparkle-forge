@@ -7,6 +7,7 @@ import SocialLinks from "@/components/profile/SocialLinks";
 import MusicPlayer from "@/components/profile/MusicPlayer";
 import ViewCounter from "@/components/profile/ViewCounter";
 import CustomCursor from "@/components/CustomCursor";
+import EntrySplash from "@/components/EntrySplash";
 
 const Profile = () => {
   const { username } = useParams();
@@ -14,7 +15,9 @@ const Profile = () => {
   const [music, setMusic] = useState<any[]>([]);
   const [links, setLinks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasEntered, setHasEntered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (username) {
@@ -24,19 +27,32 @@ const Profile = () => {
   }, [username]);
 
   useEffect(() => {
-    // Auto-play video when profile loads or updates
-    if (videoRef.current && profile?.background_type === "video") {
-      const playVideo = async () => {
-        try {
-          videoRef.current!.muted = false;
-          await videoRef.current!.play();
-        } catch (error) {
-          console.log("Autoplay prevented:", error);
-        }
-      };
-      playVideo();
+    // Auto-play media when user enters
+    if (hasEntered && profile) {
+      if (videoRef.current && profile.background_type === "video") {
+        const playVideo = async () => {
+          try {
+            videoRef.current!.muted = false;
+            await videoRef.current!.play();
+          } catch (error) {
+            console.log("Autoplay prevented:", error);
+          }
+        };
+        playVideo();
+      }
+      
+      if (audioRef.current && music.length > 0) {
+        const playAudio = async () => {
+          try {
+            await audioRef.current!.play();
+          } catch (error) {
+            console.log("Autoplay prevented:", error);
+          }
+        };
+        playAudio();
+      }
     }
-  }, [profile]);
+  }, [hasEntered, profile, music]);
 
   const loadProfile = async () => {
     const { data: profileData } = await supabase
@@ -98,64 +114,75 @@ const Profile = () => {
 
   const profileOpacity = profile.profile_opacity / 100;
   const profileBlur = profile.profile_blur;
+  
+  const hasAudio = music.length > 0 || profile.background_type === "video";
+  const shouldShowSplash = hasAudio && !hasEntered;
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={getBackgroundStyle()}>
-      <CustomCursor cursorUrl={profile.custom_cursor} />
-      
-      {profile.background_type === "video" && profile.background_url && (
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src={profile.background_url} type="video/mp4" />
-        </video>
+    <>
+      {shouldShowSplash && (
+        <EntrySplash
+          entryText={profile.entry_text || "Click to Enter"}
+          onEnter={() => setHasEntered(true)}
+        />
       )}
-
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
-        <div
-          className="w-full max-w-md"
-          style={{
-            opacity: profileOpacity === 0 ? 0 : 1,
-          }}
-        >
-          <div
-            className={`glass-panel p-8 rounded-2xl space-y-6 ${
-              profile.border_enabled && profileOpacity > 0 ? "glow-border" : ""
-            }`}
-            style={{
-              backdropFilter: `blur(${profileBlur}px)`,
-            }}
+      
+      <div className="min-h-screen relative overflow-hidden" style={getBackgroundStyle()}>
+        <CustomCursor cursorUrl={profile.custom_cursor} />
+        
+        {profile.background_type === "video" && profile.background_url && (
+          <video
+            ref={videoRef}
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
           >
-            <ProfileAvatar
-              avatarUrl={profile.avatar_url}
-              decorationUrl={profile.avatar_decoration_url}
-              displayName={profile.display_name || profile.username}
-            />
+            <source src={profile.background_url} type="video/mp4" />
+          </video>
+        )}
 
-            <div className="text-center">
-              <ProfileUsername
-                username={profile.display_name || profile.username}
-                effect={profile.username_effect}
-                glow={profile.glow_username}
+        <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+          <div className="w-full max-w-md">
+            <div
+              className={`glass-panel p-8 rounded-2xl space-y-6 ${
+                profile.border_enabled && profileOpacity > 0 ? "glow-border" : ""
+              }`}
+              style={{
+                backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
+                backgroundColor: profileOpacity === 0 ? "transparent" : undefined,
+                borderColor: profileOpacity === 0 ? "transparent" : undefined,
+              }}
+            >
+              <ProfileAvatar
+                avatarUrl={profile.avatar_url}
+                decorationUrl={profile.avatar_decoration_url}
+                displayName={profile.display_name || profile.username}
               />
-              {profile.bio && (
-                <p className="text-muted-foreground mt-2">{profile.bio}</p>
-              )}
+
+              <div className="text-center">
+                <ProfileUsername
+                  username={profile.display_name || profile.username}
+                  effect={profile.username_effect}
+                  glow={profile.glow_username}
+                  fontClass={profile.display_name_font}
+                  colorClass={profile.display_name_color}
+                />
+                {profile.bio && (
+                  <p className={`mt-2 ${profile.bio_font} ${profile.bio_color}`}>{profile.bio}</p>
+                )}
+              </div>
+
+              <SocialLinks links={links} glow={profile.glow_socials} />
+
+              {music.length > 0 && <MusicPlayer music={music} audioRef={audioRef} />}
             </div>
-
-            <SocialLinks links={links} glow={profile.glow_socials} />
-
-            {music.length > 0 && <MusicPlayer music={music} />}
           </div>
         </div>
-      </div>
 
-      <ViewCounter count={profile.view_count} />
-    </div>
+        <ViewCounter count={profile.view_count} />
+      </div>
+    </>
   );
 };
 

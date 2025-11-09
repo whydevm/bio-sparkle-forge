@@ -135,6 +135,103 @@ const Dashboard = () => {
           <TabsContent value="appearance" className="glass-panel p-6 rounded-xl mt-4">
             <div className="space-y-6">
               <div>
+                <Label>Entry Text (shown before audio/video plays)</Label>
+                <Input
+                  value={profile?.entry_text || ""}
+                  onChange={(e) => setProfile({ ...profile, entry_text: e.target.value })}
+                  placeholder="Click to Enter"
+                  className="mt-1"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Display Name Font</Label>
+                  <Select
+                    value={profile?.display_name_font || "font-sans"}
+                    onValueChange={(value) => setProfile({ ...profile, display_name_font: value })}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="font-sans">Sans Serif</SelectItem>
+                      <SelectItem value="font-serif">Serif</SelectItem>
+                      <SelectItem value="font-mono">Monospace</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label>Display Name Color</Label>
+                  <Select
+                    value={profile?.display_name_color || "text-foreground"}
+                    onValueChange={(value) => setProfile({ ...profile, display_name_color: value })}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="text-foreground">Default</SelectItem>
+                      <SelectItem value="text-primary">Primary</SelectItem>
+                      <SelectItem value="text-accent">Accent</SelectItem>
+                      <SelectItem value="text-white">White</SelectItem>
+                      <SelectItem value="text-red-500">Red</SelectItem>
+                      <SelectItem value="text-blue-500">Blue</SelectItem>
+                      <SelectItem value="text-green-500">Green</SelectItem>
+                      <SelectItem value="text-yellow-500">Yellow</SelectItem>
+                      <SelectItem value="text-purple-500">Purple</SelectItem>
+                      <SelectItem value="text-pink-500">Pink</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Bio Font</Label>
+                  <Select
+                    value={profile?.bio_font || "font-sans"}
+                    onValueChange={(value) => setProfile({ ...profile, bio_font: value })}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="font-sans">Sans Serif</SelectItem>
+                      <SelectItem value="font-serif">Serif</SelectItem>
+                      <SelectItem value="font-mono">Monospace</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label>Bio Color</Label>
+                  <Select
+                    value={profile?.bio_color || "text-muted-foreground"}
+                    onValueChange={(value) => setProfile({ ...profile, bio_color: value })}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="text-muted-foreground">Default</SelectItem>
+                      <SelectItem value="text-foreground">Foreground</SelectItem>
+                      <SelectItem value="text-primary">Primary</SelectItem>
+                      <SelectItem value="text-accent">Accent</SelectItem>
+                      <SelectItem value="text-white">White</SelectItem>
+                      <SelectItem value="text-red-500">Red</SelectItem>
+                      <SelectItem value="text-blue-500">Blue</SelectItem>
+                      <SelectItem value="text-green-500">Green</SelectItem>
+                      <SelectItem value="text-yellow-500">Yellow</SelectItem>
+                      <SelectItem value="text-purple-500">Purple</SelectItem>
+                      <SelectItem value="text-pink-500">Pink</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
                 <Label>Background Type</Label>
                 <Select
                   value={profile?.background_type}
