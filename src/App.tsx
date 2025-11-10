@@ -7,6 +7,11 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Links from "./pages/Links";
+import Overview from "./pages/Overview";
+import AccountSettings from "./pages/AccountSettings";
+import Badges from "./pages/Badges";
+import Analytics from "./pages/Analytics";
+import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
@@ -23,6 +28,11 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/links" element={<Links />} />
+          <Route path="/account/overview" element={<Overview />} />
+          <Route path="/account/settings" element={<AccountSettings />} />
+          <Route path="/account/badges" element={<Badges />} />
+          <Route path="/account/analytics" element={<Analytics />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/:username" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

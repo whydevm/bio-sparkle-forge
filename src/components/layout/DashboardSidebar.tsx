@@ -68,6 +68,34 @@ const DashboardSidebar = ({ open, onClose, username }: DashboardSidebarProps) =>
                   <Button
                     variant="ghost"
                     className="w-full justify-start text-sm"
+                    onClick={() => { navigate("/account/overview"); onClose(); }}
+                  >
+                    Overview
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm"
+                    onClick={() => { navigate("/account/analytics"); onClose(); }}
+                  >
+                    Analytics
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm"
+                    onClick={() => { navigate("/account/badges"); onClose(); }}
+                  >
+                    Badges
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm"
+                    onClick={() => { navigate("/account/settings"); onClose(); }}
+                  >
+                    Settings
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm"
                     onClick={handleLogout}
                   >
                     Logout

@@ -97,11 +97,14 @@ const Links = () => {
     if (!linkUrl || !selectedPlatform || !profile) return;
 
     try {
+      // Construct the full URL
+      const fullUrl = `https://${selectedPlatform.value}.com/${linkUrl}`;
+      
       const { error } = await supabase.from("social_links").insert({
         profile_id: profile.id,
         platform: selectedPlatform.value,
         label: selectedPlatform.label,
-        url: linkUrl,
+        url: fullUrl,
         order_index: links.length,
       });
 
@@ -185,12 +188,20 @@ const Links = () => {
 
               <div className="bg-background/50 rounded-lg p-3 flex items-center gap-2">
                 {selectedPlatform && (
-                  <selectedPlatform.icon className="w-5 h-5" style={{ color: selectedPlatform.color }} />
+                  <>
+                    <selectedPlatform.icon className="w-5 h-5" style={{ color: selectedPlatform.color }} />
+                    <span className="text-sm text-muted-foreground">{selectedPlatform.value}.com/</span>
+                  </>
                 )}
                 <Input
                   value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  placeholder={`${selectedPlatform?.value}.com/...`}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Only allow text after the domain
+                    const cleanValue = value.replace(/^https?:\/\//, '').replace(/^[^/]+\//, '');
+                    setLinkUrl(cleanValue);
+                  }}
+                  placeholder="username"
                   className="border-0 bg-transparent focus-visible:ring-0"
                 />
               </div>
