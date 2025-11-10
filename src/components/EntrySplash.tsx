@@ -25,7 +25,6 @@ const EntrySplash = ({ entryText, entryTextFont, onEnter }: EntrySplashProps) =>
     >
       <div className="text-center space-y-6 animate-fade-in pointer-events-none">
         <h1 className={`text-4xl font-bold ${entryTextFont}`}>{entryText}</h1>
-        <p className="text-muted-foreground">Click anywhere to enter</p>
       </div>
     </div>
   );
