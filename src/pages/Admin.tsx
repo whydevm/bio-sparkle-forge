@@ -39,14 +39,14 @@ const Admin = () => {
     }
 
     // Check if user has admin role
-    const { data: roleData } = await supabase
+    const { data: roleData, error } = await supabase
       .from("user_roles")
       .select("*")
       .eq("user_id", user.id)
       .eq("role", "admin")
-      .single();
+      .maybeSingle();
 
-    if (roleData) {
+    if (roleData && !error) {
       setIsAdmin(true);
       loadBadges();
     } else {

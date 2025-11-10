@@ -14,6 +14,7 @@ interface MusicEditorProps {
 
 const MusicEditor = ({ profileId }: MusicEditorProps) => {
   const [music, setMusic] = useState<any[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, string>>({});
 
   useEffect(() => {
     loadMusic();
@@ -75,6 +76,10 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
     }
   };
 
+  const handleFileSelect = (trackId: string, file: File) => {
+    setSelectedFiles(prev => ({ ...prev, [trackId]: file.name }));
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -84,11 +89,11 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
         </Button>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {music.map((track) => (
-          <div key={track.id} className="bg-background/50 p-4 rounded-lg space-y-3">
+          <div key={track.id} className="bg-background/50 p-3 rounded-lg space-y-2">
             <div>
-              <Label>Audio Title</Label>
+              <Label className="text-sm">Audio Title</Label>
               <div className="relative mt-1">
                 <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z" />
@@ -97,34 +102,57 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
                   value={track.title}
                   onChange={(e) => updateMusic(track.id, "title", e.target.value)}
                   placeholder="Add a title..."
-                  className="pl-10"
+                  className="pl-10 text-sm"
                 />
               </div>
             </div>
 
             <div>
-              <Label>Upload Audio File (MP3)</Label>
-              <div className="mt-2">
+              <Label className="text-sm">Upload Audio File (MP3)</Label>
+              <div className="mt-1">
+                <input
+                  type="file"
+                  accept="audio/mp3,audio/mpeg"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      handleFileSelect(track.id, file);
+                      // Upload to Supabase
+                      const uploadFile = async () => {
+                        const fileExt = file.name.split('.').pop();
+                        const fileName = `${crypto.randomUUID()}.${fileExt}`;
+                        const { data, error } = await supabase.storage
+                          .from('music')
+                          .upload(fileName, file);
+                        if (!error && data) {
+                          const { data: { publicUrl } } = supabase.storage
+                            .from('music')
+                            .getPublicUrl(fileName);
+                          updateMusic(track.id, "url", publicUrl);
+                        }
+                      };
+                      uploadFile();
+                    }
+                  }}
+                  className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
+                />
+                {selectedFiles[track.id] && (
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    Selected: {selectedFiles[track.id]}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-sm">Upload Audio Cover (Optional)</Label>
+              <div className="mt-1">
                 <FileUpload
                   bucket="music"
-                  onUpload={(url) => updateMusic(track.id, "url", url)}
-                  accept="audio/mp3,audio/mpeg"
-                  label="Click to upload MP3 audio"
+                  onUpload={(url) => updateMusic(track.id, "cover_url", url)}
+                  accept="image/*"
+                  label="Click to upload cover"
                 />
-              </div>
-            </div>
-
-            <div>
-              <Label>Upload Audio Cover (Optional)</Label>
-              <div className="mt-2 border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
-                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span className="text-sm text-muted-foreground">Click to upload an audio cover</span>
-                </div>
               </div>
             </div>
 
@@ -133,7 +161,7 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
               size="sm"
               onClick={() => removeMusic(track.id, track.isNew)}
             >
-              <Trash2 className="w-4 h-4 mr-2" />
+              <Trash2 className="w-3 h-3 mr-2" />
               Remove
             </Button>
           </div>
@@ -141,7 +169,7 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
       </div>
 
       <Button onClick={saveMusic} className="w-full">
-        Add Audio
+        Save Audio
       </Button>
     </div>
   );

@@ -196,32 +196,42 @@ const Profile = () => {
             </div>
 
             {music.length > 0 && (
-              <div className="bg-card/80 backdrop-blur-sm border border-border rounded-2xl p-4">
+              <div 
+                className="rounded-2xl p-3"
+                style={{
+                  backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
+                  backgroundColor: profileOpacity === 0 ? "transparent" : "hsl(var(--card) / 0.8)",
+                  borderWidth: profileOpacity === 0 ? "0" : "1px",
+                  borderColor: profileOpacity === 0 ? "transparent" : "hsl(var(--border))",
+                }}
+              >
                 <MusicPlayer music={music} audioRef={audioRef} />
               </div>
             )}
           </div>
         </div>
 
-        {/* Views in bottom left, Location in bottom right */}
-        <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2">
-          <div className="px-4 py-2 rounded-full flex items-center gap-2 bg-card/80 backdrop-blur-sm border border-border">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-            </svg>
-            <span className="text-sm font-medium">{profile.view_count.toLocaleString()}</span>
-          </div>
-
-          {profile.location && (
+        {/* Views in bottom left */}
+        {hasEntered && (
+          <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2">
             <div className="px-4 py-2 rounded-full flex items-center gap-2 bg-card/80 backdrop-blur-sm border border-border">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
               </svg>
-              <span className="text-sm font-medium">{profile.location}</span>
+              <span className="text-sm font-medium">{profile.view_count.toLocaleString()}</span>
             </div>
-          )}
-        </div>
+
+            {profile.location && (
+              <div className="px-4 py-2 rounded-full flex items-center gap-2 bg-card/80 backdrop-blur-sm border border-border">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-sm font-medium">{profile.location}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

@@ -106,17 +106,6 @@ const AccountSettings = () => {
           </div>
         </div>
 
-        {/* Discord Settings */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Discord Settings</h2>
-          
-          <div className="bg-card border border-border rounded-lg p-4">
-            <p className="text-sm text-muted-foreground mb-3">
-              Claim your guns.lol Badges as roles on the official guns.lol Discord server
-            </p>
-            <Button className="w-full">Claim Now</Button>
-          </div>
-        </div>
 
         {/* Security Settings */}
         <div className="space-y-4">
@@ -133,17 +122,6 @@ const AccountSettings = () => {
               <Switch />
             </div>
 
-            <div className="border-t border-border pt-4">
-              <div className="flex items-start justify-between">
-                <div className="space-y-1">
-                  <div className="font-medium">Login with Discord</div>
-                  <div className="text-sm text-muted-foreground">
-                    Allows you to login with Discord into your guns.lol account
-                  </div>
-                </div>
-                <Switch />
-              </div>
-            </div>
           </div>
         </div>
 
@@ -168,16 +146,12 @@ const AccountSettings = () => {
               <p className="text-sm text-muted-foreground mb-3">
                 By changing your password, you will be logged out of every device.
               </p>
-              <Button variant="secondary" className="w-full">
-                Change Password
-              </Button>
-            </div>
-
             <Button variant="secondary" className="w-full">
-              Connect Discord
+              Change Password
             </Button>
+          </div>
 
-            <Button 
+            <Button
               variant="destructive" 
               className="w-full"
               onClick={handleLogout}
