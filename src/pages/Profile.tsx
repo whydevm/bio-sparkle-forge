@@ -198,12 +198,13 @@ const Profile = () => {
 
             {music.length > 0 && profile.show_audio_player !== false && (
               <div 
-                className="rounded-2xl p-3"
+                className="rounded-2xl"
                 style={{
                   backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
                   backgroundColor: profileOpacity === 0 ? "transparent" : "hsl(var(--card) / 0.8)",
                   borderWidth: profileOpacity === 0 ? "0" : "1px",
                   borderColor: profileOpacity === 0 ? "transparent" : "hsl(var(--border))",
+                  padding: profileOpacity === 0 ? "0" : "0.75rem",
                 }}
               >
                 <MusicPlayer music={music} audioRef={audioRef} shuffle={profile.audio_shuffle} />

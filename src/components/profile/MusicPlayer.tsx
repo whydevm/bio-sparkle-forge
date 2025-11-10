@@ -63,7 +63,7 @@ const MusicPlayer = ({ music, audioRef: externalAudioRef, shuffle }: MusicPlayer
   };
 
   return (
-    <div className="glass-panel p-3 rounded-xl">
+    <div className="p-3 rounded-xl">
       <div className="flex items-center gap-3">
         {/* Album Cover */}
         <div className="flex-shrink-0">
