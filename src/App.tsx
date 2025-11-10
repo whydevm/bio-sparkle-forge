@@ -12,6 +12,7 @@ import AccountSettings from "./pages/AccountSettings";
 import Badges from "./pages/Badges";
 import Analytics from "./pages/Analytics";
 import Admin from "./pages/Admin";
+import AdminAuth from "./pages/AdminAuth";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/account/settings" element={<AccountSettings />} />
           <Route path="/account/badges" element={<Badges />} />
           <Route path="/account/analytics" element={<Analytics />} />
+          <Route path="/admin-login" element={<AdminAuth />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/:username" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

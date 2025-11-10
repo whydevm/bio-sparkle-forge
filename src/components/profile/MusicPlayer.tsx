@@ -12,12 +12,14 @@ interface Music {
 interface MusicPlayerProps {
   music: Music[];
   audioRef?: React.RefObject<HTMLAudioElement>;
+  shuffle?: boolean;
 }
 
-const MusicPlayer = ({ music, audioRef: externalAudioRef }: MusicPlayerProps) => {
+const MusicPlayer = ({ music, audioRef: externalAudioRef, shuffle }: MusicPlayerProps) => {
   const [currentTrack, setCurrentTrack] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
+  const [playedTracks, setPlayedTracks] = useState<number[]>([]);
   const internalAudioRef = useRef<HTMLAudioElement>(null);
   const audioRefInternal = externalAudioRef || internalAudioRef;
 
@@ -39,7 +41,24 @@ const MusicPlayer = ({ music, audioRef: externalAudioRef }: MusicPlayerProps) =>
   };
 
   const nextTrack = () => {
-    setCurrentTrack((prev) => (prev + 1) % music.length);
+    if (shuffle && music.length > 1) {
+      const availableTracks = music
+        .map((_, index) => index)
+        .filter(index => index !== currentTrack && !playedTracks.includes(index));
+      
+      if (availableTracks.length === 0) {
+        setPlayedTracks([]);
+        const randomIndex = Math.floor(Math.random() * music.length);
+        setCurrentTrack(randomIndex);
+        setPlayedTracks([randomIndex]);
+      } else {
+        const randomIndex = availableTracks[Math.floor(Math.random() * availableTracks.length)];
+        setCurrentTrack(randomIndex);
+        setPlayedTracks([...playedTracks, randomIndex]);
+      }
+    } else {
+      setCurrentTrack((prev) => (prev + 1) % music.length);
+    }
     setIsPlaying(false);
   };
 

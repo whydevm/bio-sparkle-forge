@@ -281,11 +281,12 @@ const Dashboard = () => {
               </div>
 
               <div>
-                <Label>Profile Opacity: {profile?.profile_opacity || 100}%</Label>
+                <Label>Profile Opacity: {profile?.profile_opacity ?? 100}%</Label>
                 <Slider
-                  value={[profile?.profile_opacity || 100]}
+                  value={[profile?.profile_opacity ?? 100]}
                   onValueChange={([value]) => setProfile({ ...profile, profile_opacity: value })}
                   max={100}
+                  min={0}
                   step={1}
                   className="mt-2"
                 />
@@ -344,6 +345,25 @@ const Dashboard = () => {
                 <Switch
                   checked={profile?.monochrome_icons}
                   onCheckedChange={(checked) => setProfile({ ...profile, monochrome_icons: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label>Show Audio Player</Label>
+                <Switch
+                  checked={profile?.show_audio_player ?? true}
+                  onCheckedChange={(checked) => setProfile({ ...profile, show_audio_player: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>Audio Shuffle</Label>
+                  <p className="text-xs text-muted-foreground">Only available with 2+ songs</p>
+                </div>
+                <Switch
+                  checked={profile?.audio_shuffle}
+                  onCheckedChange={(checked) => setProfile({ ...profile, audio_shuffle: checked })}
                 />
               </div>
 

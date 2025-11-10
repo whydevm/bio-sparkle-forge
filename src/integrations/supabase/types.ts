@@ -113,6 +113,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          audio_shuffle: boolean | null
           avatar_decoration_url: string | null
           avatar_url: string | null
           background_type: string | null
@@ -139,6 +140,7 @@ export type Database = {
           monochrome_icons: boolean | null
           profile_blur: number | null
           profile_opacity: number | null
+          show_audio_player: boolean | null
           updated_at: string | null
           user_id: string
           username: string
@@ -146,6 +148,7 @@ export type Database = {
           view_count: number | null
         }
         Insert: {
+          audio_shuffle?: boolean | null
           avatar_decoration_url?: string | null
           avatar_url?: string | null
           background_type?: string | null
@@ -172,6 +175,7 @@ export type Database = {
           monochrome_icons?: boolean | null
           profile_blur?: number | null
           profile_opacity?: number | null
+          show_audio_player?: boolean | null
           updated_at?: string | null
           user_id: string
           username: string
@@ -179,6 +183,7 @@ export type Database = {
           view_count?: number | null
         }
         Update: {
+          audio_shuffle?: boolean | null
           avatar_decoration_url?: string | null
           avatar_url?: string | null
           background_type?: string | null
@@ -205,6 +210,7 @@ export type Database = {
           monochrome_icons?: boolean | null
           profile_blur?: number | null
           profile_opacity?: number | null
+          show_audio_player?: boolean | null
           updated_at?: string | null
           user_id?: string
           username?: string
