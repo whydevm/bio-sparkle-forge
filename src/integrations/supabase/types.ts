@@ -43,6 +43,7 @@ export type Database = {
       }
       profile_music: {
         Row: {
+          cover_url: string | null
           created_at: string | null
           id: string
           order_index: number | null
@@ -52,6 +53,7 @@ export type Database = {
           url: string
         }
         Insert: {
+          cover_url?: string | null
           created_at?: string | null
           id?: string
           order_index?: number | null
@@ -61,6 +63,7 @@ export type Database = {
           url: string
         }
         Update: {
+          cover_url?: string | null
           created_at?: string | null
           id?: string
           order_index?: number | null
