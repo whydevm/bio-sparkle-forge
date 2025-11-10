@@ -106,6 +106,7 @@ export type Database = {
           glow_username: boolean | null
           id: string
           location: string | null
+          monochrome_icons: boolean | null
           profile_blur: number | null
           profile_opacity: number | null
           updated_at: string | null
@@ -138,6 +139,7 @@ export type Database = {
           glow_username?: boolean | null
           id?: string
           location?: string | null
+          monochrome_icons?: boolean | null
           profile_blur?: number | null
           profile_opacity?: number | null
           updated_at?: string | null
@@ -170,6 +172,7 @@ export type Database = {
           glow_username?: boolean | null
           id?: string
           location?: string | null
+          monochrome_icons?: boolean | null
           profile_blur?: number | null
           profile_opacity?: number | null
           updated_at?: string | null

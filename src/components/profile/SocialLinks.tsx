@@ -23,9 +23,10 @@ interface SocialLink {
 interface SocialLinksProps {
   links: SocialLink[];
   glow?: boolean;
+  monochrome?: boolean;
 }
 
-const SocialLinks = ({ links, glow }: SocialLinksProps) => {
+const SocialLinks = ({ links, glow, monochrome }: SocialLinksProps) => {
   const getIcon = (platform: string) => {
     const icons: Record<string, any> = {
       tiktok: SiTiktok,
@@ -40,30 +41,35 @@ const SocialLinks = ({ links, glow }: SocialLinksProps) => {
     };
     
     const IconComponent = icons[platform.toLowerCase()];
-    return IconComponent ? <IconComponent className="w-5 h-5" /> : null;
+    return IconComponent ? <IconComponent className={`w-8 h-8 ${monochrome ? "text-white" : ""}`} /> : null;
   };
 
+  // Determine layout based on number of links
+  const gridClass = links.length > 2
+    ? "grid grid-cols-3 gap-3 justify-start"
+    : "flex gap-3 justify-center";
+
   return (
-    <div className="space-y-3">
+    <div className={gridClass}>
       {links.map((link) => (
         <a
           key={link.id}
           href={link.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block"
+          className={`flex items-center justify-center p-3 rounded-lg hover:bg-accent transition-colors ${
+            glow ? "glow-border" : ""
+          }`}
         >
-          <Button
-            variant="outline"
-            className={`w-full justify-start gap-3 ${glow ? "glow-border" : ""}`}
-          >
-            {link.custom_icon_url ? (
-              <img src={link.custom_icon_url} alt="" className="w-5 h-5 object-contain" />
-            ) : (
-              getIcon(link.platform)
-            )}
-            <span>{link.label}</span>
-          </Button>
+          {link.custom_icon_url ? (
+            <img
+              src={link.custom_icon_url}
+              alt=""
+              className={`w-8 h-8 object-contain ${monochrome ? "brightness-0 invert" : ""}`}
+            />
+          ) : (
+            getIcon(link.platform)
+          )}
         </a>
       ))}
     </div>

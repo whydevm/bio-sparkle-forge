@@ -155,11 +155,25 @@ const Profile = () => {
                 borderColor: profileOpacity === 0 ? "transparent" : undefined,
               }}
             >
-              <ProfileAvatar
-                avatarUrl={profile.avatar_url}
-                decorationUrl={profile.avatar_decoration_url}
-                displayName={profile.display_name || profile.username}
-              />
+              {/* Profile Avatar - Circular, centered, no glow */}
+              <div className="flex justify-center mb-6">
+                <div className="relative w-24 h-24">
+                  {profile.avatar_url && (
+                    <img
+                      src={profile.avatar_url}
+                      alt={profile.display_name || profile.username}
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  )}
+                  {profile.avatar_decoration_url && (
+                    <img
+                      src={profile.avatar_decoration_url}
+                      alt="decoration"
+                      className="absolute inset-0 w-full h-full"
+                    />
+                  )}
+                </div>
+              </div>
 
               <div className="text-center">
                 <ProfileUsername
@@ -172,17 +186,28 @@ const Profile = () => {
                 {profile.bio && (
                   <p className={`mt-2 ${profile.bio_font} ${profile.bio_color}`}>{profile.bio}</p>
                 )}
-                {profile.location && (
-                  <p className="mt-1 text-sm text-muted-foreground">{profile.location}</p>
-                )}
               </div>
 
-              <SocialLinks links={links} glow={profile.glow_socials} />
+              <SocialLinks
+                links={links}
+                glow={profile.glow_socials}
+                monochrome={profile.monochrome_icons}
+              />
 
               {music.length > 0 && <MusicPlayer music={music} audioRef={audioRef} />}
             </div>
           </div>
         </div>
+
+        {/* Location in bottom left */}
+        {profile.location && (
+          <div className="fixed bottom-6 left-6 flex items-center gap-2 text-sm text-muted-foreground">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+            </svg>
+            <span>{profile.location}</span>
+          </div>
+        )}
 
         <ViewCounter count={profile.view_count} />
       </div>

@@ -1,7 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { Play, Pause, SkipForward, Volume2 } from "lucide-react";
+import { Play, Pause, SkipForward } from "lucide-react";
 
 interface Music {
   id: string;
@@ -18,22 +16,22 @@ interface MusicPlayerProps {
 const MusicPlayer = ({ music, audioRef: externalAudioRef }: MusicPlayerProps) => {
   const [currentTrack, setCurrentTrack] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState([50]);
+  const [volume, setVolume] = useState(0.5);
   const internalAudioRef = useRef<HTMLAudioElement>(null);
-  const audioRef = externalAudioRef || internalAudioRef;
+  const audioRefInternal = externalAudioRef || internalAudioRef;
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume[0] / 100;
+    if (audioRefInternal.current) {
+      audioRefInternal.current.volume = volume;
     }
   }, [volume]);
 
   const togglePlay = () => {
-    if (audioRef.current) {
+    if (audioRefInternal.current) {
       if (isPlaying) {
-        audioRef.current.pause();
+        audioRefInternal.current.pause();
       } else {
-        audioRef.current.play();
+        audioRefInternal.current.play();
       }
       setIsPlaying(!isPlaying);
     }
@@ -44,47 +42,66 @@ const MusicPlayer = ({ music, audioRef: externalAudioRef }: MusicPlayerProps) =>
     setIsPlaying(false);
   };
 
-  const currentMusic = music[currentTrack];
-
   return (
-    <div className="glass-panel p-4 rounded-xl space-y-4">
-      <div className="text-sm font-medium text-center">{currentMusic.title}</div>
-      
-      <div className="flex items-center justify-center gap-4">
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={togglePlay}
-        >
-          {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-        </Button>
-        
-        {music.length > 1 && (
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={nextTrack}
-          >
-            <SkipForward className="w-5 h-5" />
-          </Button>
-        )}
-      </div>
+    <div className="glass-panel p-4 rounded-xl">
+      {/* Spotify-style player */}
+      <div className="flex items-center gap-4">
+        {/* Album/Track icon */}
+        <div className="w-14 h-14 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+          <svg className="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z" />
+          </svg>
+        </div>
 
-      <div className="flex items-center gap-2">
-        <Volume2 className="w-4 h-4" />
-        <Slider
-          value={volume}
-          onValueChange={setVolume}
-          max={100}
-          step={1}
-          className="flex-1"
-        />
+        {/* Track info and controls */}
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-medium truncate">
+            {music[currentTrack]?.title || "Untitled"}
+          </div>
+          
+          {/* Controls */}
+          <div className="flex items-center gap-3 mt-2">
+            <button
+              onClick={togglePlay}
+              className="w-8 h-8 flex items-center justify-center bg-primary hover:bg-primary/90 rounded-full transition-colors"
+            >
+              {isPlaying ? (
+                <Pause className="w-4 h-4 text-primary-foreground" />
+              ) : (
+                <Play className="w-4 h-4 text-primary-foreground ml-0.5" />
+              )}
+            </button>
+
+            <button
+              onClick={nextTrack}
+              className="w-8 h-8 flex items-center justify-center hover:bg-accent rounded-full transition-colors"
+            >
+              <SkipForward className="w-4 h-4" />
+            </button>
+
+            {/* Volume */}
+            <div className="flex items-center gap-2 ml-auto">
+              <svg className="w-4 h-4 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clipRule="evenodd" />
+              </svg>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={(e) => setVolume(parseFloat(e.target.value))}
+                className="w-20 h-1 bg-border rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       <audio
-        ref={audioRef}
-        src={currentMusic.url}
-        onEnded={music.length > 1 ? nextTrack : undefined}
+        ref={audioRefInternal}
+        src={music[currentTrack]?.url}
+        onEnded={nextTrack}
       />
     </div>
   );

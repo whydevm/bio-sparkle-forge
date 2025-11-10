@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SocialLinksEditor from "@/components/dashboard/SocialLinksEditor";
 import MusicEditor from "@/components/dashboard/MusicEditor";
 import FileUpload from "@/components/FileUpload";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -56,29 +57,15 @@ const Dashboard = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
-  };
-
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/10 p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold glow-text">Dashboard</h1>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate(`/${profile?.username}`)}>
-              View Profile
-            </Button>
-            <Button variant="secondary" onClick={handleLogout}>
-              Logout
-            </Button>
-          </div>
-        </div>
+    <DashboardLayout username={profile?.username}>
+      <div className="p-6">
+        <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6">Customize</h1>
 
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
@@ -352,6 +339,14 @@ const Dashboard = () => {
                 />
               </div>
 
+              <div className="flex items-center justify-between">
+                <Label>Monochrome Icons</Label>
+                <Switch
+                  checked={profile?.monochrome_icons}
+                  onCheckedChange={(checked) => setProfile({ ...profile, monochrome_icons: checked })}
+                />
+              </div>
+
               <div>
                 <Label>Custom Cursor</Label>
                 <div className="mt-1 flex items-center gap-3">
@@ -380,7 +375,8 @@ const Dashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 };
 
