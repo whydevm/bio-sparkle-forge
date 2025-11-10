@@ -76,61 +76,60 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
   };
 
   return (
-    <div className="glass-panel p-6 rounded-xl space-y-4">
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Music</h2>
         <Button onClick={addMusic} size="sm">
           <Plus className="w-4 h-4 mr-2" />
-          Add Track
+          Add Audio
         </Button>
       </div>
 
       <div className="space-y-4">
         {music.map((track) => (
-          <div key={track.id} className="glass-panel p-4 rounded-lg space-y-3">
+          <div key={track.id} className="bg-background/50 p-4 rounded-lg space-y-3">
             <div>
-              <Label>Title</Label>
-              <Input
-                value={track.title}
-                onChange={(e) => updateMusic(track.id, "title", e.target.value)}
-                placeholder="Song Name"
-                className="mt-1"
-              />
+              <Label>Audio Title</Label>
+              <div className="relative mt-1">
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z" />
+                </svg>
+                <Input
+                  value={track.title}
+                  onChange={(e) => updateMusic(track.id, "title", e.target.value)}
+                  placeholder="Add a title..."
+                  className="pl-10"
+                />
+              </div>
             </div>
 
             <div>
-              <Label>Type</Label>
-              <Select
-                value={track.type}
-                onValueChange={(value) => updateMusic(track.id, "type", value)}
-              >
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="youtube">YouTube</SelectItem>
-                  <SelectItem value="mp3">MP3 File</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label>Audio File</Label>
-              <div className="mt-1 space-y-2">
-                {track.type === "mp3" && (
+              <Label>Upload Audio File</Label>
+              <div className="mt-2 border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
+                <div className="flex flex-col items-center gap-2">
+                  <svg className="w-8 h-8 text-muted-foreground" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z" />
+                  </svg>
                   <FileUpload
                     bucket="music"
                     onUpload={(url) => updateMusic(track.id, "url", url)}
                     accept="audio/*"
-                    label="Upload MP3"
+                    label="Click to upload an audio"
                   />
-                )}
-                <Input
-                  value={track.url}
-                  onChange={(e) => updateMusic(track.id, "url", e.target.value)}
-                  placeholder={track.type === "youtube" ? "YouTube URL" : "MP3 URL"}
-                  className="mt-1"
-                />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <Label>Upload Audio Cover (Optional)</Label>
+              <div className="mt-2 border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary/50 transition-colors">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="text-sm text-muted-foreground">Click to upload an audio cover</span>
+                </div>
               </div>
             </div>
 
@@ -147,7 +146,7 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
       </div>
 
       <Button onClick={saveMusic} className="w-full">
-        Save All Tracks
+        Add Audio
       </Button>
     </div>
   );

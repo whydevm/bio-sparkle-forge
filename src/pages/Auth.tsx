@@ -72,7 +72,7 @@ const Auth = () => {
           <div className="flex flex-col items-center gap-4">
             <div className="text-primary text-5xl">🔫</div>
             <h1 className="text-2xl font-bold">
-              Create a haunt.gg account
+              Create a soul.gg account
             </h1>
           </div>
 
@@ -121,7 +121,7 @@ const Auth = () => {
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="haunt.gg/"
+                    placeholder="soul.gg/"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="pl-10"

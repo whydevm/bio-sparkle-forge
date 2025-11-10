@@ -37,7 +37,7 @@ const DashboardSidebar = ({ open, onClose, username }: DashboardSidebarProps) =>
             <div className="flex items-center gap-3">
               <div className="text-primary text-2xl">🔫</div>
               <span className="text-xl font-bold">
-                haunt<span className="text-primary">.</span>gg
+                soul<span className="text-primary">.</span>gg
               </span>
             </div>
             <button
@@ -86,7 +86,10 @@ const DashboardSidebar = ({ open, onClose, username }: DashboardSidebarProps) =>
             </button>
 
             {/* Links */}
-            <button className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg transition-colors">
+            <button
+              onClick={() => { navigate("/links"); onClose(); }}
+              className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg transition-colors"
+            >
               <Link className="w-5 h-5" />
               <span>links</span>
             </button>

@@ -14,7 +14,7 @@ const Index = () => {
           <div className="flex items-center gap-3">
             <div className="text-primary text-3xl">🔫</div>
             <span className="text-2xl font-bold">
-              haunt<span className="text-primary">.</span>gg
+              soul<span className="text-primary">.</span>gg
             </span>
           </div>
           <button
@@ -52,7 +52,7 @@ const Index = () => {
           </h1>
           
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            haunt.gg is your go-to for modern, feature-rich biolinks and fast, secure file hosting. Everything you need — right here.
+            soul.gg is your go-to for modern, feature-rich biolinks and fast, secure file hosting. Everything you need — right here.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
