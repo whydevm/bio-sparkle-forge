@@ -14,13 +14,13 @@ const EntrySplash = ({ entryText, entryTextFont, onEnter, hasAudio }: EntrySplas
     setIsEntering(true);
     setTimeout(() => {
       onEnter();
-    }, 300);
+    }, 800);
   };
 
   return (
     <div
       onClick={handleEnter}
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-background transition-opacity duration-300 cursor-pointer ${
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-background cursor-pointer transition-opacity duration-700 ease-out ${
         isEntering ? "opacity-0" : "opacity-100"
       }`}
     >
