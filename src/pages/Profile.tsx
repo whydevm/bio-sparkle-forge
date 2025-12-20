@@ -6,10 +6,11 @@ import SocialLinks from "@/components/profile/SocialLinks";
 import MusicPlayer from "@/components/profile/MusicPlayer";
 import CustomCursor from "@/components/CustomCursor";
 import EntrySplash from "@/components/EntrySplash";
-import CountUpAnimation from "@/components/profile/CountUpAnimation";
 import TypewriterText from "@/components/profile/TypewriterText";
 import ScrollIndicator from "@/components/profile/ScrollIndicator";
 import AboutMeSection from "@/components/profile/AboutMeSection";
+import AudioToggle from "@/components/profile/AudioToggle";
+import ProfileStats from "@/components/profile/ProfileStats";
 
 const Profile = () => {
   const { username } = useParams();
@@ -30,7 +31,6 @@ const Profile = () => {
   }, [username]);
 
   useEffect(() => {
-    // Delay content animation after entering
     if (hasEntered) {
       const timeout = setTimeout(() => {
         setShowContent(true);
@@ -40,13 +40,11 @@ const Profile = () => {
   }, [hasEntered]);
 
   useEffect(() => {
-    // Auto-play media when user enters
     if (hasEntered && profile) {
-      // If we have music, mute the video background
       if (videoRef.current && profile.background_type === "video") {
         const playVideo = async () => {
           try {
-            videoRef.current!.muted = music.length > 0; // Mute if we have music
+            videoRef.current!.muted = music.length > 0;
             await videoRef.current!.play();
           } catch (error) {
             console.log("Autoplay prevented:", error);
@@ -134,6 +132,9 @@ const Profile = () => {
   const hasAudio = music.length > 0 || profile.background_type === "video";
   const shouldShowSplash = hasAudio && !hasEntered;
   const hasAboutMe = profile.about_me && profile.about_me.trim().length > 0;
+  
+  // Parse bio texts - support multiple lines for looping typewriter
+  const bioTexts = profile.bio ? profile.bio.split("\n").filter((t: string) => t.trim()) : [];
 
   return (
     <>
@@ -161,6 +162,13 @@ const Profile = () => {
           </video>
         )}
 
+        {/* Audio toggle button in top left when player is hidden */}
+        {music.length > 0 && profile.show_audio_player === false && (hasEntered || !hasAudio) && (
+          <div className="fixed top-6 left-6 z-50">
+            <AudioToggle audioRef={audioRef} />
+          </div>
+        )}
+
         <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center p-4 transition-opacity duration-700 ${
           shouldShowSplash ? "opacity-0" : showContent || !hasAudio ? "opacity-100" : "opacity-0"
         }`}>
@@ -173,7 +181,7 @@ const Profile = () => {
                 borderColor: showBorder ? undefined : "transparent",
               }}
             >
-              {/* Profile Avatar - Circular, centered, no glow */}
+              {/* Profile Avatar */}
               <div className="flex justify-center mb-6">
                 <div className="relative w-24 h-24">
                   {profile.avatar_url && (
@@ -201,9 +209,14 @@ const Profile = () => {
                   fontClass={profile.display_name_font}
                   colorClass={profile.display_name_color}
                 />
-                {profile.bio && (showContent || !hasAudio) && (
+                {bioTexts.length > 0 && (showContent || !hasAudio) && (
                   <p className={`mt-2 ${profile.bio_font} ${profile.bio_color}`}>
-                    <TypewriterText text={profile.bio} speed={40} />
+                    <TypewriterText 
+                      texts={bioTexts} 
+                      typingSpeed={80} 
+                      deletingSpeed={40}
+                      pauseDuration={2000}
+                    />
                   </p>
                 )}
               </div>
@@ -215,19 +228,9 @@ const Profile = () => {
               />
             </div>
 
+            {/* Music player below bio */}
             {music.length > 0 && profile.show_audio_player !== false && (
-              <div 
-                className="rounded-2xl"
-                style={{
-                  backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
-                  backgroundColor: profileOpacity === 0 ? "transparent" : "hsl(var(--card) / 0.8)",
-                  borderWidth: profileOpacity === 0 ? "0" : "1px",
-                  borderColor: profileOpacity === 0 ? "transparent" : "hsl(var(--border))",
-                  padding: profileOpacity === 0 ? "0" : "0.75rem",
-                }}
-              >
-                <MusicPlayer music={music} audioRef={audioRef} shuffle={profile.audio_shuffle} />
-              </div>
+              <MusicPlayer music={music} audioRef={audioRef} shuffle={profile.audio_shuffle} />
             )}
 
             {/* Scroll indicator if about me exists */}
@@ -244,44 +247,25 @@ const Profile = () => {
           />
         )}
 
-        {/* Views in bottom left */}
+        {/* Stats in bottom left */}
         {(hasEntered || !hasAudio) && (showContent || !hasAudio) && (
-          <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2">
-            <div 
-              className="px-4 py-2 rounded-full flex items-center gap-2 backdrop-blur-sm"
-              style={{
-                backgroundColor: profileOpacity === 0 ? "transparent" : "hsl(var(--card) / 0.8)",
-                borderWidth: profileOpacity === 0 ? "0" : "1px",
-                borderColor: profileOpacity === 0 ? "transparent" : "hsl(var(--border))",
-              }}
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-              </svg>
-              <span className="text-sm font-medium">
-                <CountUpAnimation target={profile.view_count || 0} duration={2000} />
-              </span>
-            </div>
-
-            {profile.location && (
-              <div 
-                className="px-4 py-2 rounded-full flex items-center gap-2 backdrop-blur-sm"
-                style={{
-                  backgroundColor: profileOpacity === 0 ? "transparent" : "hsl(var(--card) / 0.8)",
-                  borderWidth: profileOpacity === 0 ? "0" : "1px",
-                  borderColor: profileOpacity === 0 ? "transparent" : "hsl(var(--border))",
-                }}
-              >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                </svg>
-                <span className="text-sm font-medium">{profile.location}</span>
-              </div>
-            )}
-          </div>
+          <ProfileStats
+            viewCount={profile.view_count || 0}
+            location={profile.location}
+            createdAt={profile.created_at}
+            profileOpacity={profile.profile_opacity}
+          />
         )}
       </div>
+
+      {/* Hidden audio element for when player is hidden */}
+      {music.length > 0 && profile.show_audio_player === false && (
+        <audio
+          ref={audioRef}
+          src={music[0]?.url}
+          loop={music.length === 1}
+        />
+      )}
     </>
   );
 };

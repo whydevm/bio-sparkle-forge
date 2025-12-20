@@ -284,6 +284,75 @@ const Dashboard = () => {
                 />
               </div>
 
+              {/* Display Name Font */}
+              <div>
+                <Label className="mb-2 block">Display Name Font</Label>
+                <Select
+                  value={profile?.display_name_font || "font-sans"}
+                  onValueChange={(value) => updateProfile({ display_name_font: value })}
+                >
+                  <SelectTrigger className="bg-card/50 border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="font-sans">Inter (Default)</SelectItem>
+                    <SelectItem value="font-roboto">Roboto</SelectItem>
+                    <SelectItem value="font-poppins">Poppins</SelectItem>
+                    <SelectItem value="font-montserrat">Montserrat</SelectItem>
+                    <SelectItem value="font-lato">Lato</SelectItem>
+                    <SelectItem value="font-opensans">Open Sans</SelectItem>
+                    <SelectItem value="font-raleway">Raleway</SelectItem>
+                    <SelectItem value="font-ubuntu">Ubuntu</SelectItem>
+                    <SelectItem value="font-nunito">Nunito</SelectItem>
+                    <SelectItem value="font-quicksand">Quicksand</SelectItem>
+                    <SelectItem value="font-worksans">Work Sans</SelectItem>
+                    <SelectItem value="font-oswald">Oswald</SelectItem>
+                    <SelectItem value="font-spacegrotesk">Space Grotesk</SelectItem>
+                    <SelectItem value="font-playfair">Playfair Display</SelectItem>
+                    <SelectItem value="font-merriweather">Merriweather</SelectItem>
+                    <SelectItem value="font-crimson">Crimson Text</SelectItem>
+                    <SelectItem value="font-cormorant">Cormorant Garamond</SelectItem>
+                    <SelectItem value="font-librebaskerville">Libre Baskerville</SelectItem>
+                    <SelectItem value="font-mono">JetBrains Mono</SelectItem>
+                    <SelectItem value="font-firacode">Fira Code</SelectItem>
+                    <SelectItem value="font-sourcecodepro">Source Code Pro</SelectItem>
+                    <SelectItem value="font-robotomono">Roboto Mono</SelectItem>
+                    <SelectItem value="font-lobster">Lobster</SelectItem>
+                    <SelectItem value="font-pacifico">Pacifico</SelectItem>
+                    <SelectItem value="font-permanentmarker">Permanent Marker</SelectItem>
+                    <SelectItem value="font-bebasneue">Bebas Neue</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Bio Font */}
+              <div>
+                <Label className="mb-2 block">Bio Font</Label>
+                <Select
+                  value={profile?.bio_font || "font-sans"}
+                  onValueChange={(value) => updateProfile({ bio_font: value })}
+                >
+                  <SelectTrigger className="bg-card/50 border-border">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="font-sans">Inter (Default)</SelectItem>
+                    <SelectItem value="font-roboto">Roboto</SelectItem>
+                    <SelectItem value="font-poppins">Poppins</SelectItem>
+                    <SelectItem value="font-montserrat">Montserrat</SelectItem>
+                    <SelectItem value="font-lato">Lato</SelectItem>
+                    <SelectItem value="font-opensans">Open Sans</SelectItem>
+                    <SelectItem value="font-raleway">Raleway</SelectItem>
+                    <SelectItem value="font-ubuntu">Ubuntu</SelectItem>
+                    <SelectItem value="font-nunito">Nunito</SelectItem>
+                    <SelectItem value="font-quicksand">Quicksand</SelectItem>
+                    <SelectItem value="font-mono">JetBrains Mono</SelectItem>
+                    <SelectItem value="font-playfair">Playfair Display</SelectItem>
+                    <SelectItem value="font-merriweather">Merriweather</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* About Me */}
               <div>
                 <div className="flex items-center justify-between mb-2">

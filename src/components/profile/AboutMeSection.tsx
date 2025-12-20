@@ -18,8 +18,8 @@ const AboutMeSection = ({ aboutMe, profileOpacity, profileBlur }: AboutMeSection
         }
       },
       {
-        threshold: 0.2,
-        rootMargin: "0px 0px -50px 0px",
+        threshold: 0.1,
+        rootMargin: "0px 0px 0px 0px",
       }
     );
 
@@ -36,12 +36,14 @@ const AboutMeSection = ({ aboutMe, profileOpacity, profileBlur }: AboutMeSection
     <div
       id="about-section"
       ref={sectionRef}
-      className={`min-h-screen flex items-center justify-center p-8 transition-all duration-1000 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
+      className="flex items-center justify-center p-8 pt-16 pb-24"
     >
       <div
-        className="w-full max-w-md p-8 rounded-2xl text-center"
+        className={`w-full max-w-md p-8 rounded-2xl text-center transition-all duration-700 ease-out ${
+          isVisible 
+            ? "opacity-100 translate-y-0 scale-100" 
+            : "opacity-0 translate-y-8 scale-90"
+        }`}
         style={{
           backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
           backgroundColor: profileOpacity === 0 ? "transparent" : "hsl(var(--card) / 0.8)",
