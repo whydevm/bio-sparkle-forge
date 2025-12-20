@@ -113,6 +113,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          about_me: string | null
           audio_shuffle: boolean | null
           avatar_decoration_url: string | null
           avatar_url: string | null
@@ -148,6 +149,7 @@ export type Database = {
           view_count: number | null
         }
         Insert: {
+          about_me?: string | null
           audio_shuffle?: boolean | null
           avatar_decoration_url?: string | null
           avatar_url?: string | null
@@ -183,6 +185,7 @@ export type Database = {
           view_count?: number | null
         }
         Update: {
+          about_me?: string | null
           audio_shuffle?: boolean | null
           avatar_decoration_url?: string | null
           avatar_url?: string | null

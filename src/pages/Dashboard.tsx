@@ -99,6 +99,17 @@ const Dashboard = () => {
                   value={profile?.bio || ""}
                   onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
                   className="mt-1"
+                  placeholder="A short bio shown on your profile"
+                />
+              </div>
+              <div>
+                <Label>About Me</Label>
+                <Textarea
+                  value={profile?.about_me || ""}
+                  onChange={(e) => setProfile({ ...profile, about_me: e.target.value })}
+                  className="mt-1"
+                  placeholder="Longer description shown when visitors scroll down (optional)"
+                  rows={4}
                 />
               </div>
               <div>
