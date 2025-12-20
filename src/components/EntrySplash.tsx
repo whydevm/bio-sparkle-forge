@@ -20,12 +20,13 @@ const EntrySplash = ({ entryText, entryTextFont, onEnter, hasAudio }: EntrySplas
   return (
     <div
       onClick={handleEnter}
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-background cursor-pointer transition-opacity duration-700 ease-out ${
+      className={`fixed inset-0 z-50 flex items-center justify-center cursor-pointer transition-opacity duration-700 ease-out ${
         isEntering ? "opacity-0" : "opacity-100"
       }`}
+      style={{ backgroundColor: "#000000" }}
     >
       <div className="text-center space-y-6 animate-fade-in pointer-events-none">
-        <h1 className={`text-4xl font-bold ${entryTextFont}`}>{entryText}</h1>
+        <h1 className={`text-4xl font-bold text-white ${entryTextFont}`}>{entryText}</h1>
       </div>
     </div>
   );

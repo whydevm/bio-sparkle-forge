@@ -5,7 +5,7 @@ interface CountUpAnimationProps {
   duration?: number;
 }
 
-const CountUpAnimation = ({ target, duration = 2000 }: CountUpAnimationProps) => {
+const CountUpAnimation = ({ target, duration = 800 }: CountUpAnimationProps) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -16,8 +16,8 @@ const CountUpAnimation = ({ target, duration = 2000 }: CountUpAnimationProps) =>
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // Ease out cubic for smooth deceleration
-      const easeOut = 1 - Math.pow(1 - progress, 3);
+      // Faster ease out for quicker count
+      const easeOut = 1 - Math.pow(1 - progress, 2);
       const currentCount = Math.floor(easeOut * target);
       
       setCount(currentCount);

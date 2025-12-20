@@ -171,35 +171,44 @@ const AvatarManager = ({ open, onClose, currentAvatar, onAvatarChange }: AvatarM
   }
 
   return (
-    <div
-      onClick={() => fileInputRef.current?.click()}
-      onDrop={handleDrop}
-      onDragOver={(e) => e.preventDefault()}
-      className="border border-border rounded-xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-primary/50 transition-colors min-h-[160px]"
-    >
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileSelect}
-        className="hidden"
-      />
-      
-      {currentAvatar ? (
-        <img src={currentAvatar} alt="Current avatar" className="w-16 h-16 rounded-full object-cover" />
-      ) : (
-        <User className="w-12 h-12 text-muted-foreground" />
-      )}
-      <span className="text-muted-foreground text-sm">Click or Drop a Avatar</span>
-      
-      {isEditing && (
-        <Dialog open={isEditing} onOpenChange={() => setIsEditing(false)}>
-          <DialogContent className="max-w-md">
-            {/* Edit dialog content handled above */}
-          </DialogContent>
-        </Dialog>
-      )}
-    </div>
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="max-w-md bg-card border-border">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-primary">
+            <User className="w-5 h-5" />
+            Choose Avatar
+          </DialogTitle>
+        </DialogHeader>
+
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+          className="border border-border rounded-xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-primary/50 transition-colors min-h-[160px]"
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+          
+          {currentAvatar ? (
+            <img src={currentAvatar} alt="Current avatar" className="w-16 h-16 rounded-full object-cover" />
+          ) : (
+            <User className="w-12 h-12 text-muted-foreground" />
+          )}
+          <span className="text-muted-foreground text-sm">Click or Drop an Avatar</span>
+        </div>
+
+        <div className="flex gap-3 mt-4">
+          <Button variant="outline" onClick={handleClose} className="flex-1">
+            Cancel
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
