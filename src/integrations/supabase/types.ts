@@ -123,6 +123,7 @@ export type Database = {
           bio_color: string | null
           bio_font: string | null
           border_enabled: boolean | null
+          coding_badges: string[] | null
           created_at: string | null
           custom_cursor: string | null
           cycling_bio_enabled: boolean | null
@@ -160,6 +161,7 @@ export type Database = {
           bio_color?: string | null
           bio_font?: string | null
           border_enabled?: boolean | null
+          coding_badges?: string[] | null
           created_at?: string | null
           custom_cursor?: string | null
           cycling_bio_enabled?: boolean | null
@@ -197,6 +199,7 @@ export type Database = {
           bio_color?: string | null
           bio_font?: string | null
           border_enabled?: boolean | null
+          coding_badges?: string[] | null
           created_at?: string | null
           custom_cursor?: string | null
           cycling_bio_enabled?: boolean | null

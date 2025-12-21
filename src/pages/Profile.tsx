@@ -11,6 +11,7 @@ import ScrollIndicator from "@/components/profile/ScrollIndicator";
 import AboutMeSection from "@/components/profile/AboutMeSection";
 import AudioToggle from "@/components/profile/AudioToggle";
 import ProfileStats from "@/components/profile/ProfileStats";
+import CodingBadges from "@/components/profile/CodingBadges";
 
 const Profile = () => {
   const { username } = useParams();
@@ -257,6 +258,15 @@ const Profile = () => {
             profileOpacity={profile.profile_opacity}
             profileBlur={profileBlur}
           />
+        )}
+
+        {/* Coding Badges Section - after about me */}
+        {profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
+          <div className="relative z-10 flex justify-center pb-20">
+            <div className="max-w-md">
+              <CodingBadges badges={profile.coding_badges} />
+            </div>
+          </div>
         )}
 
         {/* Stats in bottom left */}
