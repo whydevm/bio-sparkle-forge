@@ -4,11 +4,9 @@ interface AboutMeSectionProps {
   aboutMe: string;
   profileOpacity: number;
   profileBlur: number;
-  titleColor?: string;
-  textColor?: string;
 }
 
-const AboutMeSection = ({ aboutMe, profileOpacity, profileBlur, titleColor, textColor }: AboutMeSectionProps) => {
+const AboutMeSection = ({ aboutMe, profileOpacity, profileBlur }: AboutMeSectionProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -38,13 +36,13 @@ const AboutMeSection = ({ aboutMe, profileOpacity, profileBlur, titleColor, text
     <div
       id="about-section"
       ref={sectionRef}
-      className="flex items-center justify-center p-4 pt-8 pb-4"
+      className="flex items-center justify-center p-8 pt-16 pb-24"
     >
       <div
         className={`w-full max-w-md p-8 rounded-2xl text-center transition-all duration-700 ease-out ${
           isVisible 
             ? "opacity-100 translate-y-0 scale-100" 
-            : "opacity-0 translate-y-8 scale-75"
+            : "opacity-0 translate-y-8 scale-90"
         }`}
         style={{
           backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
@@ -53,18 +51,8 @@ const AboutMeSection = ({ aboutMe, profileOpacity, profileBlur, titleColor, text
           borderColor: showBorder ? "hsl(var(--border))" : "transparent",
         }}
       >
-        <h2 
-          className="text-3xl font-bold mb-6 font-ggsans"
-          style={{ color: titleColor || undefined }}
-        >
-          About Me
-        </h2>
-        <p 
-          className="leading-relaxed"
-          style={{ color: textColor || "hsl(var(--muted-foreground))" }}
-        >
-          {aboutMe}
-        </p>
+        <h2 className="text-3xl font-bold mb-6 font-mono">About Me</h2>
+        <p className="text-muted-foreground leading-relaxed">{aboutMe}</p>
       </div>
     </div>
   );

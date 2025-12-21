@@ -14,8 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        'sans': ['gg sans', 'Inter', 'system-ui', 'sans-serif'],
-        'ggsans': ['gg sans', 'Inter', 'sans-serif'],
+        'sans': ['Inter', 'system-ui', 'sans-serif'],
         'inter': ['Inter', 'sans-serif'],
         'roboto': ['Roboto', 'sans-serif'],
         'poppins': ['Poppins', 'sans-serif'],

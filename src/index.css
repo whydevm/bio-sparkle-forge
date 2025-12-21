@@ -55,30 +55,8 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'gg sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
-}
-
-/* GG Sans font face */
-@font-face {
-  font-family: 'gg sans';
-  src: url('https://cdn.discordapp.com/blog/ggsans-Normal.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'gg sans';
-  src: url('https://cdn.discordapp.com/blog/ggsans-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'gg sans';
-  src: url('https://cdn.discordapp.com/blog/ggsans-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
 }
 
 @layer utilities {

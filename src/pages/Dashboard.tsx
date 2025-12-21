@@ -414,13 +414,6 @@ const Dashboard = () => {
                     onCheckedChange={(checked) => updateProfile({ monochrome_icons: checked })}
                   />
                 </div>
-                <div className="flex items-center justify-between">
-                  <Label>Glow Badges</Label>
-                  <Switch
-                    checked={profile?.glow_badges}
-                    onCheckedChange={(checked) => updateProfile({ glow_badges: checked })}
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -433,54 +426,6 @@ const Dashboard = () => {
             </h2>
             
             <div className="border border-border rounded-xl p-6 space-y-6 bg-card/30">
-              {/* Username Color */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="flex items-center gap-1">
-                    Username Color
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                  </Label>
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={profile?.display_name_color || "#FFFFFF"}
-                    onChange={(e) => updateProfile({ display_name_color: e.target.value })}
-                    placeholder="#FFFFFF"
-                    className="bg-card/50 border-border flex-1"
-                  />
-                  <input
-                    type="color"
-                    value={profile?.display_name_color?.startsWith('#') ? profile.display_name_color : "#FFFFFF"}
-                    onChange={(e) => updateProfile({ display_name_color: e.target.value })}
-                    className="w-12 h-10 rounded border border-border cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              {/* Bio Color */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="flex items-center gap-1">
-                    Bio & About Me Color
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                  </Label>
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={profile?.bio_color || "#DDDDDD"}
-                    onChange={(e) => updateProfile({ bio_color: e.target.value })}
-                    placeholder="#DDDDDD"
-                    className="bg-card/50 border-border flex-1"
-                  />
-                  <input
-                    type="color"
-                    value={profile?.bio_color?.startsWith('#') ? profile.bio_color : "#DDDDDD"}
-                    onChange={(e) => updateProfile({ bio_color: e.target.value })}
-                    className="w-12 h-10 rounded border border-border cursor-pointer"
-                  />
-                </div>
-              </div>
-
               {/* Accent Color */}
               <div>
                 <div className="flex items-center justify-between mb-2">
@@ -496,11 +441,9 @@ const Dashboard = () => {
                     placeholder="#FFFFFF"
                     className="bg-card/50 border-border flex-1"
                   />
-                  <input
-                    type="color"
-                    value={profile?.accent_color?.startsWith('#') ? profile.accent_color : "#FFFFFF"}
-                    onChange={(e) => updateProfile({ accent_color: e.target.value })}
-                    className="w-12 h-10 rounded border border-border cursor-pointer"
+                  <div 
+                    className="w-12 h-10 rounded border border-border"
+                    style={{ backgroundColor: profile?.accent_color || "#FFFFFF" }}
                   />
                 </div>
               </div>

@@ -210,13 +210,9 @@ const Profile = () => {
                   glow={profile.glow_username}
                   fontClass={profile.display_name_font}
                   colorClass={profile.display_name_color}
-                  customColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
                 />
                 {bioTexts.length > 0 && (showContent || !hasAudio) && (
-                  <p 
-                    className={`mt-2 ${profile.bio_font}`}
-                    style={{ color: profile.bio_color?.startsWith('#') ? profile.bio_color : undefined }}
-                  >
+                  <p className={`mt-2 ${profile.bio_font} ${profile.bio_color}`}>
                     {cyclingEnabled ? (
                       <TypewriterText 
                         texts={bioTexts} 
@@ -261,16 +257,14 @@ const Profile = () => {
             aboutMe={profile.about_me}
             profileOpacity={profile.profile_opacity}
             profileBlur={profileBlur}
-            titleColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
-            textColor={profile.bio_color?.startsWith('#') ? profile.bio_color : undefined}
           />
         )}
 
         {/* Coding Badges Section - after about me */}
         {profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
-          <div className="relative z-10 flex justify-start px-8 pb-8">
+          <div className="relative z-10 flex justify-center pb-20">
             <div className="max-w-md">
-              <CodingBadges badges={profile.coding_badges} glow={profile.glow_badges} />
+              <CodingBadges badges={profile.coding_badges} />
             </div>
           </div>
         )}
