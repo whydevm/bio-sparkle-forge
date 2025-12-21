@@ -6,9 +6,10 @@ interface ProfileUsernameProps {
   glow?: boolean;
   fontClass?: string;
   colorClass?: string;
+  customColor?: string;
 }
 
-const ProfileUsername = ({ username, effect, glow, fontClass = "font-sans", colorClass = "text-foreground" }: ProfileUsernameProps) => {
+const ProfileUsername = ({ username, effect, glow, fontClass = "font-ggsans", colorClass = "text-foreground", customColor }: ProfileUsernameProps) => {
   const [displayText, setDisplayText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -40,11 +41,12 @@ const ProfileUsername = ({ username, effect, glow, fontClass = "font-sans", colo
   };
 
   const gradientClass = getGradientClass();
-  const baseColorClass = gradientClass ? "" : colorClass;
+  const baseColorClass = gradientClass || customColor ? "" : colorClass;
 
   return (
     <h1
       className={`text-3xl font-bold ${fontClass} ${baseColorClass} ${glow ? "glow-text" : ""} ${getEffectClass()} ${gradientClass}`}
+      style={customColor && !gradientClass ? { color: customColor } : undefined}
     >
       {displayText}
       {effect === "typewriter" && currentIndex < username.length && (
