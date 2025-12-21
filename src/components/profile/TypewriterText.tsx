@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 interface TypewriterTextProps {
   texts: string[];
@@ -6,14 +6,16 @@ interface TypewriterTextProps {
   deletingSpeed?: number;
   pauseDuration?: number;
   className?: string;
+  enableCycling?: boolean;
 }
 
 const TypewriterText = ({ 
   texts, 
-  typingSpeed = 80, 
-  deletingSpeed = 40,
-  pauseDuration = 2000,
-  className = "" 
+  typingSpeed = 100, 
+  deletingSpeed = 50,
+  pauseDuration = 2500,
+  className = "",
+  enableCycling = true
 }: TypewriterTextProps) => {
   const [displayedText, setDisplayedText] = useState("");
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
@@ -21,12 +23,15 @@ const TypewriterText = ({
   const [isPaused, setIsPaused] = useState(false);
 
   const currentFullText = texts[currentTextIndex] || "";
+  const shouldCycle = enableCycling && texts.length > 1;
 
   useEffect(() => {
     if (isPaused) {
       const pauseTimeout = setTimeout(() => {
         setIsPaused(false);
-        setIsDeleting(true);
+        if (shouldCycle) {
+          setIsDeleting(true);
+        }
       }, pauseDuration);
       return () => clearTimeout(pauseTimeout);
     }
@@ -47,11 +52,11 @@ const TypewriterText = ({
           setDisplayedText(currentFullText.slice(0, displayedText.length + 1));
         }, typingSpeed);
         return () => clearTimeout(timeout);
-      } else if (texts.length > 1) {
+      } else if (shouldCycle) {
         setIsPaused(true);
       }
     }
-  }, [displayedText, isDeleting, isPaused, currentFullText, texts, typingSpeed, deletingSpeed, pauseDuration]);
+  }, [displayedText, isDeleting, isPaused, currentFullText, texts, typingSpeed, deletingSpeed, pauseDuration, shouldCycle]);
 
   return (
     <span className={className}>

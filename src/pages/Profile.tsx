@@ -135,6 +135,7 @@ const Profile = () => {
   
   // Parse bio texts - support multiple lines for looping typewriter
   const bioTexts = profile.bio ? profile.bio.split("\n").filter((t: string) => t.trim()) : [];
+  const cyclingEnabled = profile.cycling_bio_enabled ?? false;
 
   return (
     <>
@@ -211,12 +212,23 @@ const Profile = () => {
                 />
                 {bioTexts.length > 0 && (showContent || !hasAudio) && (
                   <p className={`mt-2 ${profile.bio_font} ${profile.bio_color}`}>
-                    <TypewriterText 
-                      texts={bioTexts} 
-                      typingSpeed={80} 
-                      deletingSpeed={40}
-                      pauseDuration={2000}
-                    />
+                    {cyclingEnabled ? (
+                      <TypewriterText 
+                        texts={bioTexts} 
+                        typingSpeed={100} 
+                        deletingSpeed={50}
+                        pauseDuration={2500}
+                        enableCycling={true}
+                      />
+                    ) : (
+                      <TypewriterText 
+                        texts={[bioTexts[0]]} 
+                        typingSpeed={100} 
+                        deletingSpeed={50}
+                        pauseDuration={2500}
+                        enableCycling={false}
+                      />
+                    )}
                   </p>
                 )}
               </div>

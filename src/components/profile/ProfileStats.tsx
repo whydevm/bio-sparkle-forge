@@ -22,19 +22,14 @@ const ProfileStats = ({ viewCount, location, createdAt, profileOpacity }: Profil
   const formattedDate = formatDate(createdAt);
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 flex items-center gap-3">
+    <div className="fixed bottom-6 left-6 z-50 flex items-center gap-4">
       <div 
-        className="px-4 py-2.5 rounded-xl flex items-center gap-6 backdrop-blur-md"
-        style={{
-          backgroundColor: profileOpacity === 0 ? "transparent" : "hsl(var(--card) / 0.8)",
-          borderWidth: profileOpacity === 0 ? "0" : "1px",
-          borderColor: profileOpacity === 0 ? "transparent" : "hsl(var(--border))",
-        }}
+        className="px-5 py-3 rounded-2xl flex items-center gap-8 bg-card/90 border border-border shadow-lg"
       >
         {/* Views */}
-        <div className="flex items-center gap-2">
-          <Eye className="w-5 h-5" />
-          <span className="text-sm font-medium">
+        <div className="flex items-center gap-3">
+          <Eye className="w-6 h-6 text-foreground" />
+          <span className="text-base font-semibold text-foreground">
             <CountUpAnimation target={viewCount} duration={800} />
           </span>
         </div>
@@ -42,10 +37,10 @@ const ProfileStats = ({ viewCount, location, createdAt, profileOpacity }: Profil
         {/* Location */}
         {location && (
           <>
-            <div className="w-px h-5 bg-border" />
-            <div className="flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
-              <span className="text-sm font-medium">{location}</span>
+            <div className="w-px h-6 bg-border" />
+            <div className="flex items-center gap-3">
+              <MapPin className="w-6 h-6 text-foreground" />
+              <span className="text-base font-semibold text-foreground">{location}</span>
             </div>
           </>
         )}
@@ -53,10 +48,10 @@ const ProfileStats = ({ viewCount, location, createdAt, profileOpacity }: Profil
         {/* Date */}
         {formattedDate && (
           <>
-            <div className="w-px h-5 bg-border" />
-            <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              <span className="text-sm font-medium">{formattedDate}</span>
+            <div className="w-px h-6 bg-border" />
+            <div className="flex items-center gap-3">
+              <Calendar className="w-6 h-6 text-foreground" />
+              <span className="text-base font-semibold text-foreground">{formattedDate}</span>
             </div>
           </>
         )}
@@ -64,18 +59,13 @@ const ProfileStats = ({ viewCount, location, createdAt, profileOpacity }: Profil
 
       {/* Like/Dislike buttons */}
       <div 
-        className="px-3 py-2.5 rounded-xl flex items-center gap-2 backdrop-blur-md"
-        style={{
-          backgroundColor: profileOpacity === 0 ? "transparent" : "hsl(var(--card) / 0.8)",
-          borderWidth: profileOpacity === 0 ? "0" : "1px",
-          borderColor: profileOpacity === 0 ? "transparent" : "hsl(var(--border))",
-        }}
+        className="px-4 py-3 rounded-2xl flex items-center gap-3 bg-card/90 border border-border shadow-lg"
       >
-        <button className="p-1 hover:bg-muted rounded transition-colors">
-          <ThumbsUp className="w-5 h-5" />
+        <button className="p-1.5 hover:bg-muted rounded-lg transition-colors">
+          <ThumbsUp className="w-6 h-6 text-foreground" />
         </button>
-        <button className="p-1 hover:bg-muted rounded transition-colors">
-          <ThumbsDown className="w-5 h-5" />
+        <button className="p-1.5 hover:bg-muted rounded-lg transition-colors">
+          <ThumbsDown className="w-6 h-6 text-foreground" />
         </button>
       </div>
     </div>

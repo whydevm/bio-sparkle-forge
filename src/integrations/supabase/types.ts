@@ -125,6 +125,7 @@ export type Database = {
           border_enabled: boolean | null
           created_at: string | null
           custom_cursor: string | null
+          cycling_bio_enabled: boolean | null
           discord_avatar_enabled: boolean | null
           discord_avatar_url: string | null
           discord_decoration_url: string | null
@@ -161,6 +162,7 @@ export type Database = {
           border_enabled?: boolean | null
           created_at?: string | null
           custom_cursor?: string | null
+          cycling_bio_enabled?: boolean | null
           discord_avatar_enabled?: boolean | null
           discord_avatar_url?: string | null
           discord_decoration_url?: string | null
@@ -197,6 +199,7 @@ export type Database = {
           border_enabled?: boolean | null
           created_at?: string | null
           custom_cursor?: string | null
+          cycling_bio_enabled?: boolean | null
           discord_avatar_enabled?: boolean | null
           discord_avatar_url?: string | null
           discord_decoration_url?: string | null
