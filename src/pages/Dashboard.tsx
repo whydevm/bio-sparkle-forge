@@ -140,18 +140,41 @@ const Dashboard = () => {
             </h2>
             
             <div className="border border-border rounded-xl p-6 space-y-6 bg-card/30">
-              {/* Description */}
+              {/* Cycling Bio Toggle */}
+              <div className="flex items-center justify-between">
+                <Label>Enable Cycling Bio (Typewriter)</Label>
+                <Switch
+                  checked={profile?.cycling_bio_enabled ?? false}
+                  onCheckedChange={(checked) => updateProfile({ cycling_bio_enabled: checked })}
+                />
+              </div>
+
+              {/* Description / Bio Texts */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <Label>Description</Label>
-                  <span className="text-xs text-muted-foreground">{(profile?.bio || "").length}/100</span>
+                  <Label>{profile?.cycling_bio_enabled ? "Bio Texts (one per line)" : "Description"}</Label>
+                  <span className="text-xs text-muted-foreground">{(profile?.bio || "").length}/200</span>
                 </div>
-                <Input
-                  value={profile?.bio || ""}
-                  onChange={(e) => updateProfile({ bio: e.target.value.slice(0, 100) })}
-                  placeholder="Enter your description"
-                  className="bg-card/50 border-border"
-                />
+                {profile?.cycling_bio_enabled ? (
+                  <Textarea
+                    value={profile?.bio || ""}
+                    onChange={(e) => updateProfile({ bio: e.target.value.slice(0, 200) })}
+                    placeholder="Enter multiple bio texts (one per line)&#10;Example:&#10;Developer&#10;Designer&#10;Creator"
+                    className="bg-card/50 border-border min-h-[100px]"
+                  />
+                ) : (
+                  <Input
+                    value={profile?.bio || ""}
+                    onChange={(e) => updateProfile({ bio: e.target.value.slice(0, 200) })}
+                    placeholder="Enter your description"
+                    className="bg-card/50 border-border"
+                  />
+                )}
+                {profile?.cycling_bio_enabled && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Each line will cycle with a typewriter animation
+                  </p>
+                )}
               </div>
 
               {/* Avatar Radius */}
