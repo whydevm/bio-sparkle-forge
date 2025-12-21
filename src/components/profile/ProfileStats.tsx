@@ -22,25 +22,23 @@ const ProfileStats = ({ viewCount, location, createdAt, profileOpacity }: Profil
   const formattedDate = formatDate(createdAt);
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 flex items-center gap-4">
-      <div 
-        className="px-5 py-3 rounded-2xl flex items-center gap-8 bg-card/90 border border-border shadow-lg"
-      >
+    <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2">
+      <div className="flex items-center gap-4 px-3 py-1.5 text-xs">
         {/* Views */}
-        <div className="flex items-center gap-3">
-          <Eye className="w-6 h-6 text-foreground" />
-          <span className="text-base font-semibold text-foreground">
-            <CountUpAnimation target={viewCount} duration={800} />
+        <div className="flex items-center gap-1.5 text-foreground/80">
+          <Eye className="w-3.5 h-3.5" />
+          <span className="font-medium">
+            <CountUpAnimation target={viewCount} duration={400} />
           </span>
         </div>
 
         {/* Location */}
         {location && (
           <>
-            <div className="w-px h-6 bg-border" />
-            <div className="flex items-center gap-3">
-              <MapPin className="w-6 h-6 text-foreground" />
-              <span className="text-base font-semibold text-foreground">{location}</span>
+            <div className="w-px h-3 bg-foreground/20" />
+            <div className="flex items-center gap-1.5 text-foreground/80">
+              <MapPin className="w-3.5 h-3.5" />
+              <span className="font-medium">{location}</span>
             </div>
           </>
         )}
@@ -48,25 +46,24 @@ const ProfileStats = ({ viewCount, location, createdAt, profileOpacity }: Profil
         {/* Date */}
         {formattedDate && (
           <>
-            <div className="w-px h-6 bg-border" />
-            <div className="flex items-center gap-3">
-              <Calendar className="w-6 h-6 text-foreground" />
-              <span className="text-base font-semibold text-foreground">{formattedDate}</span>
+            <div className="w-px h-3 bg-foreground/20" />
+            <div className="flex items-center gap-1.5 text-foreground/80">
+              <Calendar className="w-3.5 h-3.5" />
+              <span className="font-medium">{formattedDate}</span>
             </div>
           </>
         )}
-      </div>
 
-      {/* Like/Dislike buttons */}
-      <div 
-        className="px-4 py-3 rounded-2xl flex items-center gap-3 bg-card/90 border border-border shadow-lg"
-      >
-        <button className="p-1.5 hover:bg-muted rounded-lg transition-colors">
-          <ThumbsUp className="w-6 h-6 text-foreground" />
-        </button>
-        <button className="p-1.5 hover:bg-muted rounded-lg transition-colors">
-          <ThumbsDown className="w-6 h-6 text-foreground" />
-        </button>
+        {/* Like/Dislike buttons */}
+        <div className="w-px h-3 bg-foreground/20" />
+        <div className="flex items-center gap-1">
+          <button className="p-0.5 hover:text-foreground text-foreground/80 transition-colors">
+            <ThumbsUp className="w-3.5 h-3.5" />
+          </button>
+          <button className="p-0.5 hover:text-foreground text-foreground/80 transition-colors">
+            <ThumbsDown className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
     </div>
   );

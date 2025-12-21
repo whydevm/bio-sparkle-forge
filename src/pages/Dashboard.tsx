@@ -14,7 +14,8 @@ import AvatarManager from "@/components/dashboard/AvatarManager";
 import BackgroundManager from "@/components/dashboard/BackgroundManager";
 import AudioManager from "@/components/dashboard/AudioManager";
 import CursorManager from "@/components/dashboard/CursorManager";
-import { User, Image, Music, MousePointer, Settings, Palette, Square, RotateCcw } from "lucide-react";
+import { User, Image, Music, MousePointer, Settings, Palette, Square, RotateCcw, Code2 } from "lucide-react";
+import CodingBadgesEditor from "@/components/dashboard/CodingBadgesEditor";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -700,6 +701,21 @@ const Dashboard = () => {
                   className="[&>span:first-child]:bg-muted [&_[role=slider]]:bg-primary [&>span:first-child>span]:bg-primary"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Coding Badges Section */}
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-blue-500 flex items-center gap-2">
+              <Code2 className="w-6 h-6" />
+              Coding Badges
+            </h2>
+            
+            <div className="border border-border rounded-xl p-6 bg-card/30">
+              <CodingBadgesEditor
+                selectedBadges={profile?.coding_badges || []}
+                onBadgesChange={(badges) => updateProfile({ coding_badges: badges })}
+              />
             </div>
           </div>
 
