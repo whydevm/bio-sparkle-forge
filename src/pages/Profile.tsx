@@ -12,12 +12,14 @@ import AboutMeSection from "@/components/profile/AboutMeSection";
 import AudioToggle from "@/components/profile/AudioToggle";
 import ProfileStats from "@/components/profile/ProfileStats";
 import CodingBadges from "@/components/profile/CodingBadges";
+import ProjectsSection from "@/components/profile/ProjectsSection";
 
 const Profile = () => {
   const { username } = useParams();
   const [profile, setProfile] = useState<any>(null);
   const [music, setMusic] = useState<any[]>([]);
   const [links, setLinks] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasEntered, setHasEntered] = useState(false);
   const [showContent, setShowContent] = useState(false);
@@ -89,8 +91,15 @@ const Profile = () => {
         .eq("profile_id", profileData.id)
         .order("order_index");
 
+      const { data: projectsData } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("profile_id", profileData.id)
+        .order("order_index");
+
       setMusic(musicData || []);
       setLinks(linksData || []);
+      setProjects(projectsData || []);
     }
     setLoading(false);
   };
@@ -266,7 +275,18 @@ const Profile = () => {
           />
         )}
 
-        {/* Coding Badges Section - after about me */}
+        {/* Projects Section - after about me */}
+        {projects && projects.length > 0 && (showContent || !hasAudio) && (
+          <div className="relative z-10">
+            <ProjectsSection 
+              projects={projects} 
+              title={profile.projects_title}
+              description={profile.projects_description}
+            />
+          </div>
+        )}
+
+        {/* Coding Badges Section - after projects */}
         {profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
           <div className="relative z-10 flex justify-start px-8 pb-8">
             <div className="max-w-md">

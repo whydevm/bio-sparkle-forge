@@ -117,6 +117,7 @@ export type Database = {
           audio_shuffle: boolean | null
           avatar_decoration_url: string | null
           avatar_url: string | null
+          background_effect: string | null
           background_type: string | null
           background_url: string | null
           bio: string | null
@@ -143,18 +144,27 @@ export type Database = {
           monochrome_icons: boolean | null
           profile_blur: number | null
           profile_opacity: number | null
+          projects_description: string | null
+          projects_title: string | null
+          scroll_text: string | null
           show_audio_player: boolean | null
+          show_join_date: boolean | null
+          show_likes: boolean | null
+          show_views: boolean | null
+          theme: string | null
           updated_at: string | null
           user_id: string
           username: string
           username_effect: string | null
           view_count: number | null
+          views_animation: boolean | null
         }
         Insert: {
           about_me?: string | null
           audio_shuffle?: boolean | null
           avatar_decoration_url?: string | null
           avatar_url?: string | null
+          background_effect?: string | null
           background_type?: string | null
           background_url?: string | null
           bio?: string | null
@@ -181,18 +191,27 @@ export type Database = {
           monochrome_icons?: boolean | null
           profile_blur?: number | null
           profile_opacity?: number | null
+          projects_description?: string | null
+          projects_title?: string | null
+          scroll_text?: string | null
           show_audio_player?: boolean | null
+          show_join_date?: boolean | null
+          show_likes?: boolean | null
+          show_views?: boolean | null
+          theme?: string | null
           updated_at?: string | null
           user_id: string
           username: string
           username_effect?: string | null
           view_count?: number | null
+          views_animation?: boolean | null
         }
         Update: {
           about_me?: string | null
           audio_shuffle?: boolean | null
           avatar_decoration_url?: string | null
           avatar_url?: string | null
+          background_effect?: string | null
           background_type?: string | null
           background_url?: string | null
           bio?: string | null
@@ -219,14 +238,69 @@ export type Database = {
           monochrome_icons?: boolean | null
           profile_blur?: number | null
           profile_opacity?: number | null
+          projects_description?: string | null
+          projects_title?: string | null
+          scroll_text?: string | null
           show_audio_player?: boolean | null
+          show_join_date?: boolean | null
+          show_likes?: boolean | null
+          show_views?: boolean | null
+          theme?: string | null
           updated_at?: string | null
           user_id?: string
           username?: string
           username_effect?: string | null
           view_count?: number | null
+          views_animation?: boolean | null
         }
         Relationships: []
+      }
+      projects: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          order_index: number | null
+          profile_id: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          order_index?: number | null
+          profile_id: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          order_index?: number | null
+          profile_id?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       social_links: {
         Row: {
