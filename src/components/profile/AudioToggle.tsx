@@ -18,12 +18,12 @@ const AudioToggle = ({ audioRef }: AudioToggleProps) => {
   return (
     <button
       onClick={toggleMute}
-      className="w-14 h-14 rounded-2xl bg-card/80 border border-border backdrop-blur-sm flex items-center justify-center transition-all hover:scale-105 hover:bg-card"
+      className="w-10 h-10 rounded-full border border-foreground/30 bg-background/20 backdrop-blur-sm flex items-center justify-center transition-all hover:scale-105 hover:bg-foreground/10"
     >
       {isMuted ? (
-        <VolumeX className="w-6 h-6 text-foreground" />
+        <VolumeX className="w-5 h-5 text-foreground" />
       ) : (
-        <Volume2 className="w-6 h-6 text-foreground" />
+        <Volume2 className="w-5 h-5 text-foreground" />
       )}
     </button>
   );

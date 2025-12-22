@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Play, Pause, SkipBack, SkipForward, Volume2, ExternalLink, Music } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, Volume2, Music } from "lucide-react";
 
 interface MusicItem {
   id: string;
@@ -110,76 +110,88 @@ const MusicPlayer = ({ music, audioRef: externalAudioRef, shuffle }: MusicPlayer
   };
 
   const currentMusic = music[currentTrack];
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="w-full p-4 rounded-2xl bg-card/60 backdrop-blur-md border border-border">
-      <div className="flex items-center gap-4">
-        {/* Music icon or cover */}
-        <div className="flex-shrink-0">
-          {currentMusic?.cover_url ? (
-            <img 
-              src={currentMusic.cover_url} 
-              alt={currentMusic.title}
-              className="w-10 h-10 rounded object-cover"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded bg-primary/20 flex items-center justify-center">
-              <Music className="w-5 h-5 text-primary" />
-            </div>
-          )}
-        </div>
+    <div className="w-full flex items-center gap-3 px-4 py-3">
+      {/* Music icon */}
+      <div className="flex-shrink-0">
+        <Music className="w-6 h-6 text-foreground/70" />
+      </div>
 
-        {/* Title with external link */}
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="text-sm font-medium truncate">{currentMusic?.title || "Untitled"}</span>
-          <ExternalLink className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-        </div>
+      {/* Title */}
+      <div className="flex items-center gap-1.5 min-w-0 flex-shrink-0">
+        <span className="text-sm font-medium text-foreground truncate max-w-[80px]">
+          {currentMusic?.title || "Untitled"}
+        </span>
+        <a 
+          href={currentMusic?.url} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-foreground/60 hover:text-foreground transition-colors"
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            <polyline points="15 3 21 3 21 9" />
+            <line x1="10" y1="14" x2="21" y2="3" />
+          </svg>
+        </a>
+      </div>
 
-        {/* Time and progress */}
-        <div className="flex items-center gap-2 flex-1">
-          <span className="text-xs text-muted-foreground min-w-[32px]">{formatTime(currentTime)}</span>
+      {/* Time and progress */}
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        <span className="text-xs text-foreground/60 tabular-nums w-8 text-right flex-shrink-0">
+          {formatTime(currentTime)}
+        </span>
+        <div className="relative flex-1 h-1 bg-foreground/20 rounded-full overflow-hidden">
+          <div 
+            className="absolute inset-y-0 left-0 bg-foreground/60 rounded-full"
+            style={{ width: `${progress}%` }}
+          />
           <input
             type="range"
             min="0"
             max={duration || 0}
             value={currentTime}
             onChange={handleSeek}
-            className="flex-1 h-1 bg-muted rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-foreground"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
-          <span className="text-xs text-muted-foreground min-w-[32px]">{formatTime(duration)}</span>
         </div>
+        <span className="text-xs text-foreground/60 tabular-nums w-8 flex-shrink-0">
+          {formatTime(duration)}
+        </span>
+      </div>
 
-        {/* Controls */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={prevTrack}
-            className="w-8 h-8 flex items-center justify-center hover:bg-muted rounded-full transition-colors"
-          >
-            <SkipBack className="w-4 h-4" />
-          </button>
+      {/* Controls */}
+      <div className="flex items-center gap-0.5 flex-shrink-0">
+        <button
+          onClick={prevTrack}
+          className="w-8 h-8 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
+        >
+          <SkipBack className="w-4 h-4" fill="currentColor" />
+        </button>
 
-          <button
-            onClick={togglePlay}
-            className="w-8 h-8 flex items-center justify-center hover:bg-muted rounded-full transition-colors"
-          >
-            {isPlaying ? (
-              <Pause className="w-4 h-4" />
-            ) : (
-              <Play className="w-4 h-4 ml-0.5" />
-            )}
-          </button>
+        <button
+          onClick={togglePlay}
+          className="w-8 h-8 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
+        >
+          {isPlaying ? (
+            <Pause className="w-5 h-5" fill="currentColor" />
+          ) : (
+            <Play className="w-5 h-5" fill="currentColor" />
+          )}
+        </button>
 
-          <button
-            onClick={nextTrack}
-            className="w-8 h-8 flex items-center justify-center hover:bg-muted rounded-full transition-colors"
-          >
-            <SkipForward className="w-4 h-4" />
-          </button>
+        <button
+          onClick={nextTrack}
+          className="w-8 h-8 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
+        >
+          <SkipForward className="w-4 h-4" fill="currentColor" />
+        </button>
 
-          <button className="w-8 h-8 flex items-center justify-center hover:bg-muted rounded-full transition-colors">
-            <Volume2 className="w-4 h-4" />
-          </button>
-        </div>
+        <button className="w-8 h-8 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors">
+          <Volume2 className="w-4 h-4" />
+        </button>
       </div>
 
       <audio
