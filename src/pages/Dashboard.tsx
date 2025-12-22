@@ -14,13 +14,19 @@ import AvatarManager from "@/components/dashboard/AvatarManager";
 import BackgroundManager from "@/components/dashboard/BackgroundManager";
 import AudioManager from "@/components/dashboard/AudioManager";
 import CursorManager from "@/components/dashboard/CursorManager";
-import { User, Image, Music, MousePointer, Settings, Palette, Square, RotateCcw, Code2 } from "lucide-react";
+import ProjectsEditor from "@/components/dashboard/ProjectsEditor";
+import ThemeSelector from "@/components/dashboard/ThemeSelector";
+import SaveChangesBar from "@/components/dashboard/SaveChangesBar";
+import { User, Image, Music, MousePointer, Settings, Palette, Square, RotateCcw, Code2, FolderKanban, Sparkles } from "lucide-react";
 import CodingBadgesEditor from "@/components/dashboard/CodingBadgesEditor";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<any>(null);
+  const [originalProfile, setOriginalProfile] = useState<any>(null);
+  const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   
   // Manager modal states
   const [showAvatarManager, setShowAvatarManager] = useState(false);
@@ -47,11 +53,25 @@ const Dashboard = () => {
 
     if (data) {
       setProfile(data);
+      setOriginalProfile(data);
+      loadProjects(data.id);
     }
     setLoading(false);
   };
 
+  const loadProjects = async (profileId: string) => {
+    const { data } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("profile_id", profileId)
+      .order("order_index");
+    setProjects(data || []);
+  };
+
+  const hasChanges = JSON.stringify(profile) !== JSON.stringify(originalProfile);
+
   const handleSave = async () => {
+    setSaving(true);
     try {
       const { error } = await supabase
         .from("profiles")
@@ -59,10 +79,16 @@ const Dashboard = () => {
         .eq("id", profile.id);
 
       if (error) throw error;
+      setOriginalProfile(profile);
       toast.success("Profile updated!");
     } catch (error: any) {
       toast.error(error.message);
     }
+    setSaving(false);
+  };
+
+  const handleReset = () => {
+    setProfile(originalProfile);
   };
 
   const updateProfile = (updates: Partial<typeof profile>) => {
@@ -247,8 +273,48 @@ const Dashboard = () => {
                     <SelectItem value="particles">Particles</SelectItem>
                     <SelectItem value="snow">Snow</SelectItem>
                     <SelectItem value="rain">Rain</SelectItem>
+                    <SelectItem value="oldtv">Old TV</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              {/* Scroll Text */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Scroll Down Text</Label>
+                  <span className="text-xs text-muted-foreground">{(profile?.scroll_text || "").length}/50</span>
+                </div>
+                <Input
+                  value={profile?.scroll_text || "Scroll for more"}
+                  onChange={(e) => updateProfile({ scroll_text: e.target.value.slice(0, 50) })}
+                  placeholder="Scroll for more"
+                  className="bg-card/50 border-border"
+                />
+              </div>
+
+              {/* Toggle Settings */}
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between">
+                  <Label>Show Views</Label>
+                  <Switch
+                    checked={profile?.show_views ?? true}
+                    onCheckedChange={(checked) => updateProfile({ show_views: checked })}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label>Views Count Animation</Label>
+                  <Switch
+                    checked={profile?.views_animation ?? true}
+                    onCheckedChange={(checked) => updateProfile({ views_animation: checked })}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label>Show Join Date</Label>
+                  <Switch
+                    checked={profile?.show_join_date ?? true}
+                    onCheckedChange={(checked) => updateProfile({ show_join_date: checked })}
+                  />
+                </div>
               </div>
 
               {/* Username Effects */}
@@ -761,6 +827,69 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Theme Selection Section */}
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-purple-500 flex items-center gap-2">
+              <Sparkles className="w-6 h-6" />
+              Theme Selection
+            </h2>
+            
+            <div className="border border-border rounded-xl p-6 bg-card/30">
+              <ThemeSelector
+                selectedTheme={profile?.theme || "default"}
+                onThemeChange={(theme) => updateProfile({ theme })}
+              />
+            </div>
+          </div>
+
+          {/* Projects Section */}
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
+              <FolderKanban className="w-6 h-6" />
+              Portfolio Theme Settings
+            </h2>
+            
+            <div className="border border-border rounded-xl p-6 bg-card/30 space-y-6">
+              <ProjectsEditor
+                profileId={profile?.id}
+                projects={projects}
+                onProjectsChange={() => loadProjects(profile?.id)}
+              />
+
+              {/* Projects Customization */}
+              <div className="space-y-4 pt-4 border-t border-border">
+                <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
+                  <Palette className="w-5 h-5" />
+                  Projects Customization
+                </h3>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label>Projects Section Title</Label>
+                  </div>
+                  <Input
+                    value={profile?.projects_title || "Projects"}
+                    onChange={(e) => updateProfile({ projects_title: e.target.value })}
+                    placeholder="Projects"
+                    className="bg-card/50 border-border"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label>Projects Section Description</Label>
+                  </div>
+                  <Textarea
+                    value={profile?.projects_description || ""}
+                    onChange={(e) => updateProfile({ projects_description: e.target.value })}
+                    placeholder="Describe your projects section..."
+                    className="bg-card/50 border-border"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Coding Badges Section */}
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-blue-500 flex items-center gap-2">
@@ -775,13 +904,16 @@ const Dashboard = () => {
               />
             </div>
           </div>
-
-          {/* Save Button */}
-          <Button onClick={handleSave} className="w-full" size="lg">
-            Save Changes
-          </Button>
         </div>
       </div>
+
+      {/* Save Changes Bar */}
+      <SaveChangesBar
+        hasChanges={hasChanges}
+        onSave={handleSave}
+        onReset={handleReset}
+        saving={saving}
+      />
 
       {/* Manager Modals */}
       {showAvatarManager && (
