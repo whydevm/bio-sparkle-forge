@@ -302,6 +302,53 @@ export type Database = {
           },
         ]
       }
+      social_cards: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          extra_data: Json | null
+          follower_count: number | null
+          id: string
+          identifier: string
+          order_index: number | null
+          platform: string
+          profile_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          extra_data?: Json | null
+          follower_count?: number | null
+          id?: string
+          identifier: string
+          order_index?: number | null
+          platform: string
+          profile_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          extra_data?: Json | null
+          follower_count?: number | null
+          id?: string
+          identifier?: string
+          order_index?: number | null
+          platform?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_cards_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_links: {
         Row: {
           created_at: string | null

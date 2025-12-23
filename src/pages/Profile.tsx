@@ -13,6 +13,8 @@ import AudioToggle from "@/components/profile/AudioToggle";
 import ProfileStats from "@/components/profile/ProfileStats";
 import CodingBadges from "@/components/profile/CodingBadges";
 import ProjectsSection from "@/components/profile/ProjectsSection";
+import BackgroundEffects from "@/components/profile/BackgroundEffects";
+import SocialCards from "@/components/profile/SocialCards";
 
 const Profile = () => {
   const { username } = useParams();
@@ -161,6 +163,11 @@ const Profile = () => {
       <div className="min-h-screen relative" style={getBackgroundStyle()}>
         <CustomCursor cursorUrl={profile.custom_cursor} />
         
+        {/* Background Effects */}
+        {profile.background_effect && profile.background_effect !== "none" && (
+          <BackgroundEffects effect={profile.background_effect} />
+        )}
+        
         {profile.background_type === "video" && profile.background_url && (
           <video
             ref={videoRef}
@@ -275,7 +282,12 @@ const Profile = () => {
           />
         )}
 
-        {/* Projects Section - after about me */}
+        {/* Social Cards - after about me */}
+        {profile && (showContent || !hasAudio) && (
+          <div className="relative z-10 px-8 pb-4">
+            <SocialCards profileId={profile.id} />
+          </div>
+        )}
         {projects && projects.length > 0 && (showContent || !hasAudio) && (
           <div className="relative z-10">
             <ProjectsSection 

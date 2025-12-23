@@ -17,7 +17,8 @@ import CursorManager from "@/components/dashboard/CursorManager";
 import ProjectsEditor from "@/components/dashboard/ProjectsEditor";
 import ThemeSelector from "@/components/dashboard/ThemeSelector";
 import SaveChangesBar from "@/components/dashboard/SaveChangesBar";
-import { User, Image, Music, MousePointer, Settings, Palette, Square, RotateCcw, Code2, FolderKanban, Sparkles } from "lucide-react";
+import SocialCardsEditor from "@/components/dashboard/SocialCardsEditor";
+import { User, Image, Music, MousePointer, Settings, Palette, Square, RotateCcw, Code2, FolderKanban, Sparkles, Share2 } from "lucide-react";
 import CodingBadgesEditor from "@/components/dashboard/CodingBadgesEditor";
 
 const Dashboard = () => {
@@ -887,6 +888,18 @@ const Dashboard = () => {
                   />
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Social Cards Section */}
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold text-pink-500 flex items-center gap-2">
+              <Share2 className="w-6 h-6" />
+              Social Cards
+            </h2>
+            
+            <div className="border border-border rounded-xl p-6 bg-card/30">
+              <SocialCardsEditor profileId={profile?.id} />
             </div>
           </div>
 
