@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 
 interface AudioToggleProps {
@@ -18,12 +18,12 @@ const AudioToggle = ({ audioRef }: AudioToggleProps) => {
   return (
     <button
       onClick={toggleMute}
-      className="w-10 h-10 rounded-full border border-foreground/30 bg-background/20 backdrop-blur-sm flex items-center justify-center transition-all hover:scale-105 hover:bg-foreground/10"
+      className="w-14 h-14 rounded-2xl bg-foreground/10 backdrop-blur-md flex items-center justify-center transition-all hover:scale-105 hover:bg-foreground/20"
     >
       {isMuted ? (
-        <VolumeX className="w-5 h-5 text-foreground" />
+        <VolumeX className="w-7 h-7 text-foreground" />
       ) : (
-        <Volume2 className="w-5 h-5 text-foreground" />
+        <Volume2 className="w-7 h-7 text-foreground" />
       )}
     </button>
   );

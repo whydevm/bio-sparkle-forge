@@ -114,28 +114,26 @@ const MusicPlayer = ({ music, audioRef: externalAudioRef, shuffle }: MusicPlayer
 
   return (
     <div className="w-full flex items-center gap-3 px-4 py-3">
-      {/* Music icon */}
-      <div className="flex-shrink-0">
-        <Music className="w-6 h-6 text-foreground/70" />
+      {/* Album art / cover */}
+      <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden bg-foreground/10">
+        {currentMusic?.cover_url ? (
+          <img 
+            src={currentMusic.cover_url} 
+            alt={currentMusic.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Music className="w-5 h-5 text-foreground/50" />
+          </div>
+        )}
       </div>
 
       {/* Title */}
       <div className="flex items-center gap-1.5 min-w-0 flex-shrink-0">
-        <span className="text-sm font-medium text-foreground truncate max-w-[80px]">
+        <span className="text-sm font-medium text-foreground truncate max-w-[100px]">
           {currentMusic?.title || "Untitled"}
         </span>
-        <a 
-          href={currentMusic?.url} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-foreground/60 hover:text-foreground transition-colors"
-        >
-          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-            <polyline points="15 3 21 3 21 9" />
-            <line x1="10" y1="14" x2="21" y2="3" />
-          </svg>
-        </a>
       </div>
 
       {/* Time and progress */}

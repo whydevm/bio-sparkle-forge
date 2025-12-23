@@ -89,61 +89,48 @@ const ProjectsSection = ({ projects, title = "Projects", description }: Projects
             <div
               key={project.id}
               onClick={() => handleProjectClick(project.url)}
-              className={`relative rounded-2xl overflow-hidden border border-foreground/20 bg-background/20 backdrop-blur-sm cursor-pointer hover:border-foreground/40 transition-all duration-500 ${
+              className={`relative rounded-2xl overflow-hidden border border-foreground/20 bg-background/20 backdrop-blur-sm cursor-pointer hover:border-foreground/40 hover:scale-[1.02] transition-all duration-500 ${
                 isVisible
                   ? "opacity-100 translate-y-0 scale-100"
                   : "opacity-0 translate-y-8 scale-95"
               }`}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              {project.image_url ? (
-                <div className="relative h-48">
+              <div className="relative h-52">
+                {project.image_url ? (
                   <img
                     src={project.image_url}
                     alt={project.title}
                     className="w-full h-full object-cover"
                   />
-                  {project.tags && project.tags.length > 0 && (
-                    <div className="absolute top-3 left-3">
-                      <span className="px-3 py-1 rounded-full bg-background/60 backdrop-blur-sm text-sm text-foreground">
-                        {project.tags[0]}
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <span className="text-4xl opacity-30">🔧</span>
+                  </div>
+                )}
+                
+                {/* Tags in top left corner */}
+                {project.tags && project.tags.length > 0 && (
+                  <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+                    {project.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-3 py-1 rounded-full bg-background/60 backdrop-blur-sm text-sm text-foreground font-medium"
+                      >
+                        {tag}
                       </span>
-                    </div>
-                  )}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                    <h4 className="text-lg font-bold text-white">{project.title}</h4>
-                    {project.description && (
-                      <p className="text-sm text-white/80">{project.description}</p>
-                    )}
+                    ))}
                   </div>
-                </div>
-              ) : (
-                <div className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-lg font-bold text-foreground">{project.title}</h4>
-                      {project.description && (
-                        <p className="text-sm text-muted-foreground">{project.description}</p>
-                      )}
-                    </div>
-                    {project.url && (
-                      <ExternalLink className="w-5 h-5 text-muted-foreground" />
-                    )}
-                  </div>
-                  {project.tags && project.tags.length > 0 && (
-                    <div className="flex gap-2 mt-2">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-0.5 rounded-full bg-muted text-xs text-foreground"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                )}
+                
+                {/* Title and description in bottom left corner */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/50 to-transparent">
+                  <h4 className="text-lg font-bold text-white">{project.title}</h4>
+                  {project.description && (
+                    <p className="text-sm text-white/80 mt-1 line-clamp-2">{project.description}</p>
                   )}
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>
