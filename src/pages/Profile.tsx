@@ -288,17 +288,6 @@ const Profile = () => {
             <SocialCards profileId={profile.id} />
           </div>
         )}
-
-        {/* Coding Badges Section - before projects */}
-        {profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
-          <div className="relative z-10 flex justify-start px-8 pb-4">
-            <div className="max-w-md">
-              <CodingBadges badges={profile.coding_badges} glow={profile.glow_badges} />
-            </div>
-          </div>
-        )}
-
-        {/* Projects Section - after coding badges */}
         {projects && projects.length > 0 && (showContent || !hasAudio) && (
           <div className="relative z-10">
             <ProjectsSection 
@@ -306,6 +295,15 @@ const Profile = () => {
               title={profile.projects_title}
               description={profile.projects_description}
             />
+          </div>
+        )}
+
+        {/* Coding Badges Section - after projects */}
+        {profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
+          <div className="relative z-10 flex justify-start px-8 pb-8">
+            <div className="max-w-md">
+              <CodingBadges badges={profile.coding_badges} glow={profile.glow_badges} />
+            </div>
           </div>
         )}
 

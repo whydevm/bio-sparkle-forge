@@ -109,10 +109,9 @@ const BackgroundEffects = ({ effect }: BackgroundEffectsProps) => {
       animationRef.current = requestAnimationFrame(animate);
     };
 
-    // Reduced particle counts for subtler effect
-    if (effect === "particles") initParticles(40);
-    else if (effect === "snow") initParticles(60);
-    else if (effect === "rain") initParticles(100);
+    if (effect === "particles") initParticles(80);
+    else if (effect === "snow") initParticles(150);
+    else if (effect === "rain") initParticles(200);
 
     animate();
 
@@ -129,11 +128,8 @@ const BackgroundEffects = ({ effect }: BackgroundEffectsProps) => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      style={{ 
-        mixBlendMode: effect === "oldtv" ? "overlay" : "normal",
-        opacity: effect === "oldtv" ? 0.4 : 0.6
-      }}
+      className="fixed inset-0 pointer-events-none z-20"
+      style={{ mixBlendMode: effect === "oldtv" ? "overlay" : "normal" }}
     />
   );
 };
