@@ -41,23 +41,18 @@ const SocialLinks = ({ links, glow, monochrome }: SocialLinksProps) => {
     };
     
     const IconComponent = icons[platform.toLowerCase()];
-    return IconComponent ? <IconComponent className={`w-8 h-8 ${monochrome ? "text-white" : ""}`} /> : null;
+    return IconComponent ? <IconComponent className={`w-7 h-7 ${monochrome ? "text-white" : ""}`} /> : null;
   };
 
-  // Determine layout based on number of links
-  const gridClass = links.length > 2
-    ? "grid grid-cols-3 gap-3 justify-start"
-    : "flex gap-3 justify-center";
-
   return (
-    <div className={gridClass}>
+    <div className="flex flex-wrap gap-2 justify-center">
       {links.map((link) => (
         <a
           key={link.id}
           href={link.url}
           target="_blank"
           rel="noopener noreferrer"
-          className={`flex items-center justify-center p-3 rounded-lg hover:bg-accent transition-colors ${
+          className={`flex items-center justify-center p-2 rounded-lg transition-opacity hover:opacity-70 ${
             glow ? "glow-border" : ""
           }`}
         >
@@ -65,7 +60,7 @@ const SocialLinks = ({ links, glow, monochrome }: SocialLinksProps) => {
             <img
               src={link.custom_icon_url}
               alt=""
-              className={`w-8 h-8 object-contain ${monochrome ? "brightness-0 invert" : ""}`}
+              className={`w-7 h-7 object-contain ${monochrome ? "brightness-0 invert" : ""}`}
             />
           ) : (
             getIcon(link.platform)

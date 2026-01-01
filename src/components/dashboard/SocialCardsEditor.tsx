@@ -29,22 +29,55 @@ interface SocialCardsEditorProps {
 }
 
 const PLATFORMS = [
-  { id: "discord", name: "Discord", icon: FaDiscord, color: "#5865F2", placeholder: "Server ID, User ID, or Bot ID" },
+  { 
+    id: "discord", 
+    name: "Discord", 
+    icon: FaDiscord, 
+    color: "#5865F2", 
+    contentTypes: [
+      { id: "server", label: "Server Link", placeholder: "Discord server invite link" },
+      { id: "user", label: "Username/ID", placeholder: "Your Discord username or user ID" },
+      { id: "bot", label: "Bot Invite", placeholder: "Discord bot invite link" },
+    ]
+  },
   { id: "twitter", name: "Twitter/X", icon: FaTwitter, color: "#1DA1F2", placeholder: "Username (without @)" },
   { id: "youtube", name: "YouTube", icon: FaYoutube, color: "#FF0000", placeholder: "Channel ID or Username" },
   { id: "twitch", name: "Twitch", icon: FaTwitch, color: "#9146FF", placeholder: "Username" },
-  { id: "spotify", name: "Spotify", icon: FaSpotify, color: "#1DB954", placeholder: "Profile URL or Username" },
+  { 
+    id: "spotify", 
+    name: "Spotify", 
+    icon: FaSpotify, 
+    color: "#1DB954",
+    contentTypes: [
+      { id: "profile", label: "Profile", placeholder: "Spotify profile URL or username" },
+      { id: "track", label: "Track", placeholder: "Spotify track link" },
+      { id: "album", label: "Album", placeholder: "Spotify album link" },
+      { id: "playlist", label: "Playlist", placeholder: "Spotify playlist link" },
+      { id: "artist", label: "Artist", placeholder: "Spotify artist link" },
+    ]
+  },
   { id: "instagram", name: "Instagram", icon: FaInstagram, color: "#E4405F", placeholder: "Username (without @)" },
   { id: "tiktok", name: "TikTok", icon: FaTiktok, color: "#000000", placeholder: "Username (without @)" },
   { id: "github", name: "GitHub", icon: FaGithub, color: "#181717", placeholder: "Username" },
   { id: "steam", name: "Steam", icon: FaSteam, color: "#000000", placeholder: "Profile URL or Username" },
-  { id: "roblox", name: "Roblox", icon: SiRoblox, color: "#E2231A", placeholder: "User ID, Game ID, or Group ID" },
+  { 
+    id: "roblox", 
+    name: "Roblox", 
+    icon: SiRoblox, 
+    color: "#E2231A",
+    contentTypes: [
+      { id: "user", label: "Player Profile", placeholder: "Roblox username or user ID" },
+      { id: "game", label: "Game/Experience", placeholder: "Roblox game/experience link" },
+      { id: "group", label: "Group", placeholder: "Roblox group link" },
+    ]
+  },
 ];
 
 const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
   const [cards, setCards] = useState<SocialCard[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState("");
+  const [selectedContentType, setSelectedContentType] = useState("");
   const [identifier, setIdentifier] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -87,6 +120,7 @@ const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
       toast.success("Social card added!");
       setIsDialogOpen(false);
       setSelectedPlatform("");
+      setSelectedContentType("");
       setIdentifier("");
       loadCards();
     } catch (error: any) {
@@ -112,6 +146,24 @@ const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
 
   const getPlatformInfo = (platformId: string) => {
     return PLATFORMS.find(p => p.id === platformId);
+  };
+
+  const getSelectedPlatform = () => getPlatformInfo(selectedPlatform);
+  const hasContentTypes = () => {
+    const platform = getSelectedPlatform();
+    return platform && 'contentTypes' in platform && platform.contentTypes;
+  };
+  
+  const getPlaceholder = () => {
+    const platform = getSelectedPlatform();
+    if (!platform) return "Enter identifier";
+    
+    if ('contentTypes' in platform && platform.contentTypes && selectedContentType) {
+      const contentType = platform.contentTypes.find(ct => ct.id === selectedContentType);
+      return contentType?.placeholder || "Enter identifier";
+    }
+    
+    return 'placeholder' in platform ? platform.placeholder : "Enter identifier";
   };
 
   return (
@@ -217,14 +269,33 @@ const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
               </Select>
             </div>
 
+            {/* Content Type Selection - only for platforms with content types */}
+            {hasContentTypes() && (
+              <div>
+                <Label className="mb-2 block">Content Type</Label>
+                <Select value={selectedContentType} onValueChange={setSelectedContentType}>
+                  <SelectTrigger className="bg-card/50 border-border">
+                    <SelectValue placeholder="Select content type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(getSelectedPlatform() as any)?.contentTypes?.map((ct: any) => (
+                      <SelectItem key={ct.id} value={ct.id}>
+                        {ct.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div>
               <Label className="mb-2 block">
-                {selectedPlatform ? getPlatformInfo(selectedPlatform)?.placeholder : "Identifier"}
+                {getPlaceholder()}
               </Label>
               <Input
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                placeholder={selectedPlatform ? getPlatformInfo(selectedPlatform)?.placeholder : "Enter identifier"}
+                placeholder={getPlaceholder()}
                 className="bg-card/50 border-border"
               />
             </div>
