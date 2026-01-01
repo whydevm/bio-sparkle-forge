@@ -30,10 +30,10 @@ const BackgroundEffects = ({ effect }: BackgroundEffectsProps) => {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * (effect === "particles" ? 0.5 : 0),
-          vy: effect === "snow" ? Math.random() * 1 + 0.5 : effect === "rain" ? Math.random() * 5 + 10 : (Math.random() - 0.5) * 0.5,
-          size: effect === "rain" ? 2 : Math.random() * 3 + 1,
-          opacity: Math.random() * 0.5 + 0.3,
+          vx: (Math.random() - 0.5) * (effect === "particles" ? 0.3 : effect === "snow" ? 0.2 : 0),
+          vy: effect === "snow" ? Math.random() * 0.8 + 0.3 : effect === "rain" ? Math.random() * 4 + 6 : (Math.random() - 0.5) * 0.3,
+          size: effect === "rain" ? 1 : Math.random() * 2 + 0.5,
+          opacity: Math.random() * 0.25 + 0.1,
         });
       }
     };
@@ -109,9 +109,9 @@ const BackgroundEffects = ({ effect }: BackgroundEffectsProps) => {
       animationRef.current = requestAnimationFrame(animate);
     };
 
-    if (effect === "particles") initParticles(80);
-    else if (effect === "snow") initParticles(150);
-    else if (effect === "rain") initParticles(200);
+    if (effect === "particles") initParticles(40);
+    else if (effect === "snow") initParticles(80);
+    else if (effect === "rain") initParticles(100);
 
     animate();
 
@@ -128,8 +128,11 @@ const BackgroundEffects = ({ effect }: BackgroundEffectsProps) => {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-20"
-      style={{ mixBlendMode: effect === "oldtv" ? "overlay" : "normal" }}
+      className="fixed inset-0 pointer-events-none z-0"
+      style={{ 
+        mixBlendMode: effect === "oldtv" ? "overlay" : "normal",
+        opacity: effect === "oldtv" ? 0.3 : 0.4,
+      }}
     />
   );
 };

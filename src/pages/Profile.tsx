@@ -201,7 +201,7 @@ const Profile = () => {
             >
               {/* Profile Avatar */}
               <div className="flex justify-center mb-6">
-                <div className="relative w-24 h-24">
+                <div className="relative w-28 h-28 md:w-32 md:h-32">
                   {profile.avatar_url && (
                     <img
                       src={profile.avatar_url}
@@ -314,6 +314,10 @@ const Profile = () => {
             location={profile.location}
             createdAt={profile.created_at}
             profileOpacity={profile.profile_opacity}
+            showViews={profile.show_views ?? true}
+            showJoinDate={profile.show_join_date ?? true}
+            showLikes={profile.show_likes ?? true}
+            viewsAnimation={profile.views_animation ?? true}
           />
         )}
       </div>

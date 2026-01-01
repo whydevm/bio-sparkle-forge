@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
+import { Trash2, Cloud } from "lucide-react";
 import { toast } from "sonner";
 import {
   SiTiktok,
@@ -25,31 +25,91 @@ import {
   SiGitlab,
   SiLinkedin,
   SiReddit,
+  SiSteam,
+  SiRoblox,
 } from "react-icons/si";
 
-const platformOptions = [
-  { value: "snapchat", label: "Snapchat", icon: SiSnapchat, color: "#FFFC00" },
-  { value: "youtube", label: "YouTube", icon: SiYoutube, color: "#FF0000" },
-  { value: "discord", label: "Discord", icon: SiDiscord, color: "#5865F2" },
-  { value: "spotify", label: "Spotify", icon: SiSpotify, color: "#1DB954" },
-  { value: "instagram", label: "Instagram", icon: SiInstagram, color: "#E4405F" },
-  { value: "twitter", label: "X", icon: SiX, color: "#000000" },
-  { value: "tiktok", label: "TikTok", icon: SiTiktok, color: "#000000" },
-  { value: "telegram", label: "Telegram", icon: SiTelegram, color: "#26A5E4" },
-  { value: "soundcloud", label: "SoundCloud", icon: SiSoundcloud, color: "#FF5500" },
-  { value: "paypal", label: "PayPal", icon: SiPaypal, color: "#00457C" },
-  { value: "github", label: "GitHub", icon: SiGithub, color: "#181717" },
-  { value: "applemusic", label: "Apple Music", icon: SiApplemusic, color: "#FA243C" },
-  { value: "gitlab", label: "GitLab", icon: SiGitlab, color: "#FC6D26" },
-  { value: "twitch", label: "Twitch", icon: SiTwitch, color: "#9146FF" },
-  { value: "reddit", label: "Reddit", icon: SiReddit, color: "#FF4500" },
-  { value: "linkedin", label: "LinkedIn", icon: SiLinkedin, color: "#0A66C2" },
+interface ContentType {
+  value: string;
+  label: string;
+  placeholder: string;
+}
+
+interface PlatformOption {
+  value: string;
+  label: string;
+  icon: any;
+  color: string;
+  contentTypes?: ContentType[];
+  baseUrl?: string;
+}
+
+const platformOptions: PlatformOption[] = [
+  { value: "snapchat", label: "Snapchat", icon: SiSnapchat, color: "#FFFC00", baseUrl: "snapchat.com/add/" },
+  { value: "youtube", label: "YouTube", icon: SiYoutube, color: "#FF0000", baseUrl: "youtube.com/@" },
+  { 
+    value: "discord", 
+    label: "Discord", 
+    icon: SiDiscord, 
+    color: "#5865F2",
+    contentTypes: [
+      { value: "user", label: "Username", placeholder: "username" },
+      { value: "server", label: "Server Link", placeholder: "discord.gg/invite-code" },
+      { value: "bot", label: "Bot Invite", placeholder: "bot-client-id" },
+    ]
+  },
+  { 
+    value: "spotify", 
+    label: "Spotify", 
+    icon: SiSpotify, 
+    color: "#1DB954",
+    contentTypes: [
+      { value: "user", label: "Profile", placeholder: "username" },
+      { value: "track", label: "Track", placeholder: "track-id or full URL" },
+      { value: "album", label: "Album", placeholder: "album-id or full URL" },
+      { value: "playlist", label: "Playlist", placeholder: "playlist-id or full URL" },
+    ]
+  },
+  { value: "instagram", label: "Instagram", icon: SiInstagram, color: "#E4405F", baseUrl: "instagram.com/" },
+  { value: "twitter", label: "X", icon: SiX, color: "#000000", baseUrl: "x.com/" },
+  { value: "tiktok", label: "TikTok", icon: SiTiktok, color: "#000000", baseUrl: "tiktok.com/@" },
+  { value: "telegram", label: "Telegram", icon: SiTelegram, color: "#26A5E4", baseUrl: "t.me/" },
+  { value: "soundcloud", label: "SoundCloud", icon: SiSoundcloud, color: "#FF5500", baseUrl: "soundcloud.com/" },
+  { value: "paypal", label: "PayPal", icon: SiPaypal, color: "#00457C", baseUrl: "paypal.me/" },
+  { value: "github", label: "GitHub", icon: SiGithub, color: "#181717", baseUrl: "github.com/" },
+  { value: "applemusic", label: "Apple Music", icon: SiApplemusic, color: "#FA243C", baseUrl: "music.apple.com/" },
+  { value: "gitlab", label: "GitLab", icon: SiGitlab, color: "#FC6D26", baseUrl: "gitlab.com/" },
+  { value: "twitch", label: "Twitch", icon: SiTwitch, color: "#9146FF", baseUrl: "twitch.tv/" },
+  { value: "reddit", label: "Reddit", icon: SiReddit, color: "#FF4500", baseUrl: "reddit.com/u/" },
+  { value: "linkedin", label: "LinkedIn", icon: SiLinkedin, color: "#0A66C2", baseUrl: "linkedin.com/in/" },
+  { value: "steam", label: "Steam", icon: SiSteam, color: "#000000", baseUrl: "steamcommunity.com/id/" },
+  { 
+    value: "roblox", 
+    label: "Roblox", 
+    icon: SiRoblox, 
+    color: "#E2231A",
+    contentTypes: [
+      { value: "user", label: "Profile", placeholder: "user-id" },
+      { value: "game", label: "Game", placeholder: "game-id" },
+      { value: "group", label: "Group", placeholder: "group-id" },
+    ]
+  },
+  { 
+    value: "weather", 
+    label: "Weather", 
+    icon: Cloud, 
+    color: "#4A90D9",
+    contentTypes: [
+      { value: "location", label: "Location", placeholder: "City, Country (e.g. London, UK)" },
+    ]
+  },
 ];
 
 const Links = () => {
   const [profile, setProfile] = useState<any>(null);
   const [links, setLinks] = useState<any[]>([]);
-  const [selectedPlatform, setSelectedPlatform] = useState<any>(null);
+  const [selectedPlatform, setSelectedPlatform] = useState<PlatformOption | null>(null);
+  const [selectedContentType, setSelectedContentType] = useState<string>("user");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const navigate = useNavigate();
@@ -87,8 +147,9 @@ const Links = () => {
     setLinks(data || []);
   };
 
-  const handlePlatformClick = (platform: any) => {
+  const handlePlatformClick = (platform: PlatformOption) => {
     setSelectedPlatform(platform);
+    setSelectedContentType(platform.contentTypes?.[0]?.value || "user");
     setLinkUrl("");
     setDialogOpen(true);
   };
@@ -97,8 +158,41 @@ const Links = () => {
     if (!linkUrl || !selectedPlatform || !profile) return;
 
     try {
-      // Construct the full URL
-      const fullUrl = `https://${selectedPlatform.value}.com/${linkUrl}`;
+      let fullUrl = "";
+      const platform = selectedPlatform.value;
+
+      // Build URL based on platform and content type
+      if (platform === "discord") {
+        if (selectedContentType === "server") {
+          fullUrl = linkUrl.startsWith("http") ? linkUrl : `https://discord.gg/${linkUrl}`;
+        } else if (selectedContentType === "bot") {
+          fullUrl = `https://discord.com/oauth2/authorize?client_id=${linkUrl}&permissions=0&scope=bot`;
+        } else {
+          fullUrl = `https://discord.com/users/${linkUrl}`;
+        }
+      } else if (platform === "spotify") {
+        if (selectedContentType === "track") {
+          fullUrl = linkUrl.startsWith("http") ? linkUrl : `https://open.spotify.com/track/${linkUrl}`;
+        } else if (selectedContentType === "album") {
+          fullUrl = linkUrl.startsWith("http") ? linkUrl : `https://open.spotify.com/album/${linkUrl}`;
+        } else if (selectedContentType === "playlist") {
+          fullUrl = linkUrl.startsWith("http") ? linkUrl : `https://open.spotify.com/playlist/${linkUrl}`;
+        } else {
+          fullUrl = `https://open.spotify.com/user/${linkUrl}`;
+        }
+      } else if (platform === "roblox") {
+        if (selectedContentType === "game") {
+          fullUrl = `https://www.roblox.com/games/${linkUrl}`;
+        } else if (selectedContentType === "group") {
+          fullUrl = `https://www.roblox.com/groups/${linkUrl}`;
+        } else {
+          fullUrl = `https://www.roblox.com/users/${linkUrl}/profile`;
+        }
+      } else if (platform === "weather") {
+        fullUrl = `weather:${linkUrl}`;
+      } else {
+        fullUrl = `https://${selectedPlatform.baseUrl || `${platform}.com/`}${linkUrl}`;
+      }
       
       const { error } = await supabase.from("social_links").insert({
         profile_id: profile.id,
@@ -118,9 +212,32 @@ const Links = () => {
     }
   };
 
+  const handleDeleteLink = async (linkId: string) => {
+    try {
+      const { error } = await supabase
+        .from("social_links")
+        .delete()
+        .eq("id", linkId);
+
+      if (error) throw error;
+
+      toast.success("Link deleted successfully!");
+      loadLinks(profile.id);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  const getContentTypeForPlatform = () => {
+    if (!selectedPlatform?.contentTypes) return null;
+    return selectedPlatform.contentTypes.find(ct => ct.value === selectedContentType);
+  };
+
   if (!profile) {
     return <div>Loading...</div>;
   }
+
+  const Icon = selectedPlatform?.icon;
 
   return (
     <DashboardLayout username={profile.username}>
@@ -134,6 +251,44 @@ const Links = () => {
           </h1>
           <p className="text-muted-foreground">Pick a social media to add to your profile.</p>
         </div>
+
+        {/* Display existing links */}
+        {links.length > 0 && (
+          <div className="mb-8 space-y-3">
+            <h2 className="text-lg font-medium mb-3">Your Links</h2>
+            {links.map((link) => {
+              const platformInfo = platformOptions.find(p => p.value === link.platform);
+              const PlatformIcon = platformInfo?.icon;
+              return (
+                <div 
+                  key={link.id}
+                  className="flex items-center justify-between p-4 rounded-xl bg-card border border-border"
+                >
+                  <div className="flex items-center gap-3">
+                    {PlatformIcon && (
+                      <PlatformIcon 
+                        className="w-6 h-6" 
+                        style={{ color: platformInfo?.color }}
+                      />
+                    )}
+                    <div>
+                      <p className="font-medium">{link.label}</p>
+                      <p className="text-sm text-muted-foreground truncate max-w-[200px]">{link.url}</p>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => handleDeleteLink(link.id)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="grid grid-cols-3 gap-4">
           {platformOptions.map((platform) => (
@@ -154,54 +309,44 @@ const Links = () => {
           <DialogContent className="bg-card/95 backdrop-blur-sm border-border">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                {selectedPlatform && (
+                {Icon && selectedPlatform && (
                   <>
-                    <selectedPlatform.icon className="w-6 h-6" style={{ color: selectedPlatform.color }} />
-                    Add {selectedPlatform.label} Social
+                    <Icon className="w-6 h-6" style={{ color: selectedPlatform.color }} />
+                    Add {selectedPlatform.label}
                   </>
                 )}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 mt-4">
-              <div>
-                <Label className="flex items-center gap-2 text-sm">
-                  Social Mode
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                  </svg>
-                </Label>
-                <div className="flex gap-2 mt-2">
-                  <Button variant="secondary" className="flex-1">
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10.59 13.41c.41.39.41 1.03 0 1.42-.39.39-1.03.39-1.42 0a5.003 5.003 0 0 1 0-7.07l3.54-3.54a5.003 5.003 0 0 1 7.07 0 5.003 5.003 0 0 1 0 7.07l-1.49 1.49c.01-.82-.12-1.64-.4-2.42l.47-.48a2.982 2.982 0 0 0 0-4.24 2.982 2.982 0 0 0-4.24 0l-3.53 3.53a2.982 2.982 0 0 0 0 4.24zm2.82-4.24c.39-.39 1.03-.39 1.42 0a5.003 5.003 0 0 1 0 7.07l-3.54 3.54a5.003 5.003 0 0 1-7.07 0 5.003 5.003 0 0 1 0-7.07l1.49-1.49c-.01.82.12 1.64.4 2.43l-.47.47a2.982 2.982 0 0 0 0 4.24 2.982 2.982 0 0 0 4.24 0l3.53-3.53a2.982 2.982 0 0 0 0-4.24.973.973 0 0 1 0-1.42z"/>
-                    </svg>
-                    Link
-                  </Button>
-                  <Button variant="ghost" className="flex-1">
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                    </svg>
-                    Text
-                  </Button>
+              {/* Content type selector for platforms with multiple types */}
+              {selectedPlatform?.contentTypes && selectedPlatform.contentTypes.length > 1 && (
+                <div>
+                  <Label className="flex items-center gap-2 text-sm mb-2">
+                    Content Type
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedPlatform.contentTypes.map((ct) => (
+                      <Button 
+                        key={ct.value}
+                        variant={selectedContentType === ct.value ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSelectedContentType(ct.value)}
+                      >
+                        {ct.label}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              <div className="bg-background/50 rounded-lg p-3 flex items-center gap-2">
-                {selectedPlatform && (
-                  <>
-                    <selectedPlatform.icon className="w-5 h-5" style={{ color: selectedPlatform.color }} />
-                    <span className="text-sm text-muted-foreground">{selectedPlatform.value}.com/</span>
-                  </>
-                )}
+              <div className="bg-background/50 rounded-lg p-3">
+                <Label className="text-sm text-muted-foreground mb-2 block">
+                  {getContentTypeForPlatform()?.label || selectedPlatform?.label}
+                </Label>
                 <Input
                   value={linkUrl}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    // Only allow text after the domain
-                    const cleanValue = value.replace(/^https?:\/\//, '').replace(/^[^/]+\//, '');
-                    setLinkUrl(cleanValue);
-                  }}
-                  placeholder="username"
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder={getContentTypeForPlatform()?.placeholder || "Enter your username or link"}
                   className="border-0 bg-transparent focus-visible:ring-0"
                 />
               </div>
@@ -210,8 +355,8 @@ const Links = () => {
                 <Button onClick={handleAddLink} className="flex-1">
                   Add
                 </Button>
-                <Button variant="ghost">
-                  Need help?
+                <Button variant="ghost" onClick={() => setDialogOpen(false)}>
+                  Cancel
                 </Button>
               </div>
             </div>
