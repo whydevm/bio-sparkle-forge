@@ -74,9 +74,9 @@ const ProjectsSection = ({ projects, title = "Projects", description }: Projects
         }`}
       >
         {(title || description) && (
-          <div className="mb-4">
+          <div className="mb-4 text-center">
             {title && (
-              <h3 className="text-xl font-bold text-foreground">{title}</h3>
+              <h3 className="text-xl font-bold text-foreground font-ggsans">{title}</h3>
             )}
             {description && (
               <p className="text-sm text-muted-foreground mt-1">{description}</p>
@@ -109,13 +109,13 @@ const ProjectsSection = ({ projects, title = "Projects", description }: Projects
                   </div>
                 )}
                 
-                {/* Tags in top left corner */}
+                {/* Tags in top left corner - styled like coding badges */}
                 {project.tags && project.tags.length > 0 && (
                   <div className="absolute top-3 left-3 flex flex-wrap gap-2">
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-3 py-1 rounded-full bg-background/60 backdrop-blur-sm text-sm text-foreground font-medium"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-foreground/30 bg-background/20 backdrop-blur-sm text-sm font-medium text-foreground"
                       >
                         {tag}
                       </span>

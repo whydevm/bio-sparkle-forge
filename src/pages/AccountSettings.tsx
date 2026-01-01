@@ -8,18 +8,22 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { Hash } from "lucide-react";
 
 const AccountSettings = () => {
   const [profile, setProfile] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [profileNumber, setProfileNumber] = useState<number | null>(null);
   const navigate = useNavigate();
 
   // Edit states
   const [showUsernameDialog, setShowUsernameDialog] = useState(false);
+  const [showDisplayNameDialog, setShowDisplayNameDialog] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [newUsername, setNewUsername] = useState("");
+  const [newDisplayName, setNewDisplayName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -48,6 +52,15 @@ const AccountSettings = () => {
     if (profileData) {
       setProfile(profileData);
       setNewUsername(profileData.username);
+      setNewDisplayName(profileData.display_name || "");
+      
+      // Get profile number (position based on creation date)
+      const { count } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .lte("created_at", profileData.created_at);
+      
+      setProfileNumber(count || 1);
     }
     setLoading(false);
   };
@@ -96,6 +109,25 @@ const AccountSettings = () => {
       setProfile({ ...profile, username: newUsername.toLowerCase() });
       toast.success("Username updated successfully!");
       setShowUsernameDialog(false);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+    setSaving(false);
+  };
+
+  const handleUpdateDisplayName = async () => {
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ display_name: newDisplayName || null })
+        .eq("id", profile.id);
+
+      if (error) throw error;
+
+      setProfile({ ...profile, display_name: newDisplayName || null });
+      toast.success("Display name updated successfully!");
+      setShowDisplayNameDialog(false);
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -157,6 +189,17 @@ const AccountSettings = () => {
       <div className="container max-w-2xl mx-auto p-6 space-y-8">
         <h1 className="text-2xl font-semibold">Account Settings</h1>
 
+        {/* Profile ID Banner */}
+        <div className="bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 rounded-lg p-4 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+            <Hash className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Your Profile ID</p>
+            <p className="text-2xl font-bold text-primary">#{profileNumber}</p>
+          </div>
+        </div>
+
         {/* General Information */}
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">General Information</h2>
@@ -172,6 +215,24 @@ const AccountSettings = () => {
               <div className="flex gap-2">
                 <Input value={`/${profile.username}`} disabled className="flex-1" />
                 <Button variant="outline" onClick={() => setShowUsernameDialog(true)}>
+                  Edit
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <Label className="flex items-center gap-2 mb-2">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+                Display Name
+              </Label>
+              <div className="flex gap-2">
+                <Input value={profile.display_name || "Not set"} disabled className="flex-1" />
+                <Button variant="outline" onClick={() => {
+                  setNewDisplayName(profile.display_name || "");
+                  setShowDisplayNameDialog(true);
+                }}>
                   Edit
                 </Button>
               </div>
@@ -274,6 +335,37 @@ const AccountSettings = () => {
               Cancel
             </Button>
             <Button onClick={handleUpdateUsername} disabled={saving}>
+              {saving ? "Saving..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Display Name Dialog */}
+      <Dialog open={showDisplayNameDialog} onOpenChange={setShowDisplayNameDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Display Name</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Display Name</Label>
+              <Input
+                value={newDisplayName}
+                onChange={(e) => setNewDisplayName(e.target.value)}
+                placeholder="Your display name"
+                className="mt-2"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                This is the name shown on your profile. Leave empty to use your username.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDisplayNameDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateDisplayName} disabled={saving}>
               {saving ? "Saving..." : "Save Changes"}
             </Button>
           </DialogFooter>
