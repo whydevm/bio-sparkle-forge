@@ -18,6 +18,7 @@ interface SocialCard {
 
 interface SocialCardsProps {
   profileId: string;
+  theme?: string;
 }
 
 const PLATFORMS: Record<string, { icon: any; color: string; name: string }> = {
@@ -33,29 +34,45 @@ const PLATFORMS: Record<string, { icon: any; color: string; name: string }> = {
   roblox: { icon: SiRoblox, color: "#E2231A", name: "Roblox" },
 };
 
-const SocialCards = ({ profileId }: SocialCardsProps) => {
+const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
   const [cards, setCards] = useState<SocialCard[]>([]);
   const [isVisible, setIsVisible] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const loadCards = async () => {
-      const { data } = await supabase
-        .from("social_cards")
-        .select("*")
-        .eq("profile_id", profileId)
-        .order("order_index");
-      setCards((data as SocialCard[]) || []);
+      try {
+        const { data, error: fetchError } = await supabase
+          .from("social_cards")
+          .select("*")
+          .eq("profile_id", profileId)
+          .order("order_index");
+        
+        if (fetchError) {
+          console.error("Error loading social cards:", fetchError);
+          setError(true);
+          return;
+        }
+        setCards((data as SocialCard[]) || []);
+      } catch (err) {
+        console.error("Error loading social cards:", err);
+        setError(true);
+      }
     };
-    loadCards();
+    
+    if (profileId) {
+      loadCards();
+    }
 
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, [profileId]);
 
-  if (cards.length === 0) return null;
+  // Don't render if basic theme or no cards or error
+  if (theme === "basic" || cards.length === 0 || error) return null;
 
   return (
-    <div className={`flex flex-wrap gap-3 justify-start transition-all duration-700 ${
+    <div className={`flex flex-wrap gap-3 justify-center transition-all duration-700 ${
       isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
     }`}>
       {cards.map((card, index) => {

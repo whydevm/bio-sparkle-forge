@@ -144,6 +144,7 @@ const Profile = () => {
   const hasAudio = music.length > 0 || profile.background_type === "video";
   const shouldShowSplash = hasAudio && !hasEntered;
   const hasAboutMe = profile.about_me && profile.about_me.trim().length > 0;
+  const isPortfolioTheme = profile.theme === "portfolio";
   
   // Parse bio texts - support multiple lines for looping typewriter
   const bioTexts = profile.bio ? profile.bio.split("\n").filter((t: string) => t.trim()) : [];
@@ -190,9 +191,9 @@ const Profile = () => {
         <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center p-4 transition-opacity duration-700 ${
           shouldShowSplash ? "opacity-0" : showContent || !hasAudio ? "opacity-100" : "opacity-0"
         }`}>
-          <div className="w-full max-w-md space-y-4">
+          <div className="w-full max-w-md space-y-4 flex flex-col items-center">
             <div
-              className="glass-panel p-8 rounded-2xl space-y-6"
+              className="glass-panel p-8 rounded-2xl space-y-6 w-full"
               style={{
                 backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
                 backgroundColor: profileOpacity === 0 ? "transparent" : undefined,
@@ -201,7 +202,7 @@ const Profile = () => {
             >
               {/* Profile Avatar */}
               <div className="flex justify-center mb-6">
-                <div className="relative w-28 h-28 md:w-32 md:h-32">
+                <div className="relative w-32 h-32 md:w-36 md:h-36">
                   {profile.avatar_url && (
                     <img
                       src={profile.avatar_url}
@@ -266,13 +267,13 @@ const Profile = () => {
               <MusicPlayer music={music} audioRef={audioRef} shuffle={profile.audio_shuffle} />
             )}
 
-            {/* Scroll indicator if about me exists */}
-            {hasAboutMe && (showContent || !hasAudio) && <ScrollIndicator />}
+            {/* Scroll indicator only for portfolio theme with about me */}
+            {isPortfolioTheme && hasAboutMe && (showContent || !hasAudio) && <ScrollIndicator />}
           </div>
         </div>
 
-        {/* About Me Section */}
-        {hasAboutMe && (
+        {/* About Me Section - only for portfolio theme */}
+        {isPortfolioTheme && hasAboutMe && (
           <AboutMeSection
             aboutMe={profile.about_me}
             profileOpacity={profile.profile_opacity}
@@ -282,13 +283,15 @@ const Profile = () => {
           />
         )}
 
-        {/* Social Cards - after about me */}
-        {profile && (showContent || !hasAudio) && (
+        {/* Social Cards - only for portfolio theme */}
+        {isPortfolioTheme && profile && (showContent || !hasAudio) && (
           <div className="relative z-10 px-8 pb-4">
-            <SocialCards profileId={profile.id} />
+            <SocialCards profileId={profile.id} theme={profile.theme} />
           </div>
         )}
-        {projects && projects.length > 0 && (showContent || !hasAudio) && (
+        
+        {/* Projects - only for portfolio theme */}
+        {isPortfolioTheme && projects && projects.length > 0 && (showContent || !hasAudio) && (
           <div className="relative z-10">
             <ProjectsSection 
               projects={projects} 
@@ -298,9 +301,9 @@ const Profile = () => {
           </div>
         )}
 
-        {/* Coding Badges Section - after projects */}
-        {profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
-          <div className="relative z-10 flex justify-start px-8 pb-8">
+        {/* Coding Badges Section - only for portfolio theme */}
+        {isPortfolioTheme && profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
+          <div className="relative z-10 flex justify-center px-8 pb-8">
             <div className="max-w-md">
               <CodingBadges badges={profile.coding_badges} glow={profile.glow_badges} />
             </div>

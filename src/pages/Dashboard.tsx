@@ -279,19 +279,21 @@ const Dashboard = () => {
                 </Select>
               </div>
 
-              {/* Scroll Text */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Scroll Down Text</Label>
-                  <span className="text-xs text-muted-foreground">{(profile?.scroll_text || "").length}/50</span>
+              {/* Scroll Text - Portfolio Theme Only */}
+              {profile?.theme === "portfolio" && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label>Scroll Down Text</Label>
+                    <span className="text-xs text-muted-foreground">{(profile?.scroll_text || "").length}/50</span>
+                  </div>
+                  <Input
+                    value={profile?.scroll_text || "Scroll for more"}
+                    onChange={(e) => updateProfile({ scroll_text: e.target.value.slice(0, 50) })}
+                    placeholder="Scroll for more"
+                    className="bg-card/50 border-border"
+                  />
                 </div>
-                <Input
-                  value={profile?.scroll_text || "Scroll for more"}
-                  onChange={(e) => updateProfile({ scroll_text: e.target.value.slice(0, 50) })}
-                  placeholder="Scroll for more"
-                  className="bg-card/50 border-border"
-                />
-              </div>
+              )}
 
               {/* Toggle Settings */}
               <div className="space-y-3 pt-2">
@@ -843,80 +845,86 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Projects Section */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
-              <FolderKanban className="w-6 h-6" />
-              Portfolio Theme Settings
-            </h2>
-            
-            <div className="border border-border rounded-xl p-6 bg-card/30 space-y-6">
-              <ProjectsEditor
-                profileId={profile?.id}
-                projects={projects}
-                onProjectsChange={() => loadProjects(profile?.id)}
-              />
+          {/* Projects Section - Portfolio Theme Only */}
+          {profile?.theme === "portfolio" && (
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
+                <FolderKanban className="w-6 h-6" />
+                Portfolio Theme Settings
+              </h2>
+              
+              <div className="border border-border rounded-xl p-6 bg-card/30 space-y-6">
+                <ProjectsEditor
+                  profileId={profile?.id}
+                  projects={projects}
+                  onProjectsChange={() => loadProjects(profile?.id)}
+                />
 
-              {/* Projects Customization */}
-              <div className="space-y-4 pt-4 border-t border-border">
-                <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
-                  <Palette className="w-5 h-5" />
-                  Projects Customization
-                </h3>
+                {/* Projects Customization */}
+                <div className="space-y-4 pt-4 border-t border-border">
+                  <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
+                    <Palette className="w-5 h-5" />
+                    Projects Customization
+                  </h3>
 
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Projects Section Title</Label>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>Projects Section Title</Label>
+                    </div>
+                    <Input
+                      value={profile?.projects_title || "Projects"}
+                      onChange={(e) => updateProfile({ projects_title: e.target.value })}
+                      placeholder="Projects"
+                      className="bg-card/50 border-border"
+                    />
                   </div>
-                  <Input
-                    value={profile?.projects_title || "Projects"}
-                    onChange={(e) => updateProfile({ projects_title: e.target.value })}
-                    placeholder="Projects"
-                    className="bg-card/50 border-border"
-                  />
-                </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Projects Section Description</Label>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>Projects Section Description</Label>
+                    </div>
+                    <Textarea
+                      value={profile?.projects_description || ""}
+                      onChange={(e) => updateProfile({ projects_description: e.target.value })}
+                      placeholder="Describe your projects section..."
+                      className="bg-card/50 border-border"
+                    />
                   </div>
-                  <Textarea
-                    value={profile?.projects_description || ""}
-                    onChange={(e) => updateProfile({ projects_description: e.target.value })}
-                    placeholder="Describe your projects section..."
-                    className="bg-card/50 border-border"
-                  />
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Social Cards Section */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-pink-500 flex items-center gap-2">
-              <Share2 className="w-6 h-6" />
-              Social Cards
-            </h2>
-            
-            <div className="border border-border rounded-xl p-6 bg-card/30">
-              <SocialCardsEditor profileId={profile?.id} />
+          {/* Social Cards Section - Portfolio Theme Only */}
+          {profile?.theme === "portfolio" && (
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold text-pink-500 flex items-center gap-2">
+                <Share2 className="w-6 h-6" />
+                Social Cards
+              </h2>
+              
+              <div className="border border-border rounded-xl p-6 bg-card/30">
+                <SocialCardsEditor profileId={profile?.id} />
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Coding Badges Section */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-blue-500 flex items-center gap-2">
-              <Code2 className="w-6 h-6" />
-              Coding Badges
-            </h2>
-            
-            <div className="border border-border rounded-xl p-6 bg-card/30">
-              <CodingBadgesEditor
-                selectedBadges={profile?.coding_badges || []}
-                onBadgesChange={(badges) => updateProfile({ coding_badges: badges })}
-              />
+          {/* Coding Badges Section - Portfolio Theme Only */}
+          {profile?.theme === "portfolio" && (
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold text-blue-500 flex items-center gap-2">
+                <Code2 className="w-6 h-6" />
+                Coding Badges
+              </h2>
+              
+              <div className="border border-border rounded-xl p-6 bg-card/30">
+                <CodingBadgesEditor
+                  selectedBadges={profile?.coding_badges || []}
+                  onBadgesChange={(badges) => updateProfile({ coding_badges: badges })}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
