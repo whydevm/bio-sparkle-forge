@@ -6,6 +6,7 @@ import {
 } from "react-icons/fa";
 import { SiRoblox } from "react-icons/si";
 import DiscordPresence from "./DiscordPresence";
+import SpotifyPresence from "./SpotifyPresence";
 
 interface SocialCard {
   id: string;
@@ -14,7 +15,10 @@ interface SocialCard {
   display_name?: string;
   avatar_url?: string;
   follower_count?: number;
-  extra_data?: any;
+  extra_data?: {
+    content_type?: string;
+    [key: string]: any;
+  };
 }
 
 interface SocialCardsProps {
@@ -87,8 +91,10 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
         const platform = PLATFORMS[card.platform];
         if (!platform) return null;
 
-        // Special handling for Discord with user ID - show presence
-        if (card.platform === "discord" && card.extra_data?.content_type === "username_id") {
+        const contentType = card.extra_data?.content_type;
+
+        // Discord Rich Presence
+        if (card.platform === "discord" && contentType === "presence") {
           return (
             <div
               key={card.id}
@@ -102,12 +108,27 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
           );
         }
 
+        // Spotify Rich Presence (if user ID provided for Lanyard)
+        if (card.platform === "spotify" && contentType === "presence") {
+          return (
+            <div
+              key={card.id}
+              style={{ 
+                transitionDelay: `${index * 100}ms`,
+                animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
+              }}
+            >
+              <SpotifyPresence userId={card.identifier} />
+            </div>
+          );
+        }
+
         const Icon = platform.icon;
 
         return (
           <div
             key={card.id}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-background/20 backdrop-blur-sm hover:border-foreground/40 transition-all duration-300"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-background/30 backdrop-blur-md hover:border-foreground/40 transition-all duration-300"
             style={{ 
               transitionDelay: `${index * 100}ms`,
               animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined

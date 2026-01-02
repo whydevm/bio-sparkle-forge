@@ -35,8 +35,8 @@ const PLATFORMS = [
     icon: FaDiscord, 
     color: "#5865F2", 
     contentTypes: [
+      { id: "presence", label: "Rich Presence (User ID)", placeholder: "Your Discord User ID (e.g., 123456789012345678)" },
       { id: "server", label: "Server Link", placeholder: "Discord server invite link" },
-      { id: "user", label: "Username/ID", placeholder: "Your Discord username or user ID" },
       { id: "bot", label: "Bot Invite", placeholder: "Discord bot invite link" },
     ]
   },
@@ -49,11 +49,12 @@ const PLATFORMS = [
     icon: FaSpotify, 
     color: "#1DB954",
     contentTypes: [
-      { id: "profile", label: "Profile", placeholder: "Spotify profile URL or username" },
-      { id: "track", label: "Track", placeholder: "Spotify track link" },
-      { id: "album", label: "Album", placeholder: "Spotify album link" },
-      { id: "playlist", label: "Playlist", placeholder: "Spotify playlist link" },
-      { id: "artist", label: "Artist", placeholder: "Spotify artist link" },
+      { id: "presence", label: "Now Playing (Discord ID)", placeholder: "Your Discord User ID for Spotify presence" },
+      { id: "profile", label: "Profile Link", placeholder: "Spotify profile URL" },
+      { id: "track", label: "Track Link", placeholder: "Spotify track link" },
+      { id: "album", label: "Album Link", placeholder: "Spotify album link" },
+      { id: "playlist", label: "Playlist Link", placeholder: "Spotify playlist link" },
+      { id: "artist", label: "Artist Link", placeholder: "Spotify artist link" },
     ]
   },
   { id: "instagram", name: "Instagram", icon: FaInstagram, color: "#E4405F", placeholder: "Username (without @)" },
@@ -100,6 +101,13 @@ const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
       return;
     }
 
+    // Check if content type is required but not selected
+    const platform = getSelectedPlatform();
+    if (platform && 'contentTypes' in platform && platform.contentTypes && !selectedContentType) {
+      toast.error("Please select a content type");
+      return;
+    }
+
     if (cards.length >= 3) {
       toast.error("You can only have up to 3 social cards");
       return;
@@ -107,6 +115,12 @@ const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
 
     setLoading(true);
     try {
+      // Build extra_data with content_type if applicable
+      const extraData: Record<string, any> = {};
+      if (selectedContentType) {
+        extraData.content_type = selectedContentType;
+      }
+
       const { error } = await supabase
         .from("social_cards")
         .insert({
@@ -114,6 +128,7 @@ const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
           platform: selectedPlatform,
           identifier: identifier.trim(),
           order_index: cards.length,
+          extra_data: Object.keys(extraData).length > 0 ? extraData : null,
         });
 
       if (error) throw error;
