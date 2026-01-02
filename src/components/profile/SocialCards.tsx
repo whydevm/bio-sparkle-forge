@@ -5,6 +5,7 @@ import {
   FaInstagram, FaTiktok, FaGithub, FaSteam
 } from "react-icons/fa";
 import { SiRoblox } from "react-icons/si";
+import DiscordPresence from "./DiscordPresence";
 
 interface SocialCard {
   id: string;
@@ -37,10 +38,15 @@ const PLATFORMS: Record<string, { icon: any; color: string; name: string }> = {
 const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
   const [cards, setCards] = useState<SocialCard[]>([]);
   const [isVisible, setIsVisible] = useState(false);
-  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadCards = async () => {
+      if (!profileId) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const { data, error: fetchError } = await supabase
           .from("social_cards")
@@ -50,26 +56,28 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
         
         if (fetchError) {
           console.error("Error loading social cards:", fetchError);
-          setError(true);
-          return;
+          setCards([]);
+        } else {
+          setCards((data as SocialCard[]) || []);
         }
-        setCards((data as SocialCard[]) || []);
       } catch (err) {
         console.error("Error loading social cards:", err);
-        setError(true);
+        setCards([]);
+      } finally {
+        setLoading(false);
       }
     };
     
-    if (profileId) {
-      loadCards();
-    }
+    loadCards();
 
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, [profileId]);
 
-  // Don't render if basic theme or no cards or error
-  if (theme === "basic" || cards.length === 0 || error) return null;
+  // Don't render if basic theme or loading
+  if (theme === "basic") return null;
+  if (loading) return null;
+  if (cards.length === 0) return null;
 
   return (
     <div className={`flex flex-wrap gap-3 justify-center transition-all duration-700 ${
@@ -78,6 +86,22 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
       {cards.map((card, index) => {
         const platform = PLATFORMS[card.platform];
         if (!platform) return null;
+
+        // Special handling for Discord with user ID - show presence
+        if (card.platform === "discord" && card.extra_data?.content_type === "username_id") {
+          return (
+            <div
+              key={card.id}
+              style={{ 
+                transitionDelay: `${index * 100}ms`,
+                animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
+              }}
+            >
+              <DiscordPresence userId={card.identifier} />
+            </div>
+          );
+        }
+
         const Icon = platform.icon;
 
         return (
@@ -100,7 +124,7 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
               <p className="text-xs text-foreground/60 truncate max-w-[120px]">
                 {card.display_name || card.identifier}
               </p>
-              {card.follower_count !== undefined && (
+              {card.follower_count !== undefined && card.follower_count > 0 && (
                 <p className="text-xs text-foreground/40">
                   {card.follower_count.toLocaleString()} followers
                 </p>

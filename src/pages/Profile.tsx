@@ -144,7 +144,11 @@ const Profile = () => {
   const hasAudio = music.length > 0 || profile.background_type === "video";
   const shouldShowSplash = hasAudio && !hasEntered;
   const hasAboutMe = profile.about_me && profile.about_me.trim().length > 0;
-  const isPortfolioTheme = profile.theme === "portfolio";
+  // Normalize legacy themes to new ones
+  const normalizedTheme = profile.theme === "default" || profile.theme === "minimal" || profile.theme === "neon" 
+    ? "basic" 
+    : profile.theme;
+  const isPortfolioTheme = normalizedTheme === "portfolio";
   
   // Parse bio texts - support multiple lines for looping typewriter
   const bioTexts = profile.bio ? profile.bio.split("\n").filter((t: string) => t.trim()) : [];
@@ -272,8 +276,8 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* About Me Section - only for portfolio theme */}
-        {isPortfolioTheme && hasAboutMe && (
+        {/* About Me Section - available on all themes */}
+        {hasAboutMe && (
           <AboutMeSection
             aboutMe={profile.about_me}
             profileOpacity={profile.profile_opacity}

@@ -7,17 +7,9 @@ interface ThemeSelectorProps {
 
 const themes = [
   {
-    id: "default",
-    name: "Default",
-    preview: {
-      bg: "bg-card",
-      accent: "bg-muted",
-      text: "bg-foreground/60",
-    },
-  },
-  {
-    id: "minimal",
-    name: "Minimal",
+    id: "basic",
+    name: "Basic",
+    description: "Simple profile with avatar, bio, and links",
     preview: {
       bg: "bg-background",
       accent: "bg-muted/50",
@@ -25,17 +17,23 @@ const themes = [
     },
   },
   {
-    id: "neon",
-    name: "Neon",
+    id: "portfolio",
+    name: "Portfolio",
+    description: "Full profile with projects, badges, social cards & scroll",
     preview: {
-      bg: "bg-black",
-      accent: "bg-primary",
-      text: "bg-primary/60",
+      bg: "bg-card",
+      accent: "bg-primary/20",
+      text: "bg-foreground/60",
     },
   },
 ];
 
 const ThemeSelector = ({ selectedTheme, onThemeChange }: ThemeSelectorProps) => {
+  // Normalize legacy theme names to new ones
+  const normalizedTheme = selectedTheme === "default" || selectedTheme === "minimal" || selectedTheme === "neon" 
+    ? "basic" 
+    : selectedTheme;
+
   return (
     <div className="space-y-4">
       <Label className="text-lg font-semibold">Theme Selection</Label>
@@ -46,17 +44,18 @@ const ThemeSelector = ({ selectedTheme, onThemeChange }: ThemeSelectorProps) => 
             key={theme.id}
             onClick={() => onThemeChange(theme.id)}
             className={`p-4 rounded-xl border cursor-pointer transition-all ${
-              selectedTheme === theme.id
+              normalizedTheme === theme.id
                 ? "border-primary bg-primary/5"
                 : "border-border hover:border-primary/50"
             }`}
           >
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-2">
               <span className="font-medium">{theme.name}</span>
-              {selectedTheme === theme.id && (
+              {normalizedTheme === theme.id && (
                 <span className="text-xs text-primary">Selected</span>
               )}
             </div>
+            <p className="text-xs text-muted-foreground mb-3">{theme.description}</p>
             
             {/* Theme preview */}
             <div className={`${theme.preview.bg} rounded-lg p-4 border border-border/50`}>
@@ -74,14 +73,20 @@ const ThemeSelector = ({ selectedTheme, onThemeChange }: ThemeSelectorProps) => 
                     <div className={`w-16 h-2 rounded ${theme.preview.text}`} />
                   </div>
                 </div>
-                {/* Badges placeholder */}
-                <div className="flex gap-1 mt-1">
-                  <div className={`w-6 h-6 rounded-full ${theme.preview.accent}`} />
-                  <div className={`w-6 h-6 rounded-full ${theme.preview.accent}`} />
-                  <div className={`w-6 h-6 rounded-full ${theme.preview.accent}`} />
-                </div>
-                {/* Scroll indicator placeholder */}
-                <div className={`w-1 h-4 rounded-full ${theme.preview.text} mt-1`} />
+                
+                {/* Portfolio-only elements */}
+                {theme.id === "portfolio" && (
+                  <>
+                    {/* Badges placeholder */}
+                    <div className="flex gap-1 mt-1">
+                      <div className={`w-6 h-6 rounded-full ${theme.preview.accent}`} />
+                      <div className={`w-6 h-6 rounded-full ${theme.preview.accent}`} />
+                      <div className={`w-6 h-6 rounded-full ${theme.preview.accent}`} />
+                    </div>
+                    {/* Scroll indicator placeholder */}
+                    <div className={`w-1 h-4 rounded-full ${theme.preview.text} mt-1`} />
+                  </>
+                )}
               </div>
             </div>
           </div>
