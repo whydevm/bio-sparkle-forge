@@ -11,6 +11,12 @@ interface DiscordUser {
   avatar: string;
   discriminator: string;
   display_name?: string;
+  public_flags?: number;
+}
+
+interface AvatarDecoration {
+  asset: string;
+  sku_id?: string;
 }
 
 interface DiscordPresenceData {
@@ -21,7 +27,25 @@ interface DiscordPresenceData {
     type: number;
     state?: string;
     details?: string;
+    application_id?: string;
+    assets?: {
+      large_image?: string;
+      large_text?: string;
+      small_image?: string;
+      small_text?: string;
+    };
   }>;
+  spotify?: {
+    song: string;
+    artist: string;
+    album: string;
+    album_art_url: string;
+    timestamps: {
+      start: number;
+      end: number;
+    };
+  };
+  listening_to_spotify?: boolean;
 }
 
 const statusColors: Record<string, string> = {
@@ -31,22 +55,33 @@ const statusColors: Record<string, string> = {
   offline: "#80848e",
 };
 
-const statusLabels: Record<string, string> = {
-  online: "Online",
-  idle: "Idle",
-  dnd: "Do Not Disturb",
-  offline: "Offline",
+// Discord public flags badge mapping
+const DISCORD_BADGES: Record<number, { name: string; icon: string; color: string }> = {
+  1: { name: "Discord Employee", icon: "👨‍💼", color: "#5865F2" },
+  2: { name: "Partnered Server Owner", icon: "🤝", color: "#5865F2" },
+  4: { name: "HypeSquad Events", icon: "🎉", color: "#f47b67" },
+  8: { name: "Bug Hunter Level 1", icon: "🐛", color: "#3ba55c" },
+  64: { name: "HypeSquad Bravery", icon: "🟣", color: "#9c84ef" },
+  128: { name: "HypeSquad Brilliance", icon: "🟠", color: "#f47b67" },
+  256: { name: "HypeSquad Balance", icon: "🟢", color: "#49ddc1" },
+  512: { name: "Early Supporter", icon: "💎", color: "#7289da" },
+  16384: { name: "Bug Hunter Level 2", icon: "🐛", color: "#f9a62b" },
+  131072: { name: "Verified Bot Developer", icon: "🤖", color: "#5865F2" },
+  262144: { name: "Discord Certified Moderator", icon: "🛡️", color: "#5865F2" },
+  4194304: { name: "Active Developer", icon: "💻", color: "#23a559" },
 };
 
 const DiscordPresence = ({ userId }: DiscordPresenceProps) => {
   const [presence, setPresence] = useState<DiscordPresenceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [lastSeen, setLastSeen] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPresence = async () => {
       if (!userId) {
         setLoading(false);
+        setError(true);
         return;
       }
 
@@ -59,6 +94,14 @@ const DiscordPresence = ({ userId }: DiscordPresenceProps) => {
         const data = await response.json();
         if (data.success) {
           setPresence(data.data);
+          setError(false);
+          
+          // Calculate last seen if offline
+          if (data.data.discord_status === "offline") {
+            setLastSeen("Offline");
+          } else {
+            setLastSeen(null);
+          }
         } else {
           setError(true);
         }
@@ -76,13 +119,26 @@ const DiscordPresence = ({ userId }: DiscordPresenceProps) => {
     return () => clearInterval(interval);
   }, [userId]);
 
+  // Get badges from public_flags
+  const getBadges = (flags?: number): { name: string; icon: string; color: string }[] => {
+    if (!flags) return [];
+    const badges: { name: string; icon: string; color: string }[] = [];
+    
+    for (const [bit, badge] of Object.entries(DISCORD_BADGES)) {
+      if (flags & parseInt(bit)) {
+        badges.push(badge);
+      }
+    }
+    return badges;
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-background/20 backdrop-blur-sm animate-pulse">
-        <div className="w-10 h-10 rounded-lg bg-muted" />
-        <div className="space-y-2">
+      <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-background/30 backdrop-blur-md animate-pulse min-w-[280px]">
+        <div className="w-12 h-12 rounded-full bg-muted" />
+        <div className="space-y-2 flex-1">
+          <div className="w-24 h-4 bg-muted rounded" />
           <div className="w-20 h-3 bg-muted rounded" />
-          <div className="w-16 h-2 bg-muted rounded" />
         </div>
       </div>
     );
@@ -90,16 +146,17 @@ const DiscordPresence = ({ userId }: DiscordPresenceProps) => {
 
   if (error || !presence) {
     return (
-      <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-background/20 backdrop-blur-sm">
+      <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-background/30 backdrop-blur-md min-w-[280px]">
         <div 
-          className="w-10 h-10 rounded-lg flex items-center justify-center"
+          className="w-12 h-12 rounded-full flex items-center justify-center"
           style={{ backgroundColor: "#5865F2" }}
         >
-          <FaDiscord className="w-5 h-5 text-white" />
+          <FaDiscord className="w-6 h-6 text-white" />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-foreground">Discord</p>
-          <p className="text-xs text-foreground/60">User ID: {userId}</p>
+          <p className="text-xs text-foreground/60">User not found on Lanyard</p>
+          <p className="text-xs text-foreground/40">ID: {userId}</p>
         </div>
       </div>
     );
@@ -107,38 +164,65 @@ const DiscordPresence = ({ userId }: DiscordPresenceProps) => {
 
   const avatarUrl = presence.discord_user.avatar
     ? `https://cdn.discordapp.com/avatars/${presence.discord_user.id}/${presence.discord_user.avatar}.${presence.discord_user.avatar.startsWith("a_") ? "gif" : "png"}?size=128`
-    : `https://cdn.discordapp.com/embed/avatars/${parseInt(presence.discord_user.discriminator) % 5}.png`;
+    : `https://cdn.discordapp.com/embed/avatars/${parseInt(presence.discord_user.discriminator || "0") % 5}.png`;
 
-  const currentActivity = presence.activities?.find(a => a.type === 0);
+  const badges = getBadges(presence.discord_user.public_flags);
+  const displayName = presence.discord_user.display_name || presence.discord_user.username;
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-background/20 backdrop-blur-sm hover:border-foreground/40 transition-all duration-300">
-      <div className="relative">
+    <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-background/30 backdrop-blur-md hover:border-foreground/40 transition-all duration-300 min-w-[280px]">
+      {/* Avatar with status indicator */}
+      <div className="relative flex-shrink-0">
         <img
           src={avatarUrl}
           alt={presence.discord_user.username}
-          className="w-10 h-10 rounded-lg object-cover"
+          className="w-12 h-12 rounded-full object-cover"
+          onError={(e) => {
+            e.currentTarget.src = `https://cdn.discordapp.com/embed/avatars/0.png`;
+          }}
         />
+        {/* Status indicator */}
         <div
-          className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-background"
+          className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-background"
           style={{ backgroundColor: statusColors[presence.discord_status] }}
-          title={statusLabels[presence.discord_status]}
+          title={presence.discord_status}
         />
       </div>
+
+      {/* User info */}
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-foreground truncate">
-          {presence.discord_user.display_name || presence.discord_user.username}
-        </p>
-        <p className="text-xs text-foreground/60 truncate">
-          {currentActivity ? (
-            <>Playing {currentActivity.name}</>
-          ) : (
-            statusLabels[presence.discord_status]
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-semibold text-foreground text-sm truncate">
+            {displayName}
+          </span>
+          {/* Badges */}
+          {badges.length > 0 && (
+            <div className="flex items-center gap-1">
+              {badges.slice(0, 4).map((badge, idx) => (
+                <span
+                  key={idx}
+                  className="text-xs"
+                  title={badge.name}
+                  style={{ filter: `drop-shadow(0 0 2px ${badge.color})` }}
+                >
+                  {badge.icon}
+                </span>
+              ))}
+            </div>
           )}
+        </div>
+        
+        {/* Status text */}
+        <p className="text-xs text-foreground/60 truncate">
+          {presence.discord_status === "offline" 
+            ? lastSeen || "Offline"
+            : presence.discord_status === "dnd" 
+              ? "Do Not Disturb"
+              : presence.discord_status === "idle"
+                ? "Idle"
+                : "Online"
+          }
         </p>
-        {currentActivity?.details && (
-          <p className="text-xs text-foreground/40 truncate">{currentActivity.details}</p>
-        )}
       </div>
     </div>
   );
