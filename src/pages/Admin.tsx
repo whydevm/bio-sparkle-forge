@@ -33,6 +33,7 @@ const BADGE_ICONS: Record<string, React.ComponentType<{ className?: string }>> =
 
 const Admin = () => {
   const [profile, setProfile] = useState<any>(null);
+  const [adminUserId, setAdminUserId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [badges, setBadges] = useState<any[]>([]);
   const [usernameInput, setUsernameInput] = useState("");
@@ -47,11 +48,15 @@ const Admin = () => {
   }, []);
 
   const checkAdmin = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       navigate("/admin-login");
       return;
     }
+
+    setAdminUserId(user.id);
 
     const { data: profileData } = await supabase
       .from("profiles")
@@ -63,20 +68,26 @@ const Admin = () => {
       setProfile(profileData);
     }
 
-    // Check if user has admin role
     const { data: roleData, error } = await supabase
       .from("user_roles")
-      .select("*")
+      .select("id")
       .eq("user_id", user.id)
       .eq("role", "admin")
       .maybeSingle();
 
-    if (roleData && !error) {
+    if (error) {
+      toast.error("Could not verify admin access");
+      navigate("/dashboard");
+      return;
+    }
+
+    if (roleData) {
       setIsAdmin(true);
       loadBadges();
     } else {
       toast.error("Access denied");
       navigate("/dashboard");
+      return;
     }
 
     setLoading(false);
@@ -148,7 +159,7 @@ const Admin = () => {
         .insert({
           user_id: targetUser.user_id,
           badge_id: selectedBadge,
-          granted_by: profile.user_id,
+          granted_by: adminUserId,
         });
 
       if (error) {

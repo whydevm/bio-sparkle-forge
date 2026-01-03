@@ -166,7 +166,7 @@ const Profile = () => {
         />
       )}
       
-      <div className="min-h-screen relative" style={getBackgroundStyle()}>
+      <div className="min-h-screen relative pb-24 md:pb-28" style={getBackgroundStyle()}>
         <CustomCursor cursorUrl={profile.custom_cursor} />
         
         {/* Background Effects */}
@@ -193,7 +193,7 @@ const Profile = () => {
           </div>
         )}
 
-        <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center p-4 transition-opacity duration-700 ${
+        <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center p-4 pb-28 transition-opacity duration-700 ${
           shouldShowSplash ? "opacity-0" : showContent || !hasAudio ? "opacity-100" : "opacity-0"
         }`}>
           <div className="w-full max-w-md space-y-6 flex flex-col items-center">
@@ -205,20 +205,20 @@ const Profile = () => {
                 borderColor: showBorder ? undefined : "transparent",
               }}
             >
-              {/* Profile Avatar - Larger and more centered */}
+              {/* Profile Avatar - Centered */}
               <div className="flex justify-center mb-8">
-                <div className="relative w-36 h-36 md:w-44 md:h-44">
+                <div className="relative w-28 h-28 md:w-32 md:h-32">
                   {profile.avatar_url && (
                     <img
                       src={profile.avatar_url}
                       alt={profile.display_name || profile.username}
-                      className="w-full h-full rounded-full object-cover ring-4 ring-white/20"
+                      className="w-full h-full rounded-full object-cover"
                     />
                   )}
                   {profile.avatar_decoration_url && (
                     <img
                       src={profile.avatar_decoration_url}
-                      alt="decoration"
+                      alt="Avatar decoration"
                       className="absolute inset-0 w-full h-full"
                     />
                   )}

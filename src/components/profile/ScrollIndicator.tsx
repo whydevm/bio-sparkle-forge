@@ -17,8 +17,8 @@ const ScrollIndicator = ({ text = "scroll for more" }: ScrollIndicatorProps) => 
       className="flex flex-col items-center gap-3 cursor-pointer mt-10 animate-fade-in"
       onClick={handleClick}
     >
-      <ChevronDown className="w-8 h-8 text-white/80 animate-bounce" />
-      <span className="text-base text-white/80 font-mono tracking-wide">{text}</span>
+      <ChevronDown className="w-8 h-8 text-foreground/90 animate-bounce" />
+      <span className="text-base text-foreground/90 font-mono tracking-wide">{text}</span>
     </div>
   );
 };

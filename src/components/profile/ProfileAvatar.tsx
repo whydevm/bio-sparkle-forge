@@ -6,7 +6,7 @@ interface ProfileAvatarProps {
 
 const ProfileAvatar = ({ avatarUrl, decorationUrl, displayName }: ProfileAvatarProps) => {
   return (
-    <div className="relative w-32 h-32 mx-auto">
+    <div className="relative w-28 h-28 mx-auto">
       {decorationUrl && (
         <img
           src={decorationUrl}
@@ -14,7 +14,7 @@ const ProfileAvatar = ({ avatarUrl, decorationUrl, displayName }: ProfileAvatarP
           className="absolute inset-0 w-full h-full object-contain z-10"
         />
       )}
-      <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-primary/50">
+      <div className="relative w-full h-full rounded-full overflow-hidden">
         {avatarUrl ? (
           <img
             src={avatarUrl}
