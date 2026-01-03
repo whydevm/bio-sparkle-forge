@@ -45,14 +45,14 @@ const SocialLinks = ({ links, glow, monochrome }: SocialLinksProps) => {
   };
 
   return (
-    <div className="flex flex-wrap gap-2 justify-center">
+    <div className="flex flex-wrap gap-4 justify-center mt-4">
       {links.map((link) => (
         <a
           key={link.id}
           href={link.url}
           target="_blank"
           rel="noopener noreferrer"
-          className={`flex items-center justify-center p-2 rounded-lg transition-opacity hover:opacity-70 ${
+          className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 hover:opacity-70 hover:scale-110 ${
             glow ? "glow-border" : ""
           }`}
         >
@@ -60,10 +60,14 @@ const SocialLinks = ({ links, glow, monochrome }: SocialLinksProps) => {
             <img
               src={link.custom_icon_url}
               alt=""
-              className={`w-7 h-7 object-contain ${monochrome ? "brightness-0 invert" : ""}`}
+              className={`w-10 h-10 object-contain ${monochrome ? "brightness-0 invert" : ""}`}
             />
           ) : (
-            getIcon(link.platform)
+            <span className="text-white">
+              {getIcon(link.platform) ? (
+                <span className="[&>svg]:w-10 [&>svg]:h-10">{getIcon(link.platform)}</span>
+              ) : null}
+            </span>
           )}
         </a>
       ))}

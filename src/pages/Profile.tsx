@@ -15,6 +15,7 @@ import CodingBadges from "@/components/profile/CodingBadges";
 import ProjectsSection from "@/components/profile/ProjectsSection";
 import BackgroundEffects from "@/components/profile/BackgroundEffects";
 import SocialCards from "@/components/profile/SocialCards";
+import ProfileBadges from "@/components/profile/ProfileBadges";
 
 const Profile = () => {
   const { username } = useParams();
@@ -195,7 +196,7 @@ const Profile = () => {
         <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center p-4 transition-opacity duration-700 ${
           shouldShowSplash ? "opacity-0" : showContent || !hasAudio ? "opacity-100" : "opacity-0"
         }`}>
-          <div className="w-full max-w-md space-y-4 flex flex-col items-center">
+          <div className="w-full max-w-md space-y-6 flex flex-col items-center">
             <div
               className="glass-panel p-8 rounded-2xl space-y-6 w-full"
               style={{
@@ -204,14 +205,14 @@ const Profile = () => {
                 borderColor: showBorder ? undefined : "transparent",
               }}
             >
-              {/* Profile Avatar */}
-              <div className="flex justify-center mb-6">
-                <div className="relative w-32 h-32 md:w-36 md:h-36">
+              {/* Profile Avatar - Larger and more centered */}
+              <div className="flex justify-center mb-8">
+                <div className="relative w-36 h-36 md:w-44 md:h-44">
                   {profile.avatar_url && (
                     <img
                       src={profile.avatar_url}
                       alt={profile.display_name || profile.username}
-                      className="w-full h-full rounded-full object-cover"
+                      className="w-full h-full rounded-full object-cover ring-4 ring-white/20"
                     />
                   )}
                   {profile.avatar_decoration_url && (
@@ -233,9 +234,13 @@ const Profile = () => {
                   colorClass={profile.display_name_color}
                   customColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
                 />
+                
+                {/* Profile Badges - Under username, above bio */}
+                <ProfileBadges userId={profile.user_id} />
+                
                 {bioTexts.length > 0 && (showContent || !hasAudio) && (
                   <p 
-                    className={`mt-2 ${profile.bio_font}`}
+                    className={`mt-3 ${profile.bio_font}`}
                     style={{ color: profile.bio_color?.startsWith('#') ? profile.bio_color : undefined }}
                   >
                     {cyclingEnabled ? (
@@ -259,6 +264,7 @@ const Profile = () => {
                 )}
               </div>
 
+              {/* Social Links - Larger icons */}
               <SocialLinks
                 links={links}
                 glow={profile.glow_socials}
@@ -271,8 +277,10 @@ const Profile = () => {
               <MusicPlayer music={music} audioRef={audioRef} shuffle={profile.audio_shuffle} />
             )}
 
-            {/* Scroll indicator only for portfolio theme with about me */}
-            {isPortfolioTheme && hasAboutMe && (showContent || !hasAudio) && <ScrollIndicator />}
+            {/* Scroll indicator - Larger and more prominent */}
+            {isPortfolioTheme && hasAboutMe && (showContent || !hasAudio) && (
+              <ScrollIndicator text={profile.scroll_text || "scroll for more"} />
+            )}
           </div>
         </div>
 
@@ -294,7 +302,16 @@ const Profile = () => {
           </div>
         )}
         
-        {/* Projects - only for portfolio theme */}
+        {/* Coding Badges Section - only for portfolio theme */}
+        {isPortfolioTheme && profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
+          <div className="relative z-10 flex justify-center px-8 pb-8">
+            <div className="max-w-md">
+              <CodingBadges badges={profile.coding_badges} glow={profile.glow_badges} />
+            </div>
+          </div>
+        )}
+
+        {/* Projects - only for portfolio theme - NOW AFTER CODING BADGES */}
         {isPortfolioTheme && projects && projects.length > 0 && (showContent || !hasAudio) && (
           <div className="relative z-10">
             <ProjectsSection 
@@ -302,15 +319,6 @@ const Profile = () => {
               title={profile.projects_title}
               description={profile.projects_description}
             />
-          </div>
-        )}
-
-        {/* Coding Badges Section - only for portfolio theme */}
-        {isPortfolioTheme && profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
-          <div className="relative z-10 flex justify-center px-8 pb-8">
-            <div className="max-w-md">
-              <CodingBadges badges={profile.coding_badges} glow={profile.glow_badges} />
-            </div>
           </div>
         )}
 
