@@ -1,6 +1,10 @@
 import { ChevronDown } from "lucide-react";
 
-const ScrollIndicator = () => {
+interface ScrollIndicatorProps {
+  text?: string;
+}
+
+const ScrollIndicator = ({ text = "scroll for more" }: ScrollIndicatorProps) => {
   const handleClick = () => {
     const aboutSection = document.getElementById("about-section");
     if (aboutSection) {
@@ -10,11 +14,11 @@ const ScrollIndicator = () => {
 
   return (
     <div 
-      className="flex flex-col items-center gap-2 cursor-pointer mt-8 animate-fade-in"
+      className="flex flex-col items-center gap-3 cursor-pointer mt-10 animate-fade-in"
       onClick={handleClick}
     >
-      <ChevronDown className="w-6 h-6 text-muted-foreground animate-bounce" />
-      <span className="text-sm text-muted-foreground font-mono">scroll for more</span>
+      <ChevronDown className="w-8 h-8 text-white/80 animate-bounce" />
+      <span className="text-base text-white/80 font-mono tracking-wide">{text}</span>
     </div>
   );
 };

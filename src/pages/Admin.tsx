@@ -7,14 +7,39 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { X, Crown, Wrench, Star, Shield, Gift, Bug, Check, Trophy, Medal, Sparkles, Zap, Heart, Diamond } from "lucide-react";
+
+const BADGE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  owner: Crown,
+  manager: Wrench,
+  staff: Star,
+  helper: Shield,
+  og: Sparkles,
+  verified: Check,
+  premium: Zap,
+  donor: Heart,
+  gifter: Gift,
+  bug_hunter: Bug,
+  winner: Trophy,
+  second_place: Medal,
+  third_place: Medal,
+  server_booster: Zap,
+  million: Diamond,
+  domain_legend: Shield,
+  image_host: Shield,
+  christmas_2024: Sparkles,
+  easter_2025: Sparkles,
+};
 
 const Admin = () => {
   const [profile, setProfile] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [badges, setBadges] = useState<any[]>([]);
-  const [usernameUrl, setUsernameUrl] = useState("");
+  const [usernameInput, setUsernameInput] = useState("");
   const [selectedBadge, setSelectedBadge] = useState("");
   const [loading, setLoading] = useState(true);
+  const [targetUser, setTargetUser] = useState<any>(null);
+  const [userBadges, setUserBadges] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,33 +91,62 @@ const Admin = () => {
     setBadges(data || []);
   };
 
+  const searchUser = async () => {
+    if (!usernameInput) {
+      toast.error("Please enter a username");
+      return;
+    }
+
+    // Extract username from URL if pasted
+    const username = usernameInput.includes("/") 
+      ? usernameInput.split("/").pop() 
+      : usernameInput;
+    
+    const { data: targetProfile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("username", username)
+      .maybeSingle();
+
+    if (!targetProfile) {
+      toast.error("User not found");
+      setTargetUser(null);
+      setUserBadges([]);
+      return;
+    }
+
+    setTargetUser(targetProfile);
+    
+    // Load user's current badges
+    const { data: userBadgesData } = await supabase
+      .from("user_badges")
+      .select(`
+        id,
+        badge_id,
+        badges (
+          id,
+          name,
+          description,
+          icon,
+          badge_type
+        )
+      `)
+      .eq("user_id", targetProfile.user_id);
+
+    setUserBadges(userBadgesData || []);
+  };
+
   const handleGrantBadge = async () => {
-    if (!usernameUrl || !selectedBadge) {
-      toast.error("Please fill in all fields");
+    if (!targetUser || !selectedBadge) {
+      toast.error("Please select a user and badge");
       return;
     }
 
     try {
-      // Extract username from URL
-      const username = usernameUrl.split("/").pop();
-      
-      // Get profile by username
-      const { data: targetProfile } = await supabase
-        .from("profiles")
-        .select("user_id")
-        .eq("username", username)
-        .single();
-
-      if (!targetProfile) {
-        toast.error("User not found");
-        return;
-      }
-
-      // Grant badge
       const { error } = await supabase
         .from("user_badges")
         .insert({
-          user_id: targetProfile.user_id,
+          user_id: targetUser.user_id,
           badge_id: selectedBadge,
           granted_by: profile.user_id,
         });
@@ -105,16 +159,32 @@ const Admin = () => {
         }
       } else {
         toast.success("Badge granted successfully!");
-        setUsernameUrl("");
         setSelectedBadge("");
+        searchUser(); // Refresh user badges
       }
     } catch (error: any) {
       toast.error(error.message);
     }
   };
 
+  const handleRemoveBadge = async (userBadgeId: string) => {
+    try {
+      const { error } = await supabase
+        .from("user_badges")
+        .delete()
+        .eq("id", userBadgeId);
+
+      if (error) throw error;
+      
+      toast.success("Badge removed successfully!");
+      searchUser(); // Refresh user badges
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
   if (!isAdmin) {
@@ -125,64 +195,122 @@ const Admin = () => {
     <DashboardLayout username={profile?.username}>
       <div className="container max-w-2xl mx-auto p-6 space-y-6">
         <div className="flex items-center gap-2">
-          <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
+          <Shield className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-semibold">Admin Panel</h1>
         </div>
 
         <div className="bg-card border border-border rounded-lg p-6 space-y-6">
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Grant Badge to User</h2>
-            
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="username-url">Profile URL</Label>
+          {/* User Search */}
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="username-input">ACCOUNT USER</Label>
+              <div className="flex gap-2">
                 <Input
-                  id="username-url"
-                  placeholder="https://bio-sparkle-forge.lovable.app/username"
-                  value={usernameUrl}
-                  onChange={(e) => setUsernameUrl(e.target.value)}
+                  id="username-input"
+                  placeholder="/username"
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && searchUser()}
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Enter the full profile URL of the user
-                </p>
+                <Button onClick={searchUser}>Search</Button>
               </div>
-
-              <div>
-                <Label htmlFor="badge-select">Select Badge</Label>
-                <Select value={selectedBadge} onValueChange={setSelectedBadge}>
-                  <SelectTrigger id="badge-select">
-                    <SelectValue placeholder="Choose a badge..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {badges.map((badge) => (
-                      <SelectItem key={badge.id} value={badge.id}>
-                        {badge.icon} {badge.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <Button onClick={handleGrantBadge} className="w-full">
-                Grant Badge
-              </Button>
             </div>
+
+            {targetUser && (
+              <div className="bg-accent/50 rounded-lg p-4 space-y-4">
+                <div className="flex items-center gap-3">
+                  {targetUser.avatar_url && (
+                    <img 
+                      src={targetUser.avatar_url} 
+                      alt="" 
+                      className="w-12 h-12 rounded-full"
+                    />
+                  )}
+                  <div>
+                    <p className="font-semibold">{targetUser.display_name || targetUser.username}</p>
+                    <p className="text-sm text-muted-foreground">@{targetUser.username}</p>
+                  </div>
+                </div>
+
+                {/* Current Badges */}
+                {userBadges.length > 0 && (
+                  <div>
+                    <Label className="mb-2 block">REMOVE BADGE</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {userBadges.map((ub) => {
+                        const badge = ub.badges;
+                        if (!badge) return null;
+                        const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
+                        return (
+                          <div
+                            key={ub.id}
+                            className="inline-flex items-center gap-2 bg-background border border-border rounded-full px-3 py-1.5"
+                          >
+                            <IconComponent className="w-4 h-4" />
+                            <span className="text-sm">{badge.name}</span>
+                            <button
+                              onClick={() => handleRemoveBadge(ub.id)}
+                              className="ml-1 hover:text-destructive transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Add Badge */}
+                <div>
+                  <Label htmlFor="badge-select">ADD BADGE</Label>
+                  <div className="flex gap-2">
+                    <Select value={selectedBadge} onValueChange={setSelectedBadge}>
+                      <SelectTrigger id="badge-select" className="flex-1">
+                        <SelectValue placeholder="Choose a badge..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {badges.map((badge) => {
+                          const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
+                          const alreadyHas = userBadges.some(ub => ub.badge_id === badge.id);
+                          return (
+                            <SelectItem 
+                              key={badge.id} 
+                              value={badge.id}
+                              disabled={alreadyHas}
+                            >
+                              <div className="flex items-center gap-2">
+                                <IconComponent className="w-4 h-4" />
+                                <span>{badge.name}</span>
+                                {alreadyHas && <span className="text-xs text-muted-foreground">(owned)</span>}
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <Button onClick={handleGrantBadge}>Grant</Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="border-t border-border pt-6">
             <h3 className="font-semibold mb-3">Available Badges</h3>
             <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-              {badges.map((badge) => (
-                <div
-                  key={badge.id}
-                  className="flex items-center gap-2 p-2 bg-accent rounded-lg text-sm"
-                >
-                  <span className="text-lg">{badge.icon}</span>
-                  <span>{badge.name}</span>
-                </div>
-              ))}
+              {badges.map((badge) => {
+                const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
+                return (
+                  <div
+                    key={badge.id}
+                    className="flex items-center gap-2 p-2 bg-accent rounded-lg text-sm"
+                  >
+                    <IconComponent className="w-5 h-5" />
+                    <span>{badge.name}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
