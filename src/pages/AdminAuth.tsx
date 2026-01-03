@@ -16,33 +16,45 @@ const AdminAuth = () => {
     e.preventDefault();
     setLoading(true);
 
+    const emailNormalized = email.trim().toLowerCase();
+
     try {
-      const { data: { user }, error } = await supabase.auth.signInWithPassword({
-        email,
+      // Ensure we start from a clean session to avoid weird auth edge cases
+      await supabase.auth.signOut();
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: emailNormalized,
         password,
       });
 
       if (error) throw error;
 
-      if (user) {
-        // Check if user has admin role
-        const { data: roleData } = await supabase
-          .from("user_roles")
-          .select("*")
-          .eq("user_id", user.id)
-          .eq("role", "admin")
-          .maybeSingle();
+      const user = data.user;
+      if (!user) throw new Error("Login failed");
 
-        if (roleData) {
-          toast.success("Admin access granted");
-          navigate("/admin");
-        } else {
-          await supabase.auth.signOut();
-          toast.error("Access denied - Admin only");
-        }
+      const { data: roleData, error: roleError } = await supabase
+        .from("user_roles")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (roleError) throw roleError;
+
+      if (roleData) {
+        toast.success("Admin access granted");
+        navigate("/admin");
+      } else {
+        await supabase.auth.signOut();
+        toast.error("Access denied - Admin only");
       }
     } catch (error: any) {
-      toast.error(error.message);
+      const message = String(error?.message || "");
+      if (message.toLowerCase().includes("invalid login credentials")) {
+        toast.error("Invalid email or password");
+      } else {
+        toast.error(message || "Failed to sign in");
+      }
     } finally {
       setLoading(false);
     }

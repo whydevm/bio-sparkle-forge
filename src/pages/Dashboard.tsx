@@ -946,15 +946,6 @@ const Dashboard = () => {
             updateProfile({ avatar_url: url });
             setShowAvatarManager(false);
           }}
-          discordAvatarEnabled={profile?.discord_avatar_enabled}
-          discordAvatarUrl={profile?.discord_avatar_url}
-          onDiscordSettingsChange={(enabled, url) => {
-            updateProfile({ 
-              discord_avatar_enabled: enabled, 
-              discord_avatar_url: url,
-              avatar_url: enabled ? url : profile?.avatar_url 
-            });
-          }}
         />
       )}
 
