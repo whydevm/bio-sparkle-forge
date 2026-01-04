@@ -1,4 +1,4 @@
-import { X, User, Palette, Link, Diamond, Image, FileText, HelpCircle, ExternalLink, Share2 } from "lucide-react";
+import { X, User, Palette, Link, Diamond, Image, FileText, HelpCircle, ExternalLink, Share2, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -120,6 +120,15 @@ const DashboardSidebar = ({ open, onClose, username }: DashboardSidebarProps) =>
             >
               <Link className="w-5 h-5" />
               <span>links</span>
+            </button>
+
+            {/* Assets */}
+            <button
+              onClick={() => { navigate("/assets"); onClose(); }}
+              className="w-full flex items-center gap-3 p-3 hover:bg-accent rounded-lg transition-colors"
+            >
+              <ImageIcon className="w-5 h-5" />
+              <span>assets</span>
             </button>
 
             {/* Premium */}

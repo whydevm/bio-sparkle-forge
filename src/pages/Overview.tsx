@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Progress } from "@/components/ui/progress";
-import { Check, AlertCircle, ChevronRight } from "lucide-react";
+import { Check, AlertCircle, ChevronRight, Globe, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SiTiktok, SiInstagram, SiDiscord, SiGithub, SiYoutube, SiX } from "react-icons/si";
 
 const Overview = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -241,6 +242,28 @@ const Overview = () => {
                 <div className="w-3 h-3 rounded-full bg-muted" />
                 <span>Tablet</span>
               </div>
+            </div>
+          </div>
+
+          {/* Top Countries */}
+          <div className="bg-card border border-border rounded-lg p-4">
+            <div className="text-sm font-medium mb-4 flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              Top Countries by Views
+            </div>
+            <div className="text-center text-muted-foreground text-sm py-4">
+              No country data available yet
+            </div>
+          </div>
+
+          {/* Top Clicked Links */}
+          <div className="bg-card border border-border rounded-lg p-4">
+            <div className="text-sm font-medium mb-4 flex items-center gap-2">
+              <LinkIcon className="w-4 h-4" />
+              Top Clicked Links
+            </div>
+            <div className="text-center text-muted-foreground text-sm py-4">
+              No link click data available yet
             </div>
           </div>
         </div>

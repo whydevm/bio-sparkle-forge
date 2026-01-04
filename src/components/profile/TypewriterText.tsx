@@ -61,7 +61,6 @@ const TypewriterText = ({
   return (
     <span className={className}>
       {displayedText}
-      <span className="animate-pulse">|</span>
     </span>
   );
 };

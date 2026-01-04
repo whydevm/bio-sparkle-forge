@@ -14,6 +14,7 @@ import Analytics from "./pages/Analytics";
 import Admin from "./pages/Admin";
 import AdminAuth from "./pages/AdminAuth";
 import Profile from "./pages/Profile";
+import Assets from "./pages/Assets";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/account/analytics" element={<Analytics />} />
           <Route path="/admin-login" element={<AdminAuth />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/assets" element={<Assets />} />
           <Route path="/:username" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

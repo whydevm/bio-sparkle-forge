@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Trash2, Cloud } from "lucide-react";
+import { Trash2, Cloud, Palette } from "lucide-react";
 import { toast } from "sonner";
+import LinkColorEditor from "@/components/dashboard/LinkColorEditor";
 import {
   SiTiktok,
   SiInstagram,
@@ -112,6 +113,8 @@ const Links = () => {
   const [selectedContentType, setSelectedContentType] = useState<string>("user");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
+  const [colorEditorOpen, setColorEditorOpen] = useState(false);
+  const [selectedLinkForColor, setSelectedLinkForColor] = useState<any>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -228,6 +231,26 @@ const Links = () => {
     }
   };
 
+  const handleEditColor = (link: any) => {
+    setSelectedLinkForColor(link);
+    setColorEditorOpen(true);
+  };
+
+  const handleSaveLinkColor = async (linkId: string, color: string) => {
+    try {
+      const { error } = await supabase
+        .from("social_links")
+        .update({ custom_color: color })
+        .eq("id", linkId);
+
+      if (error) throw error;
+      toast.success("Link color updated!");
+      loadLinks(profile.id);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   const getContentTypeForPlatform = () => {
     if (!selectedPlatform?.contentTypes) return null;
     return selectedPlatform.contentTypes.find(ct => ct.value === selectedContentType);
@@ -276,14 +299,24 @@ const Links = () => {
                       <p className="text-sm text-muted-foreground truncate max-w-[200px]">{link.url}</p>
                     </div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={() => handleDeleteLink(link.id)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleEditColor(link)}
+                      className="text-primary hover:text-primary"
+                    >
+                      <Palette className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleDeleteLink(link.id)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               );
             })}
@@ -362,6 +395,14 @@ const Links = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        <LinkColorEditor
+          open={colorEditorOpen}
+          onOpenChange={setColorEditorOpen}
+          link={selectedLinkForColor}
+          currentColor={selectedLinkForColor?.custom_color || ""}
+          onSave={handleSaveLinkColor}
+        />
       </div>
     </DashboardLayout>
   );

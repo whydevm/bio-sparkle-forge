@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      assets: {
+        Row: {
+          asset_type: string
+          created_at: string
+          downloads: number | null
+          file_name: string
+          file_url: string
+          id: string
+          uploader_id: string
+        }
+        Insert: {
+          asset_type: string
+          created_at?: string
+          downloads?: number | null
+          file_name: string
+          file_url: string
+          id?: string
+          uploader_id: string
+        }
+        Update: {
+          asset_type?: string
+          created_at?: string
+          downloads?: number | null
+          file_name?: string
+          file_url?: string
+          id?: string
+          uploader_id?: string
+        }
+        Relationships: []
+      }
       badges: {
         Row: {
           badge_type: string
@@ -40,6 +70,45 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      link_clicks: {
+        Row: {
+          clicked_at: string
+          country_code: string | null
+          id: string
+          link_id: string
+          profile_id: string
+        }
+        Insert: {
+          clicked_at?: string
+          country_code?: string | null
+          id?: string
+          link_id: string
+          profile_id: string
+        }
+        Update: {
+          clicked_at?: string
+          country_code?: string | null
+          id?: string
+          link_id?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "link_clicks_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "social_links"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "link_clicks_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profile_music: {
         Row: {
@@ -82,20 +151,67 @@ export type Database = {
           },
         ]
       }
+      profile_reports: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          reason: string
+          reported_profile_id: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          reason: string
+          reported_profile_id: string
+          reporter_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          reason?: string
+          reported_profile_id?: string
+          reporter_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_reports_reported_profile_id_fkey"
+            columns: ["reported_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profile_views: {
         Row: {
+          country_code: string | null
           id: string
           profile_id: string
           viewed_at: string
           viewer_id: string
         }
         Insert: {
+          country_code?: string | null
           id?: string
           profile_id: string
           viewed_at?: string
           viewer_id: string
         }
         Update: {
+          country_code?: string | null
           id?: string
           profile_id?: string
           viewed_at?: string
@@ -115,15 +231,20 @@ export type Database = {
         Row: {
           about_me: string | null
           audio_shuffle: boolean | null
+          audio_sticky: boolean | null
           avatar_decoration_url: string | null
           avatar_url: string | null
           background_effect: string | null
           background_type: string | null
           background_url: string | null
+          badge_border: boolean | null
+          badge_colors: Json | null
+          banner_url: string | null
           bio: string | null
           bio_color: string | null
           bio_font: string | null
           border_enabled: boolean | null
+          click_sounds: boolean | null
           coding_badges: string[] | null
           created_at: string | null
           custom_cursor: string | null
@@ -134,14 +255,20 @@ export type Database = {
           display_name: string | null
           display_name_color: string | null
           display_name_font: string | null
+          entry_animation: string | null
           entry_text: string | null
           entry_text_font: string | null
           glow_badges: boolean | null
           glow_socials: boolean | null
           glow_username: boolean | null
           id: string
+          link_colors: Json | null
+          link_shiny: boolean | null
           location: string | null
           monochrome_icons: boolean | null
+          parallax_enabled: boolean | null
+          parallax_intensity: number | null
+          parallax_inverted: boolean | null
           profile_blur: number | null
           profile_opacity: number | null
           projects_description: string | null
@@ -162,15 +289,20 @@ export type Database = {
         Insert: {
           about_me?: string | null
           audio_shuffle?: boolean | null
+          audio_sticky?: boolean | null
           avatar_decoration_url?: string | null
           avatar_url?: string | null
           background_effect?: string | null
           background_type?: string | null
           background_url?: string | null
+          badge_border?: boolean | null
+          badge_colors?: Json | null
+          banner_url?: string | null
           bio?: string | null
           bio_color?: string | null
           bio_font?: string | null
           border_enabled?: boolean | null
+          click_sounds?: boolean | null
           coding_badges?: string[] | null
           created_at?: string | null
           custom_cursor?: string | null
@@ -181,14 +313,20 @@ export type Database = {
           display_name?: string | null
           display_name_color?: string | null
           display_name_font?: string | null
+          entry_animation?: string | null
           entry_text?: string | null
           entry_text_font?: string | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
           glow_username?: boolean | null
           id?: string
+          link_colors?: Json | null
+          link_shiny?: boolean | null
           location?: string | null
           monochrome_icons?: boolean | null
+          parallax_enabled?: boolean | null
+          parallax_intensity?: number | null
+          parallax_inverted?: boolean | null
           profile_blur?: number | null
           profile_opacity?: number | null
           projects_description?: string | null
@@ -209,15 +347,20 @@ export type Database = {
         Update: {
           about_me?: string | null
           audio_shuffle?: boolean | null
+          audio_sticky?: boolean | null
           avatar_decoration_url?: string | null
           avatar_url?: string | null
           background_effect?: string | null
           background_type?: string | null
           background_url?: string | null
+          badge_border?: boolean | null
+          badge_colors?: Json | null
+          banner_url?: string | null
           bio?: string | null
           bio_color?: string | null
           bio_font?: string | null
           border_enabled?: boolean | null
+          click_sounds?: boolean | null
           coding_badges?: string[] | null
           created_at?: string | null
           custom_cursor?: string | null
@@ -228,14 +371,20 @@ export type Database = {
           display_name?: string | null
           display_name_color?: string | null
           display_name_font?: string | null
+          entry_animation?: string | null
           entry_text?: string | null
           entry_text_font?: string | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
           glow_username?: boolean | null
           id?: string
+          link_colors?: Json | null
+          link_shiny?: boolean | null
           location?: string | null
           monochrome_icons?: boolean | null
+          parallax_enabled?: boolean | null
+          parallax_intensity?: number | null
+          parallax_inverted?: boolean | null
           profile_blur?: number | null
           profile_opacity?: number | null
           projects_description?: string | null
@@ -352,6 +501,7 @@ export type Database = {
       social_links: {
         Row: {
           created_at: string | null
+          custom_color: string | null
           custom_icon_url: string | null
           icon: string | null
           id: string
@@ -363,6 +513,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          custom_color?: string | null
           custom_icon_url?: string | null
           icon?: string | null
           id?: string
@@ -374,6 +525,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          custom_color?: string | null
           custom_icon_url?: string | null
           icon?: string | null
           id?: string
