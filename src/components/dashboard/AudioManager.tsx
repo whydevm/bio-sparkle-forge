@@ -13,7 +13,8 @@ interface AudioManagerProps {
   profileId: string;
   audioShuffle?: boolean;
   showAudioPlayer?: boolean;
-  onSettingsChange: (settings: { audio_shuffle?: boolean; show_audio_player?: boolean }) => void;
+  audioSticky?: boolean;
+  onSettingsChange: (settings: { audio_shuffle?: boolean; show_audio_player?: boolean; audio_sticky?: boolean }) => void;
 }
 
 const AudioManager = ({ 
@@ -22,6 +23,7 @@ const AudioManager = ({
   profileId,
   audioShuffle,
   showAudioPlayer,
+  audioSticky,
   onSettingsChange 
 }: AudioManagerProps) => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -370,9 +372,12 @@ const AudioManager = ({
               <div className="flex items-center justify-between bg-card/50 border border-border rounded-lg p-3">
                 <div className="flex items-center gap-2">
                   <Pin className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Sticky</span>
+                  <span className="text-sm">Sticky (Below Profile)</span>
                 </div>
-                <Switch />
+                <Switch 
+                  checked={audioSticky ?? false} 
+                  onCheckedChange={(checked) => onSettingsChange({ audio_sticky: checked })} 
+                />
               </div>
             </div>
           </div>

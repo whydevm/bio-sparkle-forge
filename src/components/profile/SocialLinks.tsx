@@ -26,9 +26,10 @@ interface SocialLinksProps {
   glow?: boolean;
   monochrome?: boolean;
   shiny?: boolean;
+  linkColors?: Record<string, string>;
 }
 
-const SocialLinks = ({ links, glow, monochrome, shiny }: SocialLinksProps) => {
+const SocialLinks = ({ links, glow, monochrome, shiny, linkColors }: SocialLinksProps) => {
   const getIcon = (platform: string) => {
     const icons: Record<string, any> = {
       tiktok: SiTiktok,
@@ -58,7 +59,7 @@ const SocialLinks = ({ links, glow, monochrome, shiny }: SocialLinksProps) => {
           className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 hover:opacity-70 hover:scale-110 cursor-pointer ${
             glow ? "glow-border" : ""
           } ${shiny ? "shiny-link" : ""}`}
-          style={link.custom_color ? { color: link.custom_color } : undefined}
+          style={link.custom_color || linkColors?.[link.id] ? { color: link.custom_color || linkColors?.[link.id] } : undefined}
         >
           {link.custom_icon_url ? (
             <img

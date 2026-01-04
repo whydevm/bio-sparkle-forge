@@ -279,6 +279,26 @@ const Dashboard = () => {
                 </Select>
               </div>
 
+              {/* Entry Animation */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Entry Animation</Label>
+                </div>
+                <Select
+                  value={profile?.entry_animation || "none"}
+                  onValueChange={(value) => updateProfile({ entry_animation: value })}
+                >
+                  <SelectTrigger className="bg-card/50 border-border">
+                    <SelectValue placeholder="Select animation" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None (Fade)</SelectItem>
+                    <SelectItem value="horizontal">Horizontal Split</SelectItem>
+                    <SelectItem value="vertical">Vertical Split</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Scroll Text - Portfolio Theme Only */}
               {profile?.theme === "portfolio" && (
                 <div>
@@ -295,7 +315,6 @@ const Dashboard = () => {
                 </div>
               )}
 
-              {/* Toggle Settings */}
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <Label>Show Views</Label>
@@ -318,7 +337,70 @@ const Dashboard = () => {
                     onCheckedChange={(checked) => updateProfile({ show_join_date: checked })}
                   />
                 </div>
+                <div className="flex items-center justify-between">
+                  <Label>Click Sounds</Label>
+                  <Switch
+                    checked={profile?.click_sounds ?? false}
+                    onCheckedChange={(checked) => updateProfile({ click_sounds: checked })}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label>Badge Border</Label>
+                  <Switch
+                    checked={profile?.badge_border ?? false}
+                    onCheckedChange={(checked) => updateProfile({ badge_border: checked })}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label>Shiny Links</Label>
+                  <Switch
+                    checked={profile?.link_shiny ?? false}
+                    onCheckedChange={(checked) => updateProfile({ link_shiny: checked })}
+                  />
+                </div>
               </div>
+
+              {/* Parallax Settings - Basic Theme Only */}
+              {(profile?.theme === "basic" || profile?.theme === "default") && (
+                <div className="space-y-4 pt-4 border-t border-border">
+                  <h3 className="text-lg font-semibold text-primary">Parallax Effect</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Requires border enabled and profile opacity at least 25%
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <Label>Enable Parallax</Label>
+                    <Switch
+                      checked={profile?.parallax_enabled ?? false}
+                      onCheckedChange={(checked) => updateProfile({ parallax_enabled: checked })}
+                    />
+                  </div>
+                  {profile?.parallax_enabled && (
+                    <>
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <Label>Parallax Intensity</Label>
+                          <span className="text-xs bg-card px-2 py-1 rounded">{profile?.parallax_intensity ?? 50}%</span>
+                        </div>
+                        <Slider
+                          value={[profile?.parallax_intensity ?? 50]}
+                          onValueChange={([value]) => updateProfile({ parallax_intensity: value })}
+                          max={100}
+                          min={10}
+                          step={5}
+                          className="[&>span:first-child]:bg-muted [&_[role=slider]]:bg-primary [&>span:first-child>span]:bg-primary"
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Label>Invert Parallax</Label>
+                        <Switch
+                          checked={profile?.parallax_inverted ?? false}
+                          onCheckedChange={(checked) => updateProfile({ parallax_inverted: checked })}
+                        />
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* Username Effects */}
               <div>
@@ -963,6 +1045,7 @@ const Dashboard = () => {
         profileId={profile?.id}
         audioShuffle={profile?.audio_shuffle}
         showAudioPlayer={profile?.show_audio_player}
+        audioSticky={profile?.audio_sticky}
         onSettingsChange={(settings) => updateProfile(settings)}
       />
 
