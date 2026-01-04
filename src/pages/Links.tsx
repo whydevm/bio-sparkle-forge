@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Trash2, Cloud, Palette } from "lucide-react";
+import { Trash2, Cloud, Palette, Sparkles, Upload, Image } from "lucide-react";
 import { toast } from "sonner";
 import LinkColorEditor from "@/components/dashboard/LinkColorEditor";
 import {
@@ -115,6 +116,10 @@ const Links = () => {
   const [linkUrl, setLinkUrl] = useState("");
   const [colorEditorOpen, setColorEditorOpen] = useState(false);
   const [selectedLinkForColor, setSelectedLinkForColor] = useState<any>(null);
+  const [iconDialogOpen, setIconDialogOpen] = useState(false);
+  const [selectedLinkForIcon, setSelectedLinkForIcon] = useState<any>(null);
+  const [uploading, setUploading] = useState(false);
+  const iconInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -251,6 +256,82 @@ const Links = () => {
     }
   };
 
+  const handleEditIcon = (link: any) => {
+    setSelectedLinkForIcon(link);
+    setIconDialogOpen(true);
+  };
+
+  const handleIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedLinkForIcon) return;
+
+    setUploading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const ext = file.name.split(".").pop();
+      const fileName = `${user.id}/link-icon-${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
+
+      const { error } = await supabase
+        .from("social_links")
+        .update({ custom_icon_url: data.publicUrl })
+        .eq("id", selectedLinkForIcon.id);
+
+      if (error) throw error;
+
+      toast.success("Custom icon updated!");
+      setIconDialogOpen(false);
+      loadLinks(profile.id);
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveIcon = async () => {
+    if (!selectedLinkForIcon) return;
+
+    try {
+      const { error } = await supabase
+        .from("social_links")
+        .update({ custom_icon_url: null })
+        .eq("id", selectedLinkForIcon.id);
+
+      if (error) throw error;
+
+      toast.success("Custom icon removed!");
+      setIconDialogOpen(false);
+      loadLinks(profile.id);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  const toggleShinyLinks = async (checked: boolean) => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ link_shiny: checked })
+        .eq("id", profile.id);
+
+      if (error) throw error;
+      setProfile({ ...profile, link_shiny: checked });
+      toast.success(checked ? "Shiny links enabled!" : "Shiny links disabled!");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   const getContentTypeForPlatform = () => {
     if (!selectedPlatform?.contentTypes) return null;
     return selectedPlatform.contentTypes.find(ct => ct.value === selectedContentType);
@@ -275,6 +356,21 @@ const Links = () => {
           <p className="text-muted-foreground">Pick a social media to add to your profile.</p>
         </div>
 
+        {/* Shiny Links Toggle */}
+        <div className="mb-6 flex items-center justify-between p-4 rounded-xl bg-card border border-border">
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-5 h-5 text-primary" />
+            <div>
+              <p className="font-medium">Shiny Links Effect</p>
+              <p className="text-sm text-muted-foreground">Add a shiny animation to your social links</p>
+            </div>
+          </div>
+          <Switch
+            checked={profile?.link_shiny ?? false}
+            onCheckedChange={toggleShinyLinks}
+          />
+        </div>
+
         {/* Display existing links */}
         {links.length > 0 && (
           <div className="mb-8 space-y-3">
@@ -288,12 +384,14 @@ const Links = () => {
                   className="flex items-center justify-between p-4 rounded-xl bg-card border border-border"
                 >
                   <div className="flex items-center gap-3">
-                    {PlatformIcon && (
+                    {link.custom_icon_url ? (
+                      <img src={link.custom_icon_url} alt={link.label} className="w-6 h-6 object-contain rounded" />
+                    ) : PlatformIcon ? (
                       <PlatformIcon 
                         className="w-6 h-6" 
-                        style={{ color: platformInfo?.color }}
+                        style={{ color: link.custom_color || platformInfo?.color }}
                       />
-                    )}
+                    ) : null}
                     <div>
                       <p className="font-medium">{link.label}</p>
                       <p className="text-sm text-muted-foreground truncate max-w-[200px]">{link.url}</p>
@@ -303,8 +401,18 @@ const Links = () => {
                     <Button 
                       variant="ghost" 
                       size="icon"
+                      onClick={() => handleEditIcon(link)}
+                      className="text-muted-foreground hover:text-foreground"
+                      title="Change icon"
+                    >
+                      <Image className="w-4 h-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
                       onClick={() => handleEditColor(link)}
                       className="text-primary hover:text-primary"
+                      title="Change color"
                     >
                       <Palette className="w-4 h-4" />
                     </Button>
@@ -313,6 +421,7 @@ const Links = () => {
                       size="icon"
                       onClick={() => handleDeleteLink(link.id)}
                       className="text-destructive hover:text-destructive"
+                      title="Delete link"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -403,6 +512,50 @@ const Links = () => {
           currentColor={selectedLinkForColor?.custom_color || ""}
           onSave={handleSaveLinkColor}
         />
+
+        {/* Icon Editor Dialog */}
+        <Dialog open={iconDialogOpen} onOpenChange={setIconDialogOpen}>
+          <DialogContent className="bg-card max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Edit Link Icon</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-muted-foreground">
+              Upload a custom icon for "{selectedLinkForIcon?.label}"
+            </p>
+            <div className="space-y-4">
+              <div
+                onClick={() => iconInputRef.current?.click()}
+                className="border border-border rounded-lg p-8 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 transition-colors"
+              >
+                {selectedLinkForIcon?.custom_icon_url ? (
+                  <img src={selectedLinkForIcon.custom_icon_url} alt="Icon" className="w-16 h-16 object-contain rounded" />
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Click to upload icon</span>
+                  </>
+                )}
+              </div>
+              <input
+                ref={iconInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleIconUpload}
+                className="hidden"
+              />
+              <div className="flex gap-2">
+                {selectedLinkForIcon?.custom_icon_url && (
+                  <Button variant="outline" onClick={handleRemoveIcon} className="text-destructive">
+                    Remove Icon
+                  </Button>
+                )}
+                <Button variant="outline" onClick={() => setIconDialogOpen(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );
