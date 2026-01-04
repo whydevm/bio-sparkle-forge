@@ -6,31 +6,79 @@ interface EntrySplashProps {
   onEnter: () => void;
   hasAudio?: boolean;
   animation?: string;
+  discordEmoji?: string;
+  emojiPosition?: "start" | "end";
 }
 
-const EntrySplash = ({ entryText, entryTextFont, onEnter, hasAudio, animation }: EntrySplashProps) => {
+const EntrySplash = ({ 
+  entryText, 
+  entryTextFont, 
+  onEnter, 
+  hasAudio, 
+  animation,
+  discordEmoji,
+  emojiPosition = "start"
+}: EntrySplashProps) => {
   const [isEntering, setIsEntering] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
 
   const handleEnter = () => {
     setIsEntering(true);
     setTimeout(() => {
       onEnter();
-    }, 800);
+      // Hide the splash screen after animation completes
+      setTimeout(() => {
+        setIsHidden(true);
+      }, 100);
+    }, animation && animation !== "none" ? 800 : 500);
   };
 
-  const getAnimationClass = () => {
-    if (!isEntering) return "";
-    if (animation === "horizontal") return "animate-split-horizontal";
-    if (animation === "vertical") return "animate-split-vertical";
-    return "opacity-0";
+  // Don't render at all once hidden
+  if (isHidden) return null;
+
+  const getEmojiUrl = (emojiId: string) => {
+    // Support both animated and static Discord emojis
+    const isAnimated = emojiId.startsWith("a:");
+    const cleanId = emojiId.replace(/^a?:/, "").split(":").pop() || emojiId;
+    return `https://cdn.discordapp.com/emojis/${cleanId}.${isAnimated ? "gif" : "png"}?size=48`;
+  };
+
+  const renderContent = () => {
+    const hasText = entryText && entryText.trim().length > 0;
+    const hasEmoji = discordEmoji && discordEmoji.trim().length > 0;
+
+    if (hasEmoji && !hasText) {
+      return (
+        <img 
+          src={getEmojiUrl(discordEmoji)} 
+          alt="Entry emoji" 
+          className="w-12 h-12"
+        />
+      );
+    }
+
+    if (hasEmoji && hasText) {
+      const emoji = <img src={getEmojiUrl(discordEmoji)} alt="" className="w-8 h-8 inline-block" />;
+      return (
+        <h1 className={`text-4xl font-bold text-white ${entryTextFont} flex items-center gap-3 justify-center`}>
+          {emojiPosition === "start" && emoji}
+          <span>{entryText}</span>
+          {emojiPosition === "end" && emoji}
+        </h1>
+      );
+    }
+
+    return (
+      <h1 className={`text-4xl font-bold text-white ${entryTextFont}`}>{entryText}</h1>
+    );
   };
 
   return (
     <div
       onClick={handleEnter}
-      className={`fixed inset-0 z-50 flex items-center justify-center cursor-pointer transition-all duration-700 ease-out ${
-        isEntering && !animation ? "opacity-0" : "opacity-100"
-      } ${getAnimationClass()}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center cursor-pointer transition-all duration-500 ease-out ${
+        isEntering && (!animation || animation === "none") ? "opacity-0 pointer-events-none" : "opacity-100"
+      }`}
       style={{ backgroundColor: "#000000" }}
     >
       {animation === "horizontal" && isEntering ? (
@@ -46,7 +94,7 @@ const EntrySplash = ({ entryText, entryTextFont, onEnter, hasAudio, animation }:
       ) : null}
       
       <div className={`text-center space-y-6 animate-fade-in pointer-events-none transition-opacity duration-300 ${isEntering ? "opacity-0" : "opacity-100"}`}>
-        <h1 className={`text-4xl font-bold text-white ${entryTextFont}`}>{entryText}</h1>
+        {renderContent()}
       </div>
     </div>
   );

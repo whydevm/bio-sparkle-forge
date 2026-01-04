@@ -18,7 +18,8 @@ import ProjectsEditor from "@/components/dashboard/ProjectsEditor";
 import ThemeSelector from "@/components/dashboard/ThemeSelector";
 import SaveChangesBar from "@/components/dashboard/SaveChangesBar";
 import SocialCardsEditor from "@/components/dashboard/SocialCardsEditor";
-import { User, Image, Music, MousePointer, Settings, Palette, Square, RotateCcw, Code2, FolderKanban, Sparkles, Share2 } from "lucide-react";
+import JoinDateEditor from "@/components/dashboard/JoinDateEditor";
+import { User, Image, Music, MousePointer, Settings, Palette, Square, RotateCcw, Code2, FolderKanban, Sparkles, Share2, Calendar } from "lucide-react";
 import CodingBadgesEditor from "@/components/dashboard/CodingBadgesEditor";
 
 const Dashboard = () => {
@@ -299,6 +300,38 @@ const Dashboard = () => {
                 </Select>
               </div>
 
+              {/* Discord Emoji for Entry Screen */}
+              <div className="space-y-3 pt-4 border-t border-border">
+                <h3 className="text-lg font-semibold text-primary">Entry Screen Emoji</h3>
+                <p className="text-xs text-muted-foreground">
+                  Add a Discord emoji to your entry screen. Paste the emoji ID from Discord.
+                </p>
+                <div>
+                  <Label>Discord Emoji ID</Label>
+                  <Input
+                    value={profile?.entry_emoji || ""}
+                    onChange={(e) => updateProfile({ entry_emoji: e.target.value })}
+                    placeholder="e.g., 1234567890123456789"
+                    className="bg-card/50 border-border mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Emoji Position</Label>
+                  <Select
+                    value={profile?.entry_emoji_position || "start"}
+                    onValueChange={(value) => updateProfile({ entry_emoji_position: value })}
+                  >
+                    <SelectTrigger className="bg-card/50 border-border mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="start">Before Text</SelectItem>
+                      <SelectItem value="end">After Text</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               {/* Scroll Text - Portfolio Theme Only */}
               {profile?.theme === "portfolio" && (
                 <div>
@@ -345,6 +378,23 @@ const Dashboard = () => {
                   />
                 </div>
               </div>
+
+              {/* Join Date Customization */}
+              {profile?.show_join_date && (
+                <div className="space-y-4 pt-4 border-t border-border">
+                  <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
+                    <Calendar className="w-5 h-5" />
+                    Join Date Format
+                  </h3>
+                  <JoinDateEditor
+                    createdAt={profile?.created_at || new Date().toISOString()}
+                    dateFormat={profile?.join_date_format || "MMM dd, yyyy"}
+                    timeFormat={profile?.join_time_format || "12h"}
+                    timezone={profile?.join_timezone || "UTC"}
+                    onSettingsChange={(settings) => updateProfile(settings)}
+                  />
+                </div>
+              )}
 
               {/* Parallax Settings - Basic Theme Only */}
               {(profile?.theme === "basic" || profile?.theme === "default") && (

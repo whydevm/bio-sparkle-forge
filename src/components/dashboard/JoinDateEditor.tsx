@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
@@ -26,16 +25,19 @@ const JoinDateEditor = ({
 
   const dateFormats = [
     { value: "MMM dd, yyyy", label: "Jan 01, 2025" },
-    { value: "dd/MM/yyyy", label: "01/01/2025" },
-    { value: "MM/dd/yyyy", label: "01/01/2025" },
+    { value: "dd/MM/yyyy", label: "01/01/2025 (DD/MM)" },
+    { value: "MM/dd/yyyy", label: "01/01/2025 (MM/DD)" },
     { value: "yyyy-MM-dd", label: "2025-01-01" },
     { value: "MMMM dd, yyyy", label: "January 01, 2025" },
     { value: "dd MMMM yyyy", label: "01 January 2025" },
+    { value: "EEE, MMM dd", label: "Wed, Jan 01" },
+    { value: "EEEE, MMMM dd, yyyy", label: "Wednesday, January 01, 2025" },
   ];
 
   const timeFormats = [
     { value: "12h", label: "12 Hour (AM/PM)" },
     { value: "24h", label: "24 Hour" },
+    { value: "none", label: "No Time" },
   ];
 
   const timezones = [
@@ -46,7 +48,10 @@ const JoinDateEditor = ({
     { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
     { value: "Europe/London", label: "London (GMT)" },
     { value: "Europe/Paris", label: "Paris (CET)" },
+    { value: "Europe/Berlin", label: "Berlin (CET)" },
     { value: "Asia/Tokyo", label: "Tokyo (JST)" },
+    { value: "Asia/Shanghai", label: "Shanghai (CST)" },
+    { value: "Asia/Dubai", label: "Dubai (GST)" },
     { value: "Australia/Sydney", label: "Sydney (AEST)" },
   ];
 
@@ -55,7 +60,7 @@ const JoinDateEditor = ({
       let formatted = format(date, dateFormat);
       if (timeFormat === "12h") {
         formatted += ` ${format(date, "h:mm a")}`;
-      } else {
+      } else if (timeFormat === "24h") {
         formatted += ` ${format(date, "HH:mm")}`;
       }
       return formatted;
@@ -124,9 +129,9 @@ const JoinDateEditor = ({
       </div>
 
       {/* Preview */}
-      <div className="bg-muted/50 rounded-lg p-3">
+      <div className="bg-muted/50 rounded-lg p-4 border border-border">
         <Label className="text-xs text-muted-foreground">Preview</Label>
-        <p className="text-sm font-medium mt-1">{getPreviewDate()}</p>
+        <p className="text-lg font-medium mt-1">{getPreviewDate()}</p>
       </div>
     </div>
   );

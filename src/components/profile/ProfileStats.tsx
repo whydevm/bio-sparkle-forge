@@ -1,6 +1,7 @@
 import { Eye, MapPin, Calendar, ThumbsUp, ThumbsDown } from "lucide-react";
 import CountUpAnimation from "./CountUpAnimation";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { format } from "date-fns";
 
 interface ProfileStatsProps {
   viewCount: number;
@@ -13,6 +14,8 @@ interface ProfileStatsProps {
   viewsAnimation?: boolean;
   displayName?: string;
   userId?: string;
+  joinDateFormat?: string;
+  joinTimeFormat?: string;
 }
 
 const ProfileStats = ({ 
@@ -26,15 +29,27 @@ const ProfileStats = ({
   viewsAnimation = true,
   displayName,
   userId,
+  joinDateFormat = "MMM dd, yyyy",
+  joinTimeFormat = "12h",
 }: ProfileStatsProps) => {
   const formatDate = (dateString?: string) => {
     if (!dateString) return null;
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { 
-      month: "short", 
-      day: "numeric", 
-      year: "numeric" 
-    });
+    try {
+      let formatted = format(date, joinDateFormat);
+      if (joinTimeFormat === "12h") {
+        formatted += ` ${format(date, "h:mm a")}`;
+      } else if (joinTimeFormat === "24h") {
+        formatted += ` ${format(date, "HH:mm")}`;
+      }
+      return formatted;
+    } catch {
+      return date.toLocaleDateString("en-US", { 
+        month: "short", 
+        day: "numeric", 
+        year: "numeric" 
+      });
+    }
   };
 
   const formattedDate = formatDate(createdAt);

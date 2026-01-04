@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Progress } from "@/components/ui/progress";
-import { Check, AlertCircle, ChevronRight, Globe, Link as LinkIcon, BarChart3 } from "lucide-react";
+import { Check, AlertCircle, ChevronRight, Globe, Link as LinkIcon, BarChart3, FolderKanban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CountryView {
@@ -18,12 +18,19 @@ interface LinkClick {
   count: number;
 }
 
+interface TopProject {
+  id: string;
+  title: string;
+  clicks: number;
+}
+
 const Overview = () => {
   const [profile, setProfile] = useState<any>(null);
   const [hasSocialLinks, setHasSocialLinks] = useState(false);
   const [loading, setLoading] = useState(true);
   const [countryViews, setCountryViews] = useState<CountryView[]>([]);
   const [topLinks, setTopLinks] = useState<LinkClick[]>([]);
+  const [topProjects, setTopProjects] = useState<TopProject[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -107,6 +114,19 @@ const Overview = () => {
             .slice(0, 5);
           setTopLinks(sorted);
         }
+      }
+
+      // Load projects (for now, just show projects without click tracking)
+      const { data: projectsData } = await supabase
+        .from("projects")
+        .select("id, title")
+        .eq("profile_id", profileData.id)
+        .order("order_index")
+        .limit(5);
+
+      if (projectsData) {
+        // For now, simulate click data since we don't have project_clicks table
+        setTopProjects(projectsData.map(p => ({ ...p, clicks: 0 })));
       }
     }
     setLoading(false);
@@ -341,6 +361,24 @@ const Overview = () => {
               </div>
             )}
           </div>
+
+          {/* Top Projects */}
+          {topProjects.length > 0 && (
+            <div className="bg-card border border-border rounded-lg p-4">
+              <div className="text-sm font-medium mb-4 flex items-center gap-2">
+                <FolderKanban className="w-4 h-4" />
+                Your Projects
+              </div>
+              <div className="space-y-2">
+                {topProjects.map((project, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-sm">
+                    <span>{project.title}</span>
+                    <span className="text-muted-foreground">{project.clicks} clicks</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </DashboardLayout>

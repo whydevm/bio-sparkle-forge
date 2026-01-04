@@ -33,7 +33,6 @@ const Profile = () => {
   const [hasEntered, setHasEntered] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const [exitAnimation, setExitAnimation] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -133,16 +132,7 @@ const Profile = () => {
   };
 
   const handleEnter = () => {
-    const animation = profile?.entry_animation || "none";
-    if (animation !== "none") {
-      setExitAnimation(animation);
-      setTimeout(() => {
-        setHasEntered(true);
-        setExitAnimation(null);
-      }, 800);
-    } else {
-      setHasEntered(true);
-    }
+    setHasEntered(true);
   };
 
   if (loading) {
@@ -195,14 +185,6 @@ const Profile = () => {
 
   // Avatar radius
   const avatarRadius = profile.avatar_radius ?? 100;
-
-  // Entry animation classes
-  const getEntryAnimationClass = () => {
-    if (!exitAnimation) return "";
-    if (exitAnimation === "horizontal") return "animate-split-horizontal";
-    if (exitAnimation === "vertical") return "animate-split-vertical";
-    return "";
-  };
 
   const ProfileContent = () => (
     <div
@@ -340,7 +322,9 @@ const Profile = () => {
           entryTextFont={profile.entry_text_font || "font-sans"}
           onEnter={handleEnter}
           hasAudio={hasAudio}
-          animation={exitAnimation || undefined}
+          animation={profile.entry_animation || undefined}
+          discordEmoji={profile.entry_emoji}
+          emojiPosition={profile.entry_emoji_position || "start"}
         />
       )}
       
@@ -453,6 +437,8 @@ const Profile = () => {
             showLikes={profile.show_likes ?? true}
             viewsAnimation={profile.views_animation ?? true}
             userId={profile.user_id}
+            joinDateFormat={profile.join_date_format || "MMM dd, yyyy"}
+            joinTimeFormat={profile.join_time_format || "12h"}
           />
         )}
 
