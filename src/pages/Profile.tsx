@@ -20,7 +20,7 @@ import ReportDialog from "@/components/profile/ReportDialog";
 import ParallaxContainer from "@/components/profile/ParallaxContainer";
 import { useClickSound } from "@/hooks/useClickSound";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
-import { Flag, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Flag } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Profile = () => {
@@ -456,37 +456,6 @@ const Profile = () => {
           />
         )}
 
-        {/* Likes/Dislikes in bottom right */}
-        {(hasEntered || !hasAudio) && (showContent || !hasAudio) && (
-          <div className="fixed bottom-6 right-6 z-40 flex items-center gap-3">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1.5 text-foreground/80 hover:text-foreground transition-colors">
-                    <ThumbsUp className="w-4 h-4" />
-                    <span className="text-sm">0</span>
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Likes: 0</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1.5 text-foreground/80 hover:text-foreground transition-colors">
-                    <ThumbsDown className="w-4 h-4" />
-                    <span className="text-sm">0</span>
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Dislikes: 0</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        )}
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent>

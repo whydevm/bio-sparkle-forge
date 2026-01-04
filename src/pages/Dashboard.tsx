@@ -344,20 +344,6 @@ const Dashboard = () => {
                     onCheckedChange={(checked) => updateProfile({ click_sounds: checked })}
                   />
                 </div>
-                <div className="flex items-center justify-between">
-                  <Label>Badge Border</Label>
-                  <Switch
-                    checked={profile?.badge_border ?? false}
-                    onCheckedChange={(checked) => updateProfile({ badge_border: checked })}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label>Shiny Links</Label>
-                  <Switch
-                    checked={profile?.link_shiny ?? false}
-                    onCheckedChange={(checked) => updateProfile({ link_shiny: checked })}
-                  />
-                </div>
               </div>
 
               {/* Parallax Settings - Basic Theme Only */}
