@@ -16,6 +16,9 @@ import ProjectsSection from "@/components/profile/ProjectsSection";
 import BackgroundEffects from "@/components/profile/BackgroundEffects";
 import SocialCards from "@/components/profile/SocialCards";
 import ProfileBadges from "@/components/profile/ProfileBadges";
+import ReportDialog from "@/components/profile/ReportDialog";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
+import { Flag } from "lucide-react";
 
 const Profile = () => {
   const { username } = useParams();
@@ -26,6 +29,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [hasEntered, setHasEntered] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -166,7 +170,9 @@ const Profile = () => {
         />
       )}
       
-      <div className="min-h-screen relative pb-24 md:pb-28" style={getBackgroundStyle()}>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <div className="min-h-screen relative pb-24 md:pb-28 cursor-default" style={getBackgroundStyle()}>
         <CustomCursor cursorUrl={profile.custom_cursor} />
         
         {/* Background Effects */}
@@ -269,6 +275,7 @@ const Profile = () => {
                 links={links}
                 glow={profile.glow_socials}
                 monochrome={profile.monochrome_icons}
+                shiny={profile.link_shiny}
               />
             </div>
 
@@ -335,7 +342,23 @@ const Profile = () => {
             viewsAnimation={profile.views_animation ?? true}
           />
         )}
-      </div>
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem onClick={() => setReportDialogOpen(true)} className="text-destructive gap-2">
+            <Flag className="w-4 h-4" />
+            Report Profile
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+
+      {/* Report Dialog */}
+      <ReportDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        profileId={profile.id}
+        profileUsername={profile.username}
+      />
 
       {/* Hidden audio element for when player is hidden */}
       {music.length > 0 && profile.show_audio_player === false && (

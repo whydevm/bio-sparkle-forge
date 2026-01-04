@@ -18,15 +18,17 @@ interface SocialLink {
   url: string;
   icon?: string;
   custom_icon_url?: string;
+  custom_color?: string;
 }
 
 interface SocialLinksProps {
   links: SocialLink[];
   glow?: boolean;
   monochrome?: boolean;
+  shiny?: boolean;
 }
 
-const SocialLinks = ({ links, glow, monochrome }: SocialLinksProps) => {
+const SocialLinks = ({ links, glow, monochrome, shiny }: SocialLinksProps) => {
   const getIcon = (platform: string) => {
     const icons: Record<string, any> = {
       tiktok: SiTiktok,
@@ -45,7 +47,7 @@ const SocialLinks = ({ links, glow, monochrome }: SocialLinksProps) => {
   };
 
   return (
-    <div className="flex flex-wrap gap-5 justify-center mt-4">
+    <div className="flex flex-wrap gap-3 justify-center mt-4">
       {links.map((link) => (
         <a
           key={link.id}
@@ -53,9 +55,10 @@ const SocialLinks = ({ links, glow, monochrome }: SocialLinksProps) => {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={link.label || link.platform}
-          className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 hover:opacity-70 hover:scale-110 ${
+          className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 hover:opacity-70 hover:scale-110 cursor-pointer ${
             glow ? "glow-border" : ""
-          }`}
+          } ${shiny ? "shiny-link" : ""}`}
+          style={link.custom_color ? { color: link.custom_color } : undefined}
         >
           {link.custom_icon_url ? (
             <img
@@ -65,9 +68,11 @@ const SocialLinks = ({ links, glow, monochrome }: SocialLinksProps) => {
               loading="lazy"
             />
           ) : (
-            <span className="text-foreground">
+            <span style={link.custom_color ? { color: link.custom_color } : undefined}>
               {getIcon(link.platform) ? (
-                <span className="[&>svg]:w-10 [&>svg]:h-10">{getIcon(link.platform)}</span>
+                <span className="[&>svg]:w-10 [&>svg]:h-10" style={link.custom_color ? { color: link.custom_color } : undefined}>
+                  {getIcon(link.platform)}
+                </span>
               ) : null}
             </span>
           )}
