@@ -233,6 +233,7 @@ export type Database = {
           audio_shuffle: boolean | null
           audio_sticky: boolean | null
           avatar_decoration_url: string | null
+          avatar_radius: number | null
           avatar_url: string | null
           background_effect: string | null
           background_type: string | null
@@ -256,12 +257,17 @@ export type Database = {
           display_name_color: string | null
           display_name_font: string | null
           entry_animation: string | null
+          entry_emoji: string | null
+          entry_emoji_position: string | null
           entry_text: string | null
           entry_text_font: string | null
           glow_badges: boolean | null
           glow_socials: boolean | null
           glow_username: boolean | null
           id: string
+          join_date_format: string | null
+          join_time_format: string | null
+          join_timezone: string | null
           link_colors: Json | null
           link_shiny: boolean | null
           location: string | null
@@ -291,6 +297,7 @@ export type Database = {
           audio_shuffle?: boolean | null
           audio_sticky?: boolean | null
           avatar_decoration_url?: string | null
+          avatar_radius?: number | null
           avatar_url?: string | null
           background_effect?: string | null
           background_type?: string | null
@@ -314,12 +321,17 @@ export type Database = {
           display_name_color?: string | null
           display_name_font?: string | null
           entry_animation?: string | null
+          entry_emoji?: string | null
+          entry_emoji_position?: string | null
           entry_text?: string | null
           entry_text_font?: string | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
           glow_username?: boolean | null
           id?: string
+          join_date_format?: string | null
+          join_time_format?: string | null
+          join_timezone?: string | null
           link_colors?: Json | null
           link_shiny?: boolean | null
           location?: string | null
@@ -349,6 +361,7 @@ export type Database = {
           audio_shuffle?: boolean | null
           audio_sticky?: boolean | null
           avatar_decoration_url?: string | null
+          avatar_radius?: number | null
           avatar_url?: string | null
           background_effect?: string | null
           background_type?: string | null
@@ -372,12 +385,17 @@ export type Database = {
           display_name_color?: string | null
           display_name_font?: string | null
           entry_animation?: string | null
+          entry_emoji?: string | null
+          entry_emoji_position?: string | null
           entry_text?: string | null
           entry_text_font?: string | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
           glow_username?: boolean | null
           id?: string
+          join_date_format?: string | null
+          join_time_format?: string | null
+          join_timezone?: string | null
           link_colors?: Json | null
           link_shiny?: boolean | null
           location?: string | null
