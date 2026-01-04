@@ -7,6 +7,7 @@ import {
 import { SiRoblox } from "react-icons/si";
 import DiscordPresence from "./DiscordPresence";
 import SpotifyPresence from "./SpotifyPresence";
+import TikTokPresence from "./TikTokPresence";
 
 interface SocialCard {
   id: string;
@@ -78,8 +79,7 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
     return () => clearTimeout(timer);
   }, [profileId]);
 
-  // Don't render if basic theme or loading
-  if (theme === "basic") return null;
+  // Don't render if loading
   if (loading) return null;
   if (cards.length === 0) return null;
 
@@ -119,6 +119,21 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
               }}
             >
               <SpotifyPresence userId={card.identifier} />
+            </div>
+          );
+        }
+
+        // TikTok Presence
+        if (card.platform === "tiktok" && contentType === "presence") {
+          return (
+            <div
+              key={card.id}
+              style={{ 
+                transitionDelay: `${index * 100}ms`,
+                animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
+              }}
+            >
+              <TikTokPresence username={card.identifier} />
             </div>
           );
         }

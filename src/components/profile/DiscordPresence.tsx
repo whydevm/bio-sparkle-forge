@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaDiscord } from "react-icons/fa";
+import { ExternalLink } from "lucide-react";
 
 interface DiscordPresenceProps {
   userId: string;
@@ -46,6 +47,9 @@ interface DiscordPresenceData {
     };
   };
   listening_to_spotify?: boolean;
+  active_on_discord_desktop?: boolean;
+  active_on_discord_mobile?: boolean;
+  active_on_discord_web?: boolean;
 }
 
 const statusColors: Record<string, string> = {
@@ -53,6 +57,13 @@ const statusColors: Record<string, string> = {
   idle: "#f0b232",
   dnd: "#f23f43",
   offline: "#80848e",
+};
+
+const statusLabels: Record<string, string> = {
+  online: "Online",
+  idle: "Idle",
+  dnd: "Do Not Disturb",
+  offline: "Offline",
 };
 
 // Discord public flags badge mapping
@@ -132,6 +143,27 @@ const DiscordPresence = ({ userId }: DiscordPresenceProps) => {
     return badges;
   };
 
+  // Get device indicator
+  const getDevice = () => {
+    if (!presence) return null;
+    if (presence.active_on_discord_desktop) return "Desktop";
+    if (presence.active_on_discord_mobile) return "Mobile";
+    if (presence.active_on_discord_web) return "Web";
+    return null;
+  };
+
+  // Get current activity
+  const getCurrentActivity = () => {
+    if (!presence?.activities) return null;
+    const activity = presence.activities.find(a => a.type !== 4); // Skip custom status
+    if (!activity) return null;
+    
+    let text = activity.name;
+    if (activity.details) text += ` - ${activity.details}`;
+    if (activity.state) text += ` (${activity.state})`;
+    return text;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-background/30 backdrop-blur-md animate-pulse min-w-[280px]">
@@ -155,7 +187,7 @@ const DiscordPresence = ({ userId }: DiscordPresenceProps) => {
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-foreground">Discord</p>
-          <p className="text-xs text-foreground/60">User not found on Lanyard</p>
+          <p className="text-xs text-foreground/60">User not on Lanyard</p>
           <p className="text-xs text-foreground/40">ID: {userId}</p>
         </div>
       </div>
@@ -168,6 +200,8 @@ const DiscordPresence = ({ userId }: DiscordPresenceProps) => {
 
   const badges = getBadges(presence.discord_user.public_flags);
   const displayName = presence.discord_user.display_name || presence.discord_user.username;
+  const device = getDevice();
+  const activity = getCurrentActivity();
 
   return (
     <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-background/30 backdrop-blur-md hover:border-foreground/40 transition-all duration-300 min-w-[280px]">
@@ -181,11 +215,13 @@ const DiscordPresence = ({ userId }: DiscordPresenceProps) => {
             e.currentTarget.src = `https://cdn.discordapp.com/embed/avatars/0.png`;
           }}
         />
-        {/* Status indicator */}
+        {/* Status indicator with pulse animation for online */}
         <div
-          className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-background"
+          className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2 border-background ${
+            presence.discord_status === "online" ? "animate-pulse" : ""
+          }`}
           style={{ backgroundColor: statusColors[presence.discord_status] }}
-          title={presence.discord_status}
+          title={statusLabels[presence.discord_status]}
         />
       </div>
 
@@ -212,18 +248,36 @@ const DiscordPresence = ({ userId }: DiscordPresenceProps) => {
           )}
         </div>
         
-        {/* Status text */}
-        <p className="text-xs text-foreground/60 truncate">
-          {presence.discord_status === "offline" 
-            ? lastSeen || "Offline"
-            : presence.discord_status === "dnd" 
-              ? "Do Not Disturb"
-              : presence.discord_status === "idle"
-                ? "Idle"
-                : "Online"
-          }
-        </p>
+        {/* Status text with device indicator */}
+        <div className="flex items-center gap-2">
+          <span 
+            className="text-xs truncate"
+            style={{ color: statusColors[presence.discord_status] }}
+          >
+            {statusLabels[presence.discord_status]}
+          </span>
+          {device && presence.discord_status !== "offline" && (
+            <span className="text-xs text-foreground/40">• {device}</span>
+          )}
+        </div>
+
+        {/* Current activity */}
+        {activity && (
+          <p className="text-xs text-foreground/50 truncate max-w-[180px]">
+            {activity}
+          </p>
+        )}
       </div>
+
+      {/* View profile button */}
+      <a
+        href={`https://discord.com/users/${userId}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-1 text-xs text-foreground/60 hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-foreground/10"
+      >
+        <ExternalLink className="w-3 h-3" />
+      </a>
     </div>
   );
 };

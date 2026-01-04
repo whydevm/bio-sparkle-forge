@@ -1,8 +1,9 @@
-import { X, User, Palette, Link, Diamond, Image, FileText, HelpCircle, ExternalLink, Share2, ImageIcon } from "lucide-react";
+import { X, User, Palette, Link, Diamond, Image, FileText, HelpCircle, ExternalLink, Share2, ImageIcon, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import QRCodeGenerator from "@/components/dashboard/QRCodeGenerator";
 
 interface DashboardSidebarProps {
   open: boolean;
@@ -12,6 +13,7 @@ interface DashboardSidebarProps {
 
 const DashboardSidebar = ({ open, onClose, username }: DashboardSidebarProps) => {
   const [accountExpanded, setAccountExpanded] = useState(false);
+  const [showQRCode, setShowQRCode] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -166,13 +168,28 @@ const DashboardSidebar = ({ open, onClose, username }: DashboardSidebarProps) =>
               My Page
             </Button>
 
-            <Button className="w-full justify-start gap-3">
+            <Button 
+              className="w-full justify-start gap-3"
+              onClick={() => setShowQRCode(true)}
+            >
+              <QrCode className="w-5 h-5" />
+              Generate QR Code
+            </Button>
+
+            <Button className="w-full justify-start gap-3" variant="secondary">
               <Share2 className="w-5 h-5" />
               Share Your Profile
             </Button>
           </div>
         </div>
       </div>
+
+      {/* QR Code Generator Dialog */}
+      <QRCodeGenerator
+        open={showQRCode}
+        onClose={() => setShowQRCode(false)}
+        username={username || ""}
+      />
     </>
   );
 };

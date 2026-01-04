@@ -153,3 +153,68 @@ All colors MUST be HSL.
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+/* Entry animations */
+@keyframes slide-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes slide-right {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes slide-up {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
+}
+
+@keyframes slide-down {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+
+.animate-slide-left {
+  animation: slide-left 0.8s ease-in-out forwards;
+}
+
+.animate-slide-right {
+  animation: slide-right 0.8s ease-in-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.8s ease-in-out forwards;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.8s ease-in-out forwards;
+}
+
+/* Font families */
+.font-ggsans { font-family: 'gg sans', sans-serif; }
+.font-roboto { font-family: 'Roboto', sans-serif; }
+.font-poppins { font-family: 'Poppins', sans-serif; }
+.font-montserrat { font-family: 'Montserrat', sans-serif; }
+.font-lato { font-family: 'Lato', sans-serif; }
+.font-opensans { font-family: 'Open Sans', sans-serif; }
+.font-raleway { font-family: 'Raleway', sans-serif; }
+.font-ubuntu { font-family: 'Ubuntu', sans-serif; }
+.font-nunito { font-family: 'Nunito', sans-serif; }
+.font-quicksand { font-family: 'Quicksand', sans-serif; }
+.font-worksans { font-family: 'Work Sans', sans-serif; }
+.font-oswald { font-family: 'Oswald', sans-serif; }
+.font-spacegrotesk { font-family: 'Space Grotesk', sans-serif; }
+.font-playfair { font-family: 'Playfair Display', serif; }
+.font-merriweather { font-family: 'Merriweather', serif; }
+.font-crimson { font-family: 'Crimson Text', serif; }
+.font-cormorant { font-family: 'Cormorant Garamond', serif; }
+.font-librebaskerville { font-family: 'Libre Baskerville', serif; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+.font-firacode { font-family: 'Fira Code', monospace; }
+.font-sourcecodepro { font-family: 'Source Code Pro', monospace; }
+.font-robotomono { font-family: 'Roboto Mono', monospace; }
+.font-lobster { font-family: 'Lobster', cursive; }
+.font-pacifico { font-family: 'Pacifico', cursive; }
+.font-permanentmarker { font-family: 'Permanent Marker', cursive; }
+.font-bebasneue { font-family: 'Bebas Neue', sans-serif; }

@@ -17,8 +17,11 @@ import BackgroundEffects from "@/components/profile/BackgroundEffects";
 import SocialCards from "@/components/profile/SocialCards";
 import ProfileBadges from "@/components/profile/ProfileBadges";
 import ReportDialog from "@/components/profile/ReportDialog";
+import ParallaxContainer from "@/components/profile/ParallaxContainer";
+import { useClickSound } from "@/hooks/useClickSound";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
-import { Flag } from "lucide-react";
+import { Flag, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Profile = () => {
   const { username } = useParams();
@@ -30,8 +33,22 @@ const Profile = () => {
   const [hasEntered, setHasEntered] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [exitAnimation, setExitAnimation] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Click sounds
+  useClickSound(profile?.click_sounds ?? false);
+
+  // Set page title to username
+  useEffect(() => {
+    if (profile?.username) {
+      document.title = profile.username;
+    }
+    return () => {
+      document.title = "bio-sparkle-forge";
+    };
+  }, [profile?.username]);
 
   useEffect(() => {
     if (username) {
@@ -115,6 +132,19 @@ const Profile = () => {
     await supabase.rpc("increment_view_count", { profile_username: username });
   };
 
+  const handleEnter = () => {
+    const animation = profile?.entry_animation || "none";
+    if (animation !== "none") {
+      setExitAnimation(animation);
+      setTimeout(() => {
+        setHasEntered(true);
+        setExitAnimation(null);
+      }, 800);
+    } else {
+      setHasEntered(true);
+    }
+  };
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
@@ -144,7 +174,7 @@ const Profile = () => {
 
   const profileOpacity = profile.profile_opacity / 100;
   const profileBlur = profile.profile_blur;
-  const showBorder = profileOpacity > 0;
+  const showBorder = profile.border_enabled && profileOpacity > 0;
   
   const hasAudio = music.length > 0 || profile.background_type === "video";
   const shouldShowSplash = hasAudio && !hasEntered;
@@ -154,10 +184,153 @@ const Profile = () => {
     ? "basic" 
     : profile.theme;
   const isPortfolioTheme = normalizedTheme === "portfolio";
+  const isBasicTheme = normalizedTheme === "basic";
   
   // Parse bio texts - support multiple lines for looping typewriter
   const bioTexts = profile.bio ? profile.bio.split("\n").filter((t: string) => t.trim()) : [];
   const cyclingEnabled = profile.cycling_bio_enabled ?? false;
+
+  // Parallax settings - only for basic theme with border and opacity >= 25
+  const parallaxEnabled = isBasicTheme && profile.parallax_enabled && showBorder && profile.profile_opacity >= 25;
+
+  // Avatar radius
+  const avatarRadius = profile.avatar_radius ?? 100;
+
+  // Entry animation classes
+  const getEntryAnimationClass = () => {
+    if (!exitAnimation) return "";
+    if (exitAnimation === "horizontal") return "animate-split-horizontal";
+    if (exitAnimation === "vertical") return "animate-split-vertical";
+    return "";
+  };
+
+  const ProfileContent = () => (
+    <div
+      className="glass-panel p-8 rounded-2xl space-y-6 w-full"
+      style={{
+        backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
+        backgroundColor: profileOpacity === 0 ? "transparent" : `hsl(var(--card) / ${profileOpacity})`,
+        borderWidth: showBorder ? "1px" : "0",
+        borderColor: showBorder ? "hsl(var(--border))" : "transparent",
+      }}
+    >
+      {/* Profile Avatar - Centered */}
+      <div className="flex justify-center mb-8">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div 
+                className="relative w-28 h-28 md:w-32 md:h-32"
+                style={{ borderRadius: `${avatarRadius}%` }}
+              >
+                {profile.avatar_url && (
+                  <img
+                    src={profile.avatar_url}
+                    alt={profile.display_name || profile.username}
+                    className="w-full h-full object-cover"
+                    style={{ borderRadius: `${avatarRadius}%` }}
+                  />
+                )}
+                {profile.avatar_decoration_url && (
+                  <img
+                    src={profile.avatar_decoration_url}
+                    alt="Avatar decoration"
+                    className="absolute inset-0 w-full h-full"
+                  />
+                )}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>uid {profile.user_id?.slice(0, 8)}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <div className="text-center">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="inline-block">
+                <ProfileUsername
+                  username={profile.display_name || profile.username}
+                  effect={profile.username_effect}
+                  glow={profile.glow_username}
+                  fontClass={profile.display_name_font}
+                  colorClass={profile.display_name_color}
+                  customColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>uid {profile.user_id?.slice(0, 8)}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        
+        {/* Profile Badges - Under username, above bio */}
+        <ProfileBadges 
+          userId={profile.user_id} 
+          badgeColors={profile.badge_colors}
+          badgeBorder={profile.badge_border}
+        />
+        
+        {bioTexts.length > 0 && (showContent || !hasAudio) && (
+          <p 
+            className={`mt-3 ${profile.bio_font}`}
+            style={{ color: profile.bio_color?.startsWith('#') ? profile.bio_color : undefined }}
+          >
+            {cyclingEnabled ? (
+              <TypewriterText 
+                texts={bioTexts} 
+                typingSpeed={100} 
+                deletingSpeed={50}
+                pauseDuration={2500}
+                enableCycling={true}
+              />
+            ) : (
+              <TypewriterText 
+                texts={[bioTexts[0]]} 
+                typingSpeed={100} 
+                deletingSpeed={50}
+                pauseDuration={2500}
+                enableCycling={false}
+              />
+            )}
+          </p>
+        )}
+      </div>
+
+      {/* Social Cards for basic theme - above social links */}
+      {isBasicTheme && profile && (showContent || !hasAudio) && (
+        <SocialCards profileId={profile.id} theme={profile.theme} />
+      )}
+
+      {/* Social Links - Larger icons */}
+      <SocialLinks
+        links={links}
+        glow={profile.glow_socials}
+        monochrome={profile.monochrome_icons}
+        shiny={profile.link_shiny}
+        linkColors={profile.link_colors}
+      />
+
+      {/* About Me for basic theme - inside the border */}
+      {isBasicTheme && hasAboutMe && (
+        <div className="pt-4 border-t border-foreground/10">
+          <h3 className="text-lg font-semibold mb-2" style={{ color: profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined }}>
+            About Me
+          </h3>
+          <p 
+            className="text-sm leading-relaxed"
+            style={{ color: profile.bio_color?.startsWith('#') ? profile.bio_color : "hsl(var(--muted-foreground))" }}
+          >
+            {profile.about_me}
+          </p>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <>
@@ -165,8 +338,9 @@ const Profile = () => {
         <EntrySplash
           entryText={profile.entry_text || "Click to Enter"}
           entryTextFont={profile.entry_text_font || "font-sans"}
-          onEnter={() => setHasEntered(true)}
+          onEnter={handleEnter}
           hasAudio={hasAudio}
+          animation={exitAnimation || undefined}
         />
       )}
       
@@ -203,85 +377,23 @@ const Profile = () => {
           shouldShowSplash ? "opacity-0" : showContent || !hasAudio ? "opacity-100" : "opacity-0"
         }`}>
           <div className="w-full max-w-md space-y-6 flex flex-col items-center">
-            <div
-              className="glass-panel p-8 rounded-2xl space-y-6 w-full"
-              style={{
-                backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
-                backgroundColor: profileOpacity === 0 ? "transparent" : undefined,
-                borderColor: showBorder ? undefined : "transparent",
-              }}
-            >
-              {/* Profile Avatar - Centered */}
-              <div className="flex justify-center mb-8">
-                <div className="relative w-28 h-28 md:w-32 md:h-32">
-                  {profile.avatar_url && (
-                    <img
-                      src={profile.avatar_url}
-                      alt={profile.display_name || profile.username}
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  )}
-                  {profile.avatar_decoration_url && (
-                    <img
-                      src={profile.avatar_decoration_url}
-                      alt="Avatar decoration"
-                      className="absolute inset-0 w-full h-full"
-                    />
-                  )}
-                </div>
-              </div>
+            {parallaxEnabled ? (
+              <ParallaxContainer
+                enabled={true}
+                intensity={profile.parallax_intensity || 50}
+                inverted={profile.parallax_inverted || false}
+              >
+                <ProfileContent />
+              </ParallaxContainer>
+            ) : (
+              <ProfileContent />
+            )}
 
-              <div className="text-center">
-                <ProfileUsername
-                  username={profile.display_name || profile.username}
-                  effect={profile.username_effect}
-                  glow={profile.glow_username}
-                  fontClass={profile.display_name_font}
-                  colorClass={profile.display_name_color}
-                  customColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
-                />
-                
-                {/* Profile Badges - Under username, above bio */}
-                <ProfileBadges userId={profile.user_id} />
-                
-                {bioTexts.length > 0 && (showContent || !hasAudio) && (
-                  <p 
-                    className={`mt-3 ${profile.bio_font}`}
-                    style={{ color: profile.bio_color?.startsWith('#') ? profile.bio_color : undefined }}
-                  >
-                    {cyclingEnabled ? (
-                      <TypewriterText 
-                        texts={bioTexts} 
-                        typingSpeed={100} 
-                        deletingSpeed={50}
-                        pauseDuration={2500}
-                        enableCycling={true}
-                      />
-                    ) : (
-                      <TypewriterText 
-                        texts={[bioTexts[0]]} 
-                        typingSpeed={100} 
-                        deletingSpeed={50}
-                        pauseDuration={2500}
-                        enableCycling={false}
-                      />
-                    )}
-                  </p>
-                )}
-              </div>
-
-              {/* Social Links - Larger icons */}
-              <SocialLinks
-                links={links}
-                glow={profile.glow_socials}
-                monochrome={profile.monochrome_icons}
-                shiny={profile.link_shiny}
-              />
-            </div>
-
-            {/* Music player below bio */}
+            {/* Music player - Sticky option */}
             {music.length > 0 && profile.show_audio_player !== false && (
-              <MusicPlayer music={music} audioRef={audioRef} shuffle={profile.audio_shuffle} />
+              <div className={profile.audio_sticky ? "fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-40" : ""}>
+                <MusicPlayer music={music} audioRef={audioRef} shuffle={profile.audio_shuffle} />
+              </div>
             )}
 
             {/* Scroll indicator - Larger and more prominent */}
@@ -291,8 +403,8 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* About Me Section - available on all themes */}
-        {hasAboutMe && (
+        {/* About Me Section - only for portfolio theme (basic theme shows it in the card) */}
+        {isPortfolioTheme && hasAboutMe && (
           <AboutMeSection
             aboutMe={profile.about_me}
             profileOpacity={profile.profile_opacity}
@@ -340,7 +452,40 @@ const Profile = () => {
             showJoinDate={profile.show_join_date ?? true}
             showLikes={profile.show_likes ?? true}
             viewsAnimation={profile.views_animation ?? true}
+            userId={profile.user_id}
           />
+        )}
+
+        {/* Likes/Dislikes in bottom right */}
+        {(hasEntered || !hasAudio) && (showContent || !hasAudio) && (
+          <div className="fixed bottom-6 right-6 z-40 flex items-center gap-3">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="flex items-center gap-1.5 text-foreground/80 hover:text-foreground transition-colors">
+                    <ThumbsUp className="w-4 h-4" />
+                    <span className="text-sm">0</span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Likes: 0</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="flex items-center gap-1.5 text-foreground/80 hover:text-foreground transition-colors">
+                    <ThumbsDown className="w-4 h-4" />
+                    <span className="text-sm">0</span>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Dislikes: 0</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         )}
           </div>
         </ContextMenuTrigger>

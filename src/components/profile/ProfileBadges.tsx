@@ -15,6 +15,7 @@ interface ProfileBadgesProps {
   userId: string;
   badgeColors?: Record<string, string>;
   showBorder?: boolean;
+  badgeBorder?: boolean;
 }
 
 const BADGE_ICONS: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
@@ -39,7 +40,7 @@ const BADGE_ICONS: Record<string, React.ComponentType<{ className?: string; styl
   easter_2025: Sparkles,
 };
 
-const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true }: ProfileBadgesProps) => {
+const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorder }: ProfileBadgesProps) => {
   const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -79,7 +80,7 @@ const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true }: ProfileB
 
   return (
     <div className="flex justify-center mt-2 mb-3">
-      <div className={`inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 ${showBorder ? 'border border-white/20' : ''}`}>
+      <div className={`inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 ${badgeBorder !== false ? 'border border-white/20' : ''}`}>
         {badges.map((badge) => {
           const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
           const customColor = badgeColors[badge.id];
