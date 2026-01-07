@@ -76,24 +76,26 @@ const EntrySplash = ({
   return (
     <div
       onClick={handleEnter}
-      className={`fixed inset-0 z-50 flex items-center justify-center cursor-pointer transition-all duration-500 ease-out ${
-        isEntering && (!animation || animation === "none") ? "opacity-0 pointer-events-none" : "opacity-100"
+      className={`fixed inset-0 z-50 flex items-center justify-center cursor-pointer ${
+        isEntering && (!animation || animation === "none") ? "animate-fade-out pointer-events-none" : ""
       }`}
       style={{ backgroundColor: "#000000" }}
     >
       {animation === "horizontal" && isEntering ? (
         <>
-          <div className="absolute inset-0 w-1/2 left-0 bg-black animate-slide-left" />
-          <div className="absolute inset-0 w-1/2 right-0 left-1/2 bg-black animate-slide-right" />
+          <div className="absolute top-0 bottom-0 left-0 w-1/2 bg-black animate-slide-left" />
+          <div className="absolute top-0 bottom-0 right-0 w-1/2 bg-black animate-slide-right" />
         </>
       ) : animation === "vertical" && isEntering ? (
         <>
-          <div className="absolute inset-0 h-1/2 top-0 bg-black animate-slide-up" />
-          <div className="absolute inset-0 h-1/2 bottom-0 top-1/2 bg-black animate-slide-down" />
+          <div className="absolute left-0 right-0 top-0 h-1/2 bg-black animate-slide-up" />
+          <div className="absolute left-0 right-0 bottom-0 h-1/2 bg-black animate-slide-down" />
         </>
+      ) : !isEntering ? (
+        <div className="absolute inset-0 bg-black" />
       ) : null}
       
-      <div className={`text-center space-y-6 animate-fade-in pointer-events-none transition-opacity duration-300 ${isEntering ? "opacity-0" : "opacity-100"}`}>
+      <div className={`text-center space-y-6 animate-fade-in pointer-events-none transition-opacity duration-300 z-10 ${isEntering ? "opacity-0" : "opacity-100"}`}>
         {renderContent()}
       </div>
     </div>

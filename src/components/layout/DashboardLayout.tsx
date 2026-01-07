@@ -6,9 +6,12 @@ import DashboardSidebar from "./DashboardSidebar";
 interface DashboardLayoutProps {
   children: React.ReactNode;
   username?: string;
+  displayName?: string;
+  avatarUrl?: string;
+  bio?: string;
 }
 
-const DashboardLayout = ({ children, username }: DashboardLayoutProps) => {
+const DashboardLayout = ({ children, username, displayName, avatarUrl, bio }: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -34,6 +37,9 @@ const DashboardLayout = ({ children, username }: DashboardLayoutProps) => {
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         username={username}
+        displayName={displayName}
+        avatarUrl={avatarUrl}
+        bio={bio}
       />
 
       {/* Main content */}

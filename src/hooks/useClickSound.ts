@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef } from "react";
 
-const CLICK_SOUND_URL = "https://cdn.freesound.org/previews/256/256116_3263906-lq.mp3";
+const DEFAULT_CLICK_SOUND_URL = "https://cdn.freesound.org/previews/256/256116_3263906-lq.mp3";
 
-export const useClickSound = (enabled: boolean) => {
+export const useClickSound = (enabled: boolean, customSoundUrl?: string | null) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const soundUrl = customSoundUrl || DEFAULT_CLICK_SOUND_URL;
 
   useEffect(() => {
     if (enabled) {
-      audioRef.current = new Audio(CLICK_SOUND_URL);
+      audioRef.current = new Audio(soundUrl);
       audioRef.current.volume = 0.3;
     }
 
@@ -17,7 +18,7 @@ export const useClickSound = (enabled: boolean) => {
         audioRef.current = null;
       }
     };
-  }, [enabled]);
+  }, [enabled, soundUrl]);
 
   const playClickSound = useCallback(() => {
     if (enabled && audioRef.current) {

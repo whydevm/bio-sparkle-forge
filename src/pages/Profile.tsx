@@ -36,8 +36,8 @@ const Profile = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // Click sounds
-  useClickSound(profile?.click_sounds ?? false);
+  // Click sounds - support custom sound URL
+  useClickSound(profile?.click_sounds ?? false, profile?.click_sound_url);
 
   // Set page title to username
   useEffect(() => {

@@ -110,10 +110,12 @@ All colors MUST be HSL.
     display: none !important;
   }
 
-  /* Shiny effect for links */
+  /* Shiny effect for links - with background */
   .shiny-link {
     position: relative;
     overflow: hidden;
+    background: hsl(var(--card) / 0.6);
+    border-radius: 0.75rem;
   }
   
   .shiny-link::before {
@@ -126,10 +128,16 @@ All colors MUST be HSL.
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(255, 255, 255, 0.2),
+      rgba(255, 255, 255, 0.4),
       transparent
     );
     animation: shine 3s infinite;
+    z-index: 1;
+  }
+  
+  .shiny-link > * {
+    position: relative;
+    z-index: 2;
   }
 
   @keyframes shine {
