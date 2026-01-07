@@ -102,7 +102,7 @@ const Dashboard = () => {
   }
 
   return (
-    <DashboardLayout username={profile?.username}>
+    <DashboardLayout username={profile?.username} displayName={profile?.display_name} avatarUrl={profile?.avatar_url} bio={profile?.bio}>
       <div className="p-4 md:p-6">
         <div className="max-w-2xl mx-auto space-y-6">
           
@@ -377,6 +377,59 @@ const Dashboard = () => {
                     onCheckedChange={(checked) => updateProfile({ click_sounds: checked })}
                   />
                 </div>
+                
+                {/* Custom Click Sound Upload */}
+                {profile?.click_sounds && (
+                  <div className="space-y-2 pt-2">
+                    <Label className="text-sm">Custom Click Sound (MP3)</Label>
+                    <div className="flex gap-2">
+                      <input
+                        type="file"
+                        accept="audio/mp3,audio/mpeg"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          try {
+                            const { data: { user } } = await supabase.auth.getUser();
+                            if (!user) throw new Error("Not authenticated");
+                            const fileName = `${user.id}/click-sound-${Date.now()}.mp3`;
+                            const { error } = await supabase.storage
+                              .from("music")
+                              .upload(fileName, file, { upsert: true });
+                            if (error) throw error;
+                            const { data } = supabase.storage.from("music").getPublicUrl(fileName);
+                            updateProfile({ click_sound_url: data.publicUrl });
+                            toast.success("Click sound uploaded!");
+                          } catch (error: any) {
+                            toast.error(error.message);
+                          }
+                        }}
+                        className="hidden"
+                        id="click-sound-upload"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById("click-sound-upload")?.click()}
+                        className="flex-1"
+                      >
+                        {profile?.click_sound_url ? "Change Sound" : "Upload MP3"}
+                      </Button>
+                      {profile?.click_sound_url && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => updateProfile({ click_sound_url: null })}
+                        >
+                          Reset
+                        </Button>
+                      )}
+                    </div>
+                    {profile?.click_sound_url && (
+                      <p className="text-xs text-muted-foreground">Custom sound active</p>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Join Date Customization */}

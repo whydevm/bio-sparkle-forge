@@ -245,6 +245,7 @@ export type Database = {
           bio_color: string | null
           bio_font: string | null
           border_enabled: boolean | null
+          click_sound_url: string | null
           click_sounds: boolean | null
           coding_badges: string[] | null
           created_at: string | null
@@ -309,6 +310,7 @@ export type Database = {
           bio_color?: string | null
           bio_font?: string | null
           border_enabled?: boolean | null
+          click_sound_url?: string | null
           click_sounds?: boolean | null
           coding_badges?: string[] | null
           created_at?: string | null
@@ -373,6 +375,7 @@ export type Database = {
           bio_color?: string | null
           bio_font?: string | null
           border_enabled?: boolean | null
+          click_sound_url?: string | null
           click_sounds?: boolean | null
           coding_badges?: string[] | null
           created_at?: string | null

@@ -4,16 +4,21 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import QRCodeGenerator from "@/components/dashboard/QRCodeGenerator";
+import ProfileShareBanner from "@/components/dashboard/ProfileShareBanner";
 
 interface DashboardSidebarProps {
   open: boolean;
   onClose: () => void;
   username?: string;
+  displayName?: string;
+  avatarUrl?: string;
+  bio?: string;
 }
 
-const DashboardSidebar = ({ open, onClose, username }: DashboardSidebarProps) => {
+const DashboardSidebar = ({ open, onClose, username, displayName, avatarUrl, bio }: DashboardSidebarProps) => {
   const [accountExpanded, setAccountExpanded] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false);
+  const [showShareBanner, setShowShareBanner] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -176,7 +181,11 @@ const DashboardSidebar = ({ open, onClose, username }: DashboardSidebarProps) =>
               Generate QR Code
             </Button>
 
-            <Button className="w-full justify-start gap-3" variant="secondary">
+            <Button 
+              className="w-full justify-start gap-3" 
+              variant="secondary"
+              onClick={() => setShowShareBanner(true)}
+            >
               <Share2 className="w-5 h-5" />
               Share Your Profile
             </Button>
@@ -189,6 +198,16 @@ const DashboardSidebar = ({ open, onClose, username }: DashboardSidebarProps) =>
         open={showQRCode}
         onClose={() => setShowQRCode(false)}
         username={username || ""}
+      />
+
+      {/* Profile Share Banner Dialog */}
+      <ProfileShareBanner
+        open={showShareBanner}
+        onClose={() => setShowShareBanner(false)}
+        username={username || ""}
+        displayName={displayName}
+        avatarUrl={avatarUrl}
+        bio={bio}
       />
     </>
   );
