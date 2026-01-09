@@ -180,20 +180,24 @@ const Profile = () => {
   const bioTexts = profile.bio ? profile.bio.split("\n").filter((t: string) => t.trim()) : [];
   const cyclingEnabled = profile.cycling_bio_enabled ?? false;
 
-  // Parallax settings - only for basic theme with border and opacity >= 25
-  const parallaxEnabled = isBasicTheme && profile.parallax_enabled && showBorder && profile.profile_opacity >= 25;
+  // Parallax settings - works without border requirement
+  const parallaxEnabled = isBasicTheme && profile.parallax_enabled && profile.profile_opacity >= 25;
 
   // Avatar radius
   const avatarRadius = profile.avatar_radius ?? 100;
+  
+  // Border effect type
+  const borderEffect = profile.border_effect || "default";
 
   const ProfileContent = () => (
     <div
-      className="glass-panel p-8 rounded-2xl space-y-6 w-full"
+      className={`p-8 rounded-2xl space-y-6 w-full ${borderEffect === "glass" ? "glass-border-effect" : ""}`}
       style={{
         backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
         backgroundColor: profileOpacity === 0 ? "transparent" : `hsl(var(--card) / ${profileOpacity})`,
-        borderWidth: showBorder ? "1px" : "0",
-        borderColor: showBorder ? "hsl(var(--border))" : "transparent",
+        borderWidth: showBorder && borderEffect !== "glass" ? "1px" : "0",
+        borderColor: showBorder && borderEffect !== "glass" ? "hsl(var(--border))" : "transparent",
+        borderRadius: "1rem",
       }}
     >
       {/* Profile Avatar - Centered */}
@@ -254,7 +258,6 @@ const Profile = () => {
         <ProfileBadges 
           userId={profile.user_id} 
           badgeColors={profile.badge_colors}
-          badgeBorder={profile.badge_border}
         />
         
         {bioTexts.length > 0 && (showContent || !hasAudio) && (
@@ -293,7 +296,6 @@ const Profile = () => {
         links={links}
         glow={profile.glow_socials}
         monochrome={profile.monochrome_icons}
-        shiny={profile.link_shiny}
         linkColors={profile.link_colors}
       />
 
