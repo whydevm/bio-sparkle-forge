@@ -38,27 +38,52 @@ const EntrySplash = ({
 
   const getEmojiUrl = (emojiId: string) => {
     // Support both animated and static Discord emojis
+    // Format: a:name:id for animated, name:id for static, or just id
     const isAnimated = emojiId.startsWith("a:");
-    const cleanId = emojiId.replace(/^a?:/, "").split(":").pop() || emojiId;
+    let cleanId = emojiId;
+    
+    if (emojiId.includes(":")) {
+      const parts = emojiId.split(":");
+      cleanId = parts[parts.length - 1];
+    }
+    
+    // Remove any non-numeric characters except for the ID itself
+    cleanId = cleanId.replace(/[^\d]/g, "");
+    
+    if (!cleanId) return null;
+    
     return `https://cdn.discordapp.com/emojis/${cleanId}.${isAnimated ? "gif" : "png"}?size=48`;
   };
 
   const renderContent = () => {
     const hasText = entryText && entryText.trim().length > 0;
     const hasEmoji = discordEmoji && discordEmoji.trim().length > 0;
+    const emojiUrl = hasEmoji ? getEmojiUrl(discordEmoji) : null;
 
-    if (hasEmoji && !hasText) {
+    if (hasEmoji && emojiUrl && !hasText) {
       return (
         <img 
-          src={getEmojiUrl(discordEmoji)} 
+          src={emojiUrl} 
           alt="Entry emoji" 
           className="w-12 h-12"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
         />
       );
     }
 
-    if (hasEmoji && hasText) {
-      const emoji = <img src={getEmojiUrl(discordEmoji)} alt="" className="w-8 h-8 inline-block" />;
+    if (hasEmoji && emojiUrl && hasText) {
+      const emoji = (
+        <img 
+          src={emojiUrl} 
+          alt="" 
+          className="w-8 h-8 inline-block"
+          onError={(e) => {
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+      );
       return (
         <h1 className={`text-4xl font-bold text-white ${entryTextFont} flex items-center gap-3 justify-center`}>
           {emojiPosition === "start" && emoji}
@@ -73,23 +98,39 @@ const EntrySplash = ({
     );
   };
 
+  const getAnimationContainerClass = () => {
+    if (!isEntering) return "";
+    if (!animation || animation === "none") return "animate-fade-out pointer-events-none";
+    return "";
+  };
+
   return (
     <div
       onClick={handleEnter}
-      className={`fixed inset-0 z-50 flex items-center justify-center cursor-pointer ${
-        isEntering && (!animation || animation === "none") ? "animate-fade-out pointer-events-none" : ""
-      }`}
+      className={`fixed inset-0 z-50 flex items-center justify-center cursor-pointer ${getAnimationContainerClass()}`}
       style={{ backgroundColor: "#000000" }}
     >
       {animation === "horizontal" && isEntering ? (
         <>
-          <div className="absolute top-0 bottom-0 left-0 w-1/2 bg-black animate-slide-left" />
-          <div className="absolute top-0 bottom-0 right-0 w-1/2 bg-black animate-slide-right" />
+          <div 
+            className="absolute inset-y-0 left-0 w-1/2 bg-black" 
+            style={{ animation: "slide-left 0.8s ease-in-out forwards" }}
+          />
+          <div 
+            className="absolute inset-y-0 right-0 w-1/2 bg-black"
+            style={{ animation: "slide-right 0.8s ease-in-out forwards" }}
+          />
         </>
       ) : animation === "vertical" && isEntering ? (
         <>
-          <div className="absolute left-0 right-0 top-0 h-1/2 bg-black animate-slide-up" />
-          <div className="absolute left-0 right-0 bottom-0 h-1/2 bg-black animate-slide-down" />
+          <div 
+            className="absolute inset-x-0 top-0 h-1/2 bg-black"
+            style={{ animation: "slide-up 0.8s ease-in-out forwards" }}
+          />
+          <div 
+            className="absolute inset-x-0 bottom-0 h-1/2 bg-black"
+            style={{ animation: "slide-down 0.8s ease-in-out forwards" }}
+          />
         </>
       ) : !isEntering ? (
         <div className="absolute inset-0 bg-black" />

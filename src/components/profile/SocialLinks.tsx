@@ -1,4 +1,3 @@
-
 import {
   SiTiktok,
   SiInstagram,
@@ -25,11 +24,10 @@ interface SocialLinksProps {
   links: SocialLink[];
   glow?: boolean;
   monochrome?: boolean;
-  shiny?: boolean;
   linkColors?: Record<string, string>;
 }
 
-const SocialLinks = ({ links, glow, monochrome, shiny, linkColors }: SocialLinksProps) => {
+const SocialLinks = ({ links, glow, monochrome, linkColors }: SocialLinksProps) => {
   const getIcon = (platform: string) => {
     const icons: Record<string, any> = {
       tiktok: SiTiktok,
@@ -58,7 +56,7 @@ const SocialLinks = ({ links, glow, monochrome, shiny, linkColors }: SocialLinks
           aria-label={link.label || link.platform}
           className={`flex items-center justify-center p-3 rounded-xl transition-all duration-300 hover:opacity-70 hover:scale-110 cursor-pointer ${
             glow ? "glow-border" : ""
-          } ${shiny ? "shiny-link" : ""}`}
+          }`}
           style={link.custom_color || linkColors?.[link.id] ? { color: link.custom_color || linkColors?.[link.id] } : undefined}
         >
           {link.custom_icon_url ? (
