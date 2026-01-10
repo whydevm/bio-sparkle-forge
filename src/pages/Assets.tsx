@@ -133,8 +133,23 @@ const Assets = () => {
     // Increment download count
     await supabase.from("assets").update({ downloads: asset.downloads + 1 }).eq("id", asset.id);
     
-    // Download file
-    window.open(asset.file_url, "_blank");
+    // Actually download the file
+    try {
+      const response = await fetch(asset.file_url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = asset.file_name;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success("Download started!");
+    } catch {
+      // Fallback to opening in new tab
+      window.open(asset.file_url, "_blank");
+    }
     loadAssets();
   };
 
@@ -197,29 +212,29 @@ const Assets = () => {
         <div className="max-w-6xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-                <ImageIcon className="w-6 h-6" />
+              <h1 className="text-2xl font-bold flex items-center gap-2">
+                <ImageIcon className="w-6 h-6 text-primary" />
                 Assets
               </h1>
-              <p className="text-muted-foreground">Share and discover useful assets for your profile</p>
+              <p className="text-muted-foreground text-sm">Share and discover assets</p>
             </div>
             
             <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2">
+                <Button size="sm" className="gap-2">
                   <Upload className="w-4 h-4" />
-                  Upload Asset
+                  Upload
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-sm">
                 <DialogHeader>
                   <DialogTitle>Upload Asset</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <Label>Asset Type</Label>
+                    <Label className="text-sm">Type</Label>
                     <Select value={uploadType} onValueChange={setUploadType}>
-                      <SelectTrigger>
+                      <SelectTrigger className="mt-1">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -232,11 +247,12 @@ const Assets = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label>File</Label>
+                    <Label className="text-sm">File</Label>
                     <Input
                       type="file"
                       accept={uploadType === "audio" ? "audio/*" : "image/*,video/*"}
                       onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                      className="mt-1"
                     />
                   </div>
                   <Button onClick={handleUpload} disabled={!selectedFile || uploading} className="w-full">
@@ -248,58 +264,49 @@ const Assets = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-7 w-full">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="owned">Owned</TabsTrigger>
-              <TabsTrigger value="avatar">Avatars</TabsTrigger>
-              <TabsTrigger value="background">Backgrounds</TabsTrigger>
-              <TabsTrigger value="banner">Banners</TabsTrigger>
-              <TabsTrigger value="cursor">Cursors</TabsTrigger>
-              <TabsTrigger value="audio">Audio</TabsTrigger>
+            <TabsList className="w-full grid grid-cols-7 h-9">
+              <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
+              <TabsTrigger value="owned" className="text-xs">Mine</TabsTrigger>
+              <TabsTrigger value="avatar" className="text-xs">Avatars</TabsTrigger>
+              <TabsTrigger value="background" className="text-xs">BGs</TabsTrigger>
+              <TabsTrigger value="banner" className="text-xs">Banners</TabsTrigger>
+              <TabsTrigger value="cursor" className="text-xs">Cursors</TabsTrigger>
+              <TabsTrigger value="audio" className="text-xs">Audio</TabsTrigger>
             </TabsList>
 
-            <TabsContent value={activeTab} className="mt-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <TabsContent value={activeTab} className="mt-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {assets.map((asset) => (
                   <div key={asset.id} className="bg-card border border-border rounded-xl overflow-hidden">
                     <div className="relative aspect-video bg-muted">
                       {asset.asset_type === "audio" ? (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Music className="w-12 h-12 text-muted-foreground" />
+                          <Music className="w-10 h-10 text-muted-foreground" />
                         </div>
                       ) : (
                         <img src={asset.file_url} alt={asset.file_name} className="w-full h-full object-cover" />
                       )}
-                      <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                      <div className="absolute top-1.5 right-1.5 bg-background/80 backdrop-blur-sm text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-1">
                         {getTypeIcon(asset.asset_type)}
-                        <span className="capitalize">{asset.asset_type}</span>
                       </div>
                     </div>
-                    <div className="p-3 space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-1">
-                          <User className="w-3 h-3" />
-                          <span>{asset.uploader_username}</span>
-                        </div>
-                        <span className="text-muted-foreground text-xs">
-                          {formatDistanceToNow(new Date(asset.created_at), { addSuffix: true })}
-                        </span>
+                    <div className="p-2 space-y-1.5">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground truncate">{asset.uploader_username}</span>
+                        <span className="text-muted-foreground">{asset.downloads}</span>
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        {asset.downloads} Downloads
-                      </div>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline" onClick={() => handleDownload(asset)} className="flex-1">
-                          <Download className="w-4 h-4" />
+                      <div className="flex gap-1.5">
+                        <Button size="sm" variant="outline" onClick={() => handleDownload(asset)} className="flex-1 h-7 text-xs">
+                          <Download className="w-3 h-3" />
                         </Button>
                         {asset.asset_type !== "audio" && (
-                          <Button size="sm" variant="outline" onClick={() => handleApply(asset)} className="flex-1 text-green-500 hover:text-green-400">
-                            <Check className="w-4 h-4" />
+                          <Button size="sm" variant="outline" onClick={() => handleApply(asset)} className="flex-1 h-7 text-xs text-green-500">
+                            <Check className="w-3 h-3" />
                           </Button>
                         )}
                         {asset.uploader_id === userId && (
-                          <Button size="sm" variant="destructive" onClick={() => handleDelete(asset)}>
-                            <Trash2 className="w-4 h-4" />
+                          <Button size="sm" variant="destructive" onClick={() => handleDelete(asset)} className="h-7">
+                            <Trash2 className="w-3 h-3" />
                           </Button>
                         )}
                       </div>
@@ -307,7 +314,7 @@ const Assets = () => {
                   </div>
                 ))}
                 {assets.length === 0 && (
-                  <div className="col-span-full text-center py-12 text-muted-foreground">
+                  <div className="col-span-full text-center py-12 text-muted-foreground text-sm">
                     No assets found
                   </div>
                 )}

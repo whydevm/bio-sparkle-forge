@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Trash2, Cloud, Palette, Sparkles, Upload, Image } from "lucide-react";
+import { Trash2, Cloud, Palette, Upload, Image } from "lucide-react";
 import { toast } from "sonner";
 import LinkColorEditor from "@/components/dashboard/LinkColorEditor";
 import {
@@ -356,20 +356,6 @@ const Links = () => {
           <p className="text-muted-foreground">Pick a social media to add to your profile.</p>
         </div>
 
-        {/* Shiny Links Toggle */}
-        <div className="mb-6 flex items-center justify-between p-4 rounded-xl bg-card border border-border">
-          <div className="flex items-center gap-3">
-            <Sparkles className="w-5 h-5 text-primary" />
-            <div>
-              <p className="font-medium">Shiny Links Effect</p>
-              <p className="text-sm text-muted-foreground">Add a shiny animation to your social links</p>
-            </div>
-          </div>
-          <Switch
-            checked={profile?.link_shiny ?? false}
-            onCheckedChange={toggleShinyLinks}
-          />
-        </div>
 
         {/* Display existing links */}
         {links.length > 0 && (

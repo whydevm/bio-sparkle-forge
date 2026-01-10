@@ -1,4 +1,4 @@
-import { Eye, MapPin, Calendar, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Eye, MapPin, Calendar, ThumbsUp, ThumbsDown, Hash } from "lucide-react";
 import CountUpAnimation from "./CountUpAnimation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { format } from "date-fns";
@@ -14,7 +14,7 @@ interface ProfileStatsProps {
   viewsAnimation?: boolean;
   displayName?: string;
   userId?: string;
-  userUid?: number;
+  uidNumber?: number;
   joinDateFormat?: string;
   joinTimeFormat?: string;
 }
@@ -30,7 +30,7 @@ const ProfileStats = ({
   viewsAnimation = true,
   displayName,
   userId,
-  userUid,
+  uidNumber,
   joinDateFormat = "MMM dd, yyyy",
   joinTimeFormat = "12h",
 }: ProfileStatsProps) => {
@@ -63,33 +63,53 @@ const ProfileStats = ({
       {/* Main stats in bottom left */}
       <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2">
         <div className="flex items-center gap-4 px-3 py-1.5 text-xs">
-          {/* Views */}
-          {showViews && (
+          {/* UID Number */}
+          {uidNumber && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-1.5 text-foreground cursor-default">
-                    <Eye className="w-3.5 h-3.5" />
-                    <span className="font-medium">
-                      {viewsAnimation ? (
-                        <CountUpAnimation target={viewCount} duration={400} />
-                      ) : (
-                        viewCount.toLocaleString()
-                      )}
-                    </span>
+                    <Hash className="w-3.5 h-3.5" />
+                    <span className="font-medium font-mono">{uidNumber}</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="bg-card border-border">
-                  <p className="font-medium">Views</p>
+                  <p className="font-medium">UID</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}
 
+          {/* Views */}
+          {showViews && (
+            <>
+              {uidNumber && <div className="w-px h-3 bg-foreground/30" />}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-1.5 text-foreground cursor-default">
+                      <Eye className="w-3.5 h-3.5" />
+                      <span className="font-medium">
+                        {viewsAnimation ? (
+                          <CountUpAnimation target={viewCount} duration={400} />
+                        ) : (
+                          viewCount.toLocaleString()
+                        )}
+                      </span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-card border-border">
+                    <p className="font-medium">Views</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
+          )}
+
           {/* Location */}
           {location && (
             <>
-              {showViews && <div className="w-px h-3 bg-foreground/30" />}
+              {(showViews || uidNumber) && <div className="w-px h-3 bg-foreground/30" />}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -109,7 +129,7 @@ const ProfileStats = ({
           {/* Date */}
           {showJoinDate && formattedDate && (
             <>
-              {(showViews || location) && <div className="w-px h-3 bg-foreground/30" />}
+              {(showViews || location || uidNumber) && <div className="w-px h-3 bg-foreground/30" />}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>

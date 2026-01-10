@@ -235,15 +235,20 @@ export type Database = {
           avatar_decoration_url: string | null
           avatar_radius: number | null
           avatar_url: string | null
+          background_duration: number | null
           background_effect: string | null
+          background_loop: boolean | null
+          background_shuffle: boolean | null
           background_type: string | null
           background_url: string | null
+          backgrounds: Json | null
           badge_border: boolean | null
           badge_colors: Json | null
           banner_url: string | null
           bio: string | null
           bio_color: string | null
           bio_font: string | null
+          border_effect: string | null
           border_enabled: boolean | null
           click_sound_url: string | null
           click_sounds: boolean | null
@@ -286,6 +291,7 @@ export type Database = {
           show_likes: boolean | null
           show_views: boolean | null
           theme: string | null
+          uid_number: number
           updated_at: string | null
           user_id: string
           username: string
@@ -300,15 +306,20 @@ export type Database = {
           avatar_decoration_url?: string | null
           avatar_radius?: number | null
           avatar_url?: string | null
+          background_duration?: number | null
           background_effect?: string | null
+          background_loop?: boolean | null
+          background_shuffle?: boolean | null
           background_type?: string | null
           background_url?: string | null
+          backgrounds?: Json | null
           badge_border?: boolean | null
           badge_colors?: Json | null
           banner_url?: string | null
           bio?: string | null
           bio_color?: string | null
           bio_font?: string | null
+          border_effect?: string | null
           border_enabled?: boolean | null
           click_sound_url?: string | null
           click_sounds?: boolean | null
@@ -351,6 +362,7 @@ export type Database = {
           show_likes?: boolean | null
           show_views?: boolean | null
           theme?: string | null
+          uid_number?: number
           updated_at?: string | null
           user_id: string
           username: string
@@ -365,15 +377,20 @@ export type Database = {
           avatar_decoration_url?: string | null
           avatar_radius?: number | null
           avatar_url?: string | null
+          background_duration?: number | null
           background_effect?: string | null
+          background_loop?: boolean | null
+          background_shuffle?: boolean | null
           background_type?: string | null
           background_url?: string | null
+          backgrounds?: Json | null
           badge_border?: boolean | null
           badge_colors?: Json | null
           banner_url?: string | null
           bio?: string | null
           bio_color?: string | null
           bio_font?: string | null
+          border_effect?: string | null
           border_enabled?: boolean | null
           click_sound_url?: string | null
           click_sounds?: boolean | null
@@ -416,6 +433,7 @@ export type Database = {
           show_likes?: boolean | null
           show_views?: boolean | null
           theme?: string | null
+          uid_number?: number
           updated_at?: string | null
           user_id?: string
           username?: string
@@ -424,6 +442,45 @@ export type Database = {
           views_animation?: boolean | null
         }
         Relationships: []
+      }
+      project_clicks: {
+        Row: {
+          clicked_at: string
+          country_code: string | null
+          id: string
+          profile_id: string
+          project_id: string
+        }
+        Insert: {
+          clicked_at?: string
+          country_code?: string | null
+          id?: string
+          profile_id: string
+          project_id: string
+        }
+        Update: {
+          clicked_at?: string
+          country_code?: string | null
+          id?: string
+          profile_id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_clicks_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_clicks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       projects: {
         Row: {

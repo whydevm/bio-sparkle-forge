@@ -37,22 +37,37 @@ const EntrySplash = ({
   if (isHidden) return null;
 
   const getEmojiUrl = (emojiId: string) => {
-    // Support both animated and static Discord emojis
-    // Format: a:name:id for animated, name:id for static, or just id
-    const isAnimated = emojiId.startsWith("a:");
-    let cleanId = emojiId;
+    if (!emojiId) return null;
     
-    if (emojiId.includes(":")) {
-      const parts = emojiId.split(":");
+    // Support various Discord emoji formats:
+    // 1. Full format: <a:name:id> or <:name:id>
+    // 2. Partial: a:name:id or name:id
+    // 3. Just the ID
+    
+    let isAnimated = false;
+    let cleanId = emojiId.trim();
+    
+    // Remove < and > if present
+    cleanId = cleanId.replace(/^<|>$/g, "");
+    
+    // Check for animated prefix
+    if (cleanId.startsWith("a:")) {
+      isAnimated = true;
+      cleanId = cleanId.slice(2);
+    }
+    
+    // If it contains colons, get the last part (the ID)
+    if (cleanId.includes(":")) {
+      const parts = cleanId.split(":");
       cleanId = parts[parts.length - 1];
     }
     
-    // Remove any non-numeric characters except for the ID itself
+    // Clean up to just numbers
     cleanId = cleanId.replace(/[^\d]/g, "");
     
-    if (!cleanId) return null;
+    if (!cleanId || cleanId.length < 15) return null;
     
-    return `https://cdn.discordapp.com/emojis/${cleanId}.${isAnimated ? "gif" : "png"}?size=48`;
+    return `https://cdn.discordapp.com/emojis/${cleanId}.${isAnimated ? "gif" : "png"}?size=64`;
   };
 
   const renderContent = () => {
