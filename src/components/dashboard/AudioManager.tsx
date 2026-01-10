@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Music, Plus, Upload, Youtube, Shuffle, Video, Volume2, Pin, Image, Trash2 } from "lucide-react";
+import { Music, Plus, Upload, Shuffle, Volume2, Pin, Image, Trash2, Play, X } from "lucide-react";
 
 interface AudioManagerProps {
   open: boolean;
@@ -62,6 +62,11 @@ const AudioManager = ({
     if (file) {
       setSelectedAudioFile(file);
       setAudioPreviewUrl(file.name);
+      // Auto-fill title from filename
+      const titleFromFile = file.name.replace(/\.[^/.]+$/, "");
+      if (!newTrack.title) {
+        setNewTrack({ ...newTrack, title: titleFromFile });
+      }
     }
   };
 
@@ -151,116 +156,107 @@ const AudioManager = ({
   if (showAddModal) {
     return (
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="max-w-md bg-card border-border max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-sm bg-card border-border">
           <DialogHeader>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center">
-                <Music className="w-6 h-6 text-green-500" />
+              <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                <Music className="w-5 h-5 text-green-500" />
               </div>
               <div>
-                <DialogTitle className="text-lg">Add New Audio</DialogTitle>
-                <p className="text-sm text-muted-foreground">Upload an audio file or search YouTube for music</p>
+                <DialogTitle className="text-base">Add Audio</DialogTitle>
+                <p className="text-xs text-muted-foreground">Upload an audio file</p>
               </div>
             </div>
           </DialogHeader>
 
           <div className="space-y-4 mt-4">
-            {/* Upload options */}
-            <div className="space-y-2">
-              <Button
-                variant="outline"
-                className="w-full border-primary text-primary hover:bg-primary/10"
-                onClick={() => audioInputRef.current?.click()}
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                Upload File
-              </Button>
-              <Button variant="ghost" className="w-full text-muted-foreground" disabled>
-                <Youtube className="w-4 h-4 mr-2" />
-                YouTube
-              </Button>
-              <input
-                ref={audioInputRef}
-                type="file"
-                accept="audio/*"
-                onChange={handleAudioFileSelect}
-                className="hidden"
-              />
-            </div>
-
-            {/* Audio file drop zone */}
-            <div>
-              <label className="text-sm font-medium">Audio File</label>
-              <div
-                onClick={() => audioInputRef.current?.click()}
-                className="mt-2 border border-border rounded-lg p-8 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 transition-colors min-h-[120px]"
-              >
-                {audioPreviewUrl ? (
-                  <div className="text-center">
-                    <Music className="w-8 h-8 text-primary mx-auto mb-2" />
-                    <span className="text-sm text-primary">{audioPreviewUrl}</span>
+            {/* Audio file upload */}
+            <div
+              onClick={() => audioInputRef.current?.click()}
+              className="border-2 border-dashed border-border rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-primary/50 transition-colors bg-background/50"
+            >
+              {audioPreviewUrl ? (
+                <>
+                  <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                    <Music className="w-5 h-5 text-primary" />
                   </div>
-                ) : (
-                  <>
-                    <Music className="w-8 h-8 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Click or Drop an Audio File</span>
-                  </>
-                )}
-              </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm truncate">{audioPreviewUrl}</p>
+                    <p className="text-xs text-muted-foreground">Audio file selected</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedAudioFile(null);
+                      setAudioPreviewUrl(null);
+                    }}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Upload className="w-6 h-6 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm">Click to upload audio</p>
+                    <p className="text-xs text-muted-foreground">MP3, WAV, OGG</p>
+                  </div>
+                </>
+              )}
             </div>
+            <input
+              ref={audioInputRef}
+              type="file"
+              accept="audio/*"
+              onChange={handleAudioFileSelect}
+              className="hidden"
+            />
 
-            {/* Cover image drop zone */}
-            <div>
-              <label className="text-sm font-medium">
-                Cover Image <span className="text-muted-foreground">(optional)</span>
-              </label>
+            {/* Cover image */}
+            <div className="flex gap-3">
               <div
                 onClick={() => coverInputRef.current?.click()}
-                className="mt-2 border border-border rounded-lg p-8 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 transition-colors min-h-[120px]"
+                className="w-16 h-16 rounded-lg border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors bg-background/50 flex-shrink-0"
               >
                 {coverPreviewUrl ? (
-                  <img src={coverPreviewUrl} alt="Cover" className="w-20 h-20 object-cover rounded" />
+                  <img src={coverPreviewUrl} alt="Cover" className="w-full h-full object-cover rounded-lg" />
                 ) : (
-                  <>
-                    <Image className="w-8 h-8 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">Click or Drop a Cover Image</span>
-                  </>
+                  <Image className="w-5 h-5 text-muted-foreground" />
                 )}
               </div>
-              <input
-                ref={coverInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleCoverFileSelect}
-                className="hidden"
-              />
-            </div>
-
-            {/* Song title */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-medium">Song Title</label>
-                <span className="text-xs text-muted-foreground">{newTrack.title.length}/64</span>
+              <div className="flex-1">
+                <Input
+                  value={newTrack.title}
+                  onChange={(e) => setNewTrack({ ...newTrack, title: e.target.value.slice(0, 64) })}
+                  placeholder="Song title"
+                  className="bg-background/50 border-border text-sm"
+                />
+                <p className="text-xs text-muted-foreground mt-1">{newTrack.title.length}/64</p>
               </div>
-              <Input
-                value={newTrack.title}
-                onChange={(e) => setNewTrack({ ...newTrack, title: e.target.value.slice(0, 64) })}
-                placeholder="Enter song title"
-                className="bg-card/50 border-border"
-              />
             </div>
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleCoverFileSelect}
+              className="hidden"
+            />
 
             {/* Action buttons */}
-            <div className="flex gap-3 pt-4">
-              <Button variant="ghost" onClick={handleCloseAddModal}>
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={handleCloseAddModal} className="flex-1" size="sm">
                 Cancel
               </Button>
               <Button
                 onClick={handleAddAudio}
                 disabled={!selectedAudioFile || !newTrack.title || uploading}
-                className="flex-1 bg-primary/20 text-primary hover:bg-primary/30"
+                className="flex-1"
+                size="sm"
               >
-                {uploading ? "Adding..." : "Apply"}
+                {uploading ? "Adding..." : "Add"}
               </Button>
             </div>
           </div>
@@ -271,15 +267,15 @@ const AudioManager = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md bg-card border-border max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-sm bg-card border-border max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-primary">
-            <Music className="w-5 h-5" />
+          <DialogTitle className="flex items-center gap-2">
+            <Music className="w-5 h-5 text-primary" />
             Audio Manager
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 mt-4">
+        <div className="space-y-4 mt-4">
           {/* Your Audios section */}
           <div>
             <div className="flex items-center justify-between mb-3">
@@ -288,97 +284,80 @@ const AudioManager = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setShowAddModal(true)}
-                className="border-primary text-primary hover:bg-primary/10"
+                disabled={music.length >= 3}
+                className="h-8 text-xs"
               >
-                <Plus className="w-4 h-4 mr-1" />
-                Add Audio
+                <Plus className="w-3.5 h-3.5 mr-1" />
+                Add
               </Button>
             </div>
             
-            <div className="border border-border rounded-lg p-4 min-h-[100px]">
-              {music.length > 0 ? (
-                <div className="space-y-2">
-                  {music.map((track) => (
-                    <div key={track.id} className="flex items-center gap-3 bg-card/50 rounded p-2">
-                      {track.cover_url ? (
-                        <img src={track.cover_url} alt={track.title} className="w-10 h-10 rounded object-cover" />
-                      ) : (
-                        <div className="w-10 h-10 rounded bg-muted flex items-center justify-center">
-                          <Music className="w-5 h-5 text-muted-foreground" />
-                        </div>
-                      )}
-                      <span className="flex-1 text-sm truncate">{track.title}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteTrack(track.id)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center gap-2 py-4">
-                  <Music className="w-8 h-8 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">You don't have any audio files yet.</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Premium notice */}
-          <div className="border border-primary/30 bg-primary/5 rounded-lg p-4 text-center">
-            <p className="text-sm text-primary">
-              With premium, you can upload up to 5 audio files. Upgrade now <span className="underline cursor-pointer">here</span>.
-            </p>
+            {music.length > 0 ? (
+              <div className="space-y-2">
+                {music.map((track) => (
+                  <div key={track.id} className="flex items-center gap-3 p-2 rounded-lg bg-background/50 border border-border">
+                    {track.cover_url ? (
+                      <img src={track.cover_url} alt={track.title} className="w-10 h-10 rounded-lg object-cover" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                        <Music className="w-5 h-5 text-muted-foreground" />
+                      </div>
+                    )}
+                    <span className="flex-1 text-sm truncate">{track.title}</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteTrack(track.id)}
+                      className="h-8 w-8 text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="border border-dashed border-border rounded-lg p-6 flex flex-col items-center justify-center gap-2">
+                <Music className="w-8 h-8 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">No audio files yet</span>
+              </div>
+            )}
           </div>
 
           {/* Audio Settings */}
-          <div>
-            <h3 className="text-sm font-medium mb-3">Audio Settings</h3>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between bg-card/50 border border-border rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <Shuffle className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Shuffle</span>
-                </div>
-                <Switch 
-                  checked={audioShuffle} 
-                  onCheckedChange={(checked) => onSettingsChange({ audio_shuffle: checked })} 
-                />
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium">Settings</h3>
+            
+            <div className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-border">
+              <div className="flex items-center gap-2">
+                <Shuffle className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm">Shuffle</span>
               </div>
-              
-              <div className="flex items-center justify-between bg-card/50 border border-border rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <Video className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Player</span>
-                </div>
-                <Switch 
-                  checked={showAudioPlayer ?? true} 
-                  onCheckedChange={(checked) => onSettingsChange({ show_audio_player: checked })} 
-                />
+              <Switch 
+                checked={audioShuffle} 
+                onCheckedChange={(checked) => onSettingsChange({ audio_shuffle: checked })} 
+              />
+            </div>
+            
+            <div className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-border">
+              <div className="flex items-center gap-2">
+                <Play className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm">Show Player</span>
               </div>
-              
-              <div className="flex items-center justify-between bg-card/50 border border-border rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <Volume2 className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Volume</span>
-                </div>
-                <Switch />
+              <Switch 
+                checked={showAudioPlayer ?? true} 
+                onCheckedChange={(checked) => onSettingsChange({ show_audio_player: checked })} 
+              />
+            </div>
+            
+            <div className="flex items-center justify-between p-3 rounded-lg bg-background/50 border border-border">
+              <div className="flex items-center gap-2">
+                <Pin className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm">Sticky</span>
               </div>
-              
-              <div className="flex items-center justify-between bg-card/50 border border-border rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <Pin className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Sticky (Below Profile)</span>
-                </div>
-                <Switch 
-                  checked={audioSticky ?? false} 
-                  onCheckedChange={(checked) => onSettingsChange({ audio_sticky: checked })} 
-                />
-              </div>
+              <Switch 
+                checked={audioSticky ?? false} 
+                onCheckedChange={(checked) => onSettingsChange({ audio_sticky: checked })} 
+              />
             </div>
           </div>
         </div>

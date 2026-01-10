@@ -1,6 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
+import { Calendar, Clock, Globe } from "lucide-react";
 
 interface JoinDateEditorProps {
   createdAt: string;
@@ -70,68 +71,80 @@ const JoinDateEditor = ({
   };
 
   return (
-    <div className="space-y-4">
-      <div>
-        <Label className="mb-2 block">Date Format</Label>
-        <Select
-          value={dateFormat}
-          onValueChange={(value) => onSettingsChange({ join_date_format: value })}
-        >
-          <SelectTrigger className="bg-card/50 border-border">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {dateFormats.map((fmt) => (
-              <SelectItem key={fmt.value} value={fmt.value}>
-                {fmt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <div className="space-y-3">
+      {/* Date Format */}
+      <div className="flex items-center gap-3 p-3 rounded-lg bg-background/50 border border-border">
+        <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+        <div className="flex-1">
+          <Label className="text-xs text-muted-foreground">Date Format</Label>
+          <Select
+            value={dateFormat}
+            onValueChange={(value) => onSettingsChange({ join_date_format: value })}
+          >
+            <SelectTrigger className="h-8 bg-transparent border-0 p-0 text-sm focus:ring-0 shadow-none">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {dateFormats.map((fmt) => (
+                <SelectItem key={fmt.value} value={fmt.value}>
+                  {fmt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <div>
-        <Label className="mb-2 block">Time Format</Label>
-        <Select
-          value={timeFormat}
-          onValueChange={(value) => onSettingsChange({ join_time_format: value })}
-        >
-          <SelectTrigger className="bg-card/50 border-border">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {timeFormats.map((fmt) => (
-              <SelectItem key={fmt.value} value={fmt.value}>
-                {fmt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Time Format */}
+      <div className="flex items-center gap-3 p-3 rounded-lg bg-background/50 border border-border">
+        <Clock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+        <div className="flex-1">
+          <Label className="text-xs text-muted-foreground">Time Format</Label>
+          <Select
+            value={timeFormat}
+            onValueChange={(value) => onSettingsChange({ join_time_format: value })}
+          >
+            <SelectTrigger className="h-8 bg-transparent border-0 p-0 text-sm focus:ring-0 shadow-none">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {timeFormats.map((fmt) => (
+                <SelectItem key={fmt.value} value={fmt.value}>
+                  {fmt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <div>
-        <Label className="mb-2 block">Timezone</Label>
-        <Select
-          value={timezone}
-          onValueChange={(value) => onSettingsChange({ join_timezone: value })}
-        >
-          <SelectTrigger className="bg-card/50 border-border">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {timezones.map((tz) => (
-              <SelectItem key={tz.value} value={tz.value}>
-                {tz.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Timezone */}
+      <div className="flex items-center gap-3 p-3 rounded-lg bg-background/50 border border-border">
+        <Globe className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+        <div className="flex-1">
+          <Label className="text-xs text-muted-foreground">Timezone</Label>
+          <Select
+            value={timezone}
+            onValueChange={(value) => onSettingsChange({ join_timezone: value })}
+          >
+            <SelectTrigger className="h-8 bg-transparent border-0 p-0 text-sm focus:ring-0 shadow-none">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {timezones.map((tz) => (
+                <SelectItem key={tz.value} value={tz.value}>
+                  {tz.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Preview */}
-      <div className="bg-muted/50 rounded-lg p-4 border border-border">
-        <Label className="text-xs text-muted-foreground">Preview</Label>
-        <p className="text-lg font-medium mt-1">{getPreviewDate()}</p>
+      <div className="bg-primary/5 rounded-lg p-3 border border-primary/20">
+        <p className="text-xs text-muted-foreground mb-1">Preview</p>
+        <p className="text-sm font-medium">{getPreviewDate()}</p>
       </div>
     </div>
   );

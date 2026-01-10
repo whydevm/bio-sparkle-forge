@@ -439,6 +439,7 @@ const Profile = () => {
             showLikes={profile.show_likes ?? true}
             viewsAnimation={profile.views_animation ?? true}
             userId={profile.user_id}
+            uidNumber={profile.uid_number}
             joinDateFormat={profile.join_date_format || "MMM dd, yyyy"}
             joinTimeFormat={profile.join_time_format || "12h"}
           />
