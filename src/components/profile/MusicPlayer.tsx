@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Play, Pause, SkipBack, SkipForward, Volume2, Music } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Music } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 
 interface MusicItem {
   id: string;
@@ -21,15 +22,16 @@ const MusicPlayer = ({ music, audioRef: externalAudioRef, shuffle }: MusicPlayer
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.5);
+  const [isMuted, setIsMuted] = useState(false);
   const [playedTracks, setPlayedTracks] = useState<number[]>([]);
   const internalAudioRef = useRef<HTMLAudioElement>(null);
   const audioRefInternal = externalAudioRef || internalAudioRef;
 
   useEffect(() => {
     if (audioRefInternal.current) {
-      audioRefInternal.current.volume = volume;
+      audioRefInternal.current.volume = isMuted ? 0 : volume;
     }
-  }, [volume]);
+  }, [volume, isMuted]);
 
   useEffect(() => {
     const audio = audioRefInternal.current;
@@ -70,6 +72,10 @@ const MusicPlayer = ({ music, audioRef: externalAudioRef, shuffle }: MusicPlayer
     }
   };
 
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+  };
+
   const nextTrack = () => {
     if (shuffle && music.length > 1) {
       const availableTracks = music
@@ -101,8 +107,8 @@ const MusicPlayer = ({ music, audioRef: externalAudioRef, shuffle }: MusicPlayer
     }
   };
 
-  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTime = parseFloat(e.target.value);
+  const handleSeek = (value: number[]) => {
+    const newTime = value[0];
     if (audioRefInternal.current) {
       audioRefInternal.current.currentTime = newTime;
       setCurrentTime(newTime);
@@ -113,83 +119,83 @@ const MusicPlayer = ({ music, audioRef: externalAudioRef, shuffle }: MusicPlayer
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="w-full flex items-center gap-3 px-4 py-3">
-      {/* Album art / cover */}
-      <div className="flex-shrink-0 w-10 h-10 rounded-lg overflow-hidden bg-foreground/10">
-        {currentMusic?.cover_url ? (
-          <img 
-            src={currentMusic.cover_url} 
-            alt={currentMusic.title}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Music className="w-5 h-5 text-foreground/50" />
-          </div>
-        )}
-      </div>
-
-      {/* Title */}
-      <div className="flex items-center gap-1.5 min-w-0 flex-shrink-0">
-        <span className="text-sm font-medium text-foreground truncate max-w-[100px]">
-          {currentMusic?.title || "Untitled"}
-        </span>
-      </div>
-
-      {/* Time and progress */}
-      <div className="flex items-center gap-2 flex-1 min-w-0">
-        <span className="text-xs text-foreground/60 tabular-nums w-8 text-right flex-shrink-0">
-          {formatTime(currentTime)}
-        </span>
-        <div className="relative flex-1 h-1 bg-foreground/20 rounded-full overflow-hidden">
-          <div 
-            className="absolute inset-y-0 left-0 bg-foreground/60 rounded-full"
-            style={{ width: `${progress}%` }}
-          />
-          <input
-            type="range"
-            min="0"
-            max={duration || 0}
-            value={currentTime}
-            onChange={handleSeek}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-          />
-        </div>
-        <span className="text-xs text-foreground/60 tabular-nums w-8 flex-shrink-0">
-          {formatTime(duration)}
-        </span>
-      </div>
-
-      {/* Controls */}
-      <div className="flex items-center gap-0.5 flex-shrink-0">
-        <button
-          onClick={prevTrack}
-          className="w-8 h-8 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
-        >
-          <SkipBack className="w-4 h-4" fill="currentColor" />
-        </button>
-
-        <button
-          onClick={togglePlay}
-          className="w-8 h-8 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
-        >
-          {isPlaying ? (
-            <Pause className="w-5 h-5" fill="currentColor" />
+    <div className="w-full backdrop-blur-md bg-background/20 border border-foreground/10 rounded-xl p-3">
+      <div className="flex items-center gap-3">
+        {/* Album art / cover */}
+        <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-foreground/10">
+          {currentMusic?.cover_url ? (
+            <img 
+              src={currentMusic.cover_url} 
+              alt={currentMusic.title}
+              className="w-full h-full object-cover"
+            />
           ) : (
-            <Play className="w-5 h-5" fill="currentColor" />
+            <div className="w-full h-full flex items-center justify-center">
+              <Music className="w-5 h-5 text-foreground/50" />
+            </div>
           )}
-        </button>
+        </div>
 
-        <button
-          onClick={nextTrack}
-          className="w-8 h-8 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
-        >
-          <SkipForward className="w-4 h-4" fill="currentColor" />
-        </button>
+        {/* Title and controls */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-sm font-medium text-foreground truncate max-w-[120px]">
+              {currentMusic?.title || "Untitled"}
+            </span>
+            
+            {/* Controls */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={prevTrack}
+                className="w-7 h-7 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
+              >
+                <SkipBack className="w-3.5 h-3.5" fill="currentColor" />
+              </button>
 
-        <button className="w-8 h-8 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors">
-          <Volume2 className="w-4 h-4" />
-        </button>
+              <button
+                onClick={togglePlay}
+                className="w-8 h-8 flex items-center justify-center bg-foreground/10 hover:bg-foreground/20 rounded-full text-foreground transition-colors"
+              >
+                {isPlaying ? (
+                  <Pause className="w-4 h-4" fill="currentColor" />
+                ) : (
+                  <Play className="w-4 h-4 ml-0.5" fill="currentColor" />
+                )}
+              </button>
+
+              <button
+                onClick={nextTrack}
+                className="w-7 h-7 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
+              >
+                <SkipForward className="w-3.5 h-3.5" fill="currentColor" />
+              </button>
+
+              <button 
+                onClick={toggleMute}
+                className="w-7 h-7 flex items-center justify-center text-foreground/70 hover:text-foreground transition-colors"
+              >
+                {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-foreground/60 tabular-nums w-8">
+              {formatTime(currentTime)}
+            </span>
+            <Slider
+              value={[currentTime]}
+              max={duration || 100}
+              step={0.1}
+              onValueChange={handleSeek}
+              className="flex-1 [&>span:first-child]:h-1 [&>span:first-child]:bg-foreground/20 [&_[role=slider]]:w-3 [&_[role=slider]]:h-3 [&_[role=slider]]:bg-foreground [&>span:first-child>span]:bg-foreground/60"
+            />
+            <span className="text-xs text-foreground/60 tabular-nums w-8 text-right">
+              {formatTime(duration)}
+            </span>
+          </div>
+        </div>
       </div>
 
       <audio

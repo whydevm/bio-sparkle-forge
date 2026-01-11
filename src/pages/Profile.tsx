@@ -166,9 +166,14 @@ const Profile = () => {
   const profileBlur = profile.profile_blur;
   const showBorder = profile.border_enabled && profileOpacity > 0;
   
-  const hasAudio = music.length > 0 || profile.background_type === "video";
+  // Check if video has audio (we assume videos may have audio)
+  const videoHasAudio = profile.background_type === "video" && profile.background_url;
+  const hasAudio = music.length > 0 || videoHasAudio;
   const shouldShowSplash = hasAudio && !hasEntered;
   const hasAboutMe = profile.about_me && profile.about_me.trim().length > 0;
+  
+  // Show audio toggle even when no music tracks but video exists
+  const showAudioToggle = hasAudio && (hasEntered || !hasAudio);
   // Normalize legacy themes to new ones
   const normalizedTheme = profile.theme === "default" || profile.theme === "minimal" || profile.theme === "neon" 
     ? "basic" 
@@ -352,10 +357,10 @@ const Profile = () => {
           </video>
         )}
 
-        {/* Audio toggle button in top left when player is hidden */}
-        {music.length > 0 && profile.show_audio_player === false && (hasEntered || !hasAudio) && (
+        {/* Audio toggle button in top left when player is hidden or when only video has audio */}
+        {((music.length > 0 && profile.show_audio_player === false) || (music.length === 0 && videoHasAudio)) && (hasEntered || !hasAudio) && (
           <div className="fixed top-6 left-6 z-50">
-            <AudioToggle audioRef={audioRef} />
+            <AudioToggle audioRef={videoHasAudio && music.length === 0 ? videoRef as any : audioRef} />
           </div>
         )}
 

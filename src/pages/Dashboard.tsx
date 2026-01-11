@@ -19,6 +19,9 @@ import ThemeSelector from "@/components/dashboard/ThemeSelector";
 import SaveChangesBar from "@/components/dashboard/SaveChangesBar";
 import SocialCardsEditor from "@/components/dashboard/SocialCardsEditor";
 import JoinDateEditor from "@/components/dashboard/JoinDateEditor";
+import ClickSoundManager from "@/components/dashboard/ClickSoundManager";
+import EffectsPreview from "@/components/dashboard/EffectsPreview";
+import BorderEffectSelector from "@/components/dashboard/BorderEffectSelector";
 import { User, Image, Music, MousePointer, Settings, Palette, Square, RotateCcw, Code2, FolderKanban, Sparkles, Share2, Calendar } from "lucide-react";
 import CodingBadgesEditor from "@/components/dashboard/CodingBadgesEditor";
 
@@ -107,71 +110,78 @@ const Dashboard = () => {
         <div className="max-w-2xl mx-auto space-y-6">
           
           {/* Main Manager Cards */}
-          <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {/* Avatar Card */}
             <div
               onClick={() => setShowAvatarManager(true)}
-              className="border border-border rounded-xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-primary/50 transition-colors min-h-[160px] bg-card/30"
+              className="border border-border rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 transition-colors bg-card/30 aspect-square"
             >
               {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="Avatar" className="w-16 h-16 rounded-full object-cover" />
+                <img src={profile.avatar_url} alt="Avatar" className="w-12 h-12 rounded-full object-cover" />
               ) : (
-                <User className="w-12 h-12 text-muted-foreground" />
+                <User className="w-8 h-8 text-muted-foreground" />
               )}
-              <span className="text-muted-foreground text-sm">Click or Drop a Avatar</span>
+              <span className="text-muted-foreground text-xs text-center">Avatar</span>
             </div>
 
             {/* Background Card */}
             <div
               onClick={() => setShowBackgroundManager(true)}
-              className="border border-border rounded-xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-primary/50 transition-colors min-h-[160px] bg-card/30"
+              className="border border-border rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 transition-colors bg-card/30 aspect-square"
             >
               {profile?.background_url ? (
                 profile?.background_type === "video" ? (
-                  <video src={profile.background_url} className="w-24 h-16 object-cover rounded" />
+                  <video src={profile.background_url} className="w-12 h-12 object-cover rounded" />
                 ) : (
-                  <img src={profile.background_url} alt="Background" className="w-24 h-16 object-cover rounded" />
+                  <img src={profile.background_url} alt="Background" className="w-12 h-12 object-cover rounded" />
                 )
               ) : (
-                <Image className="w-12 h-12 text-muted-foreground" />
+                <Image className="w-8 h-8 text-muted-foreground" />
               )}
-              <span className="text-muted-foreground text-sm">Click to open background manager</span>
+              <span className="text-muted-foreground text-xs text-center">Background</span>
             </div>
 
             {/* Audio Card */}
             <div
               onClick={() => setShowAudioManager(true)}
-              className="border border-border rounded-xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-primary/50 transition-colors min-h-[160px] bg-card/30"
+              className="border border-border rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 transition-colors bg-card/30 aspect-square"
             >
-              <Music className="w-12 h-12 text-muted-foreground" />
-              <span className="text-muted-foreground text-sm">Click to open audio manager</span>
+              <Music className="w-8 h-8 text-muted-foreground" />
+              <span className="text-muted-foreground text-xs text-center">Audio</span>
             </div>
 
             {/* Cursor Card */}
             <div
               onClick={() => setShowCursorManager(true)}
-              className="border border-border rounded-xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-primary/50 transition-colors min-h-[160px] bg-card/30"
+              className="border border-border rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 transition-colors bg-card/30 aspect-square"
             >
               {profile?.custom_cursor ? (
-                <img src={profile.custom_cursor} alt="Cursor" className="w-12 h-12 object-contain" />
+                <img src={profile.custom_cursor} alt="Cursor" className="w-8 h-8 object-contain" />
               ) : (
-                <MousePointer className="w-12 h-12 text-muted-foreground" />
+                <MousePointer className="w-8 h-8 text-muted-foreground" />
               )}
-              <span className="text-muted-foreground text-sm">Click to open cursor manager</span>
+              <span className="text-muted-foreground text-xs text-center">Cursor</span>
             </div>
           </div>
 
+          {/* Click Sound - Now at top */}
+          <ClickSoundManager
+            enabled={profile?.click_sounds ?? false}
+            soundUrl={profile?.click_sound_url}
+            onSettingsChange={(settings) => updateProfile(settings)}
+          />
+
           {/* General Customization Section */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
-              <Settings className="w-6 h-6" />
-              General Customization
+            <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+              <Settings className="w-5 h-5" />
+              General
             </h2>
             
-            <div className="border border-border rounded-xl p-6 space-y-6 bg-card/30">
+            <div className="border border-border rounded-xl p-4 md:p-6 space-y-5 bg-card/30">
               {/* Cycling Bio Toggle */}
               <div className="flex items-center justify-between">
-                <Label>Enable Cycling Bio (Typewriter)</Label>
+                <Label className="text-sm">Enable Cycling Bio</Label>
                 <Switch
                   checked={profile?.cycling_bio_enabled ?? false}
                   onCheckedChange={(checked) => updateProfile({ cycling_bio_enabled: checked })}
@@ -180,37 +190,32 @@ const Dashboard = () => {
 
               {/* Description / Bio Texts */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>{profile?.cycling_bio_enabled ? "Bio Texts (one per line)" : "Description"}</Label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <Label className="text-sm">{profile?.cycling_bio_enabled ? "Bio Texts" : "Description"}</Label>
                   <span className="text-xs text-muted-foreground">{(profile?.bio || "").length}/200</span>
                 </div>
                 {profile?.cycling_bio_enabled ? (
                   <Textarea
                     value={profile?.bio || ""}
                     onChange={(e) => updateProfile({ bio: e.target.value.slice(0, 200) })}
-                    placeholder="Enter multiple bio texts (one per line)&#10;Example:&#10;Developer&#10;Designer&#10;Creator"
-                    className="bg-card/50 border-border min-h-[100px]"
+                    placeholder="Enter multiple bio texts (one per line)"
+                    className="bg-card/50 border-border min-h-[80px] text-sm"
                   />
                 ) : (
                   <Input
                     value={profile?.bio || ""}
                     onChange={(e) => updateProfile({ bio: e.target.value.slice(0, 200) })}
                     placeholder="Enter your description"
-                    className="bg-card/50 border-border"
+                    className="bg-card/50 border-border text-sm"
                   />
-                )}
-                {profile?.cycling_bio_enabled && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Each line will cycle with a typewriter animation
-                  </p>
                 )}
               </div>
 
               {/* Avatar Radius */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Avatar Radius</Label>
-                  <span className="text-xs bg-card px-2 py-1 rounded">{profile?.avatar_radius ?? 100}</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <Label className="text-sm">Avatar Radius</Label>
+                  <span className="text-xs bg-card px-2 py-0.5 rounded">{profile?.avatar_radius ?? 100}%</span>
                 </div>
                 <Slider
                   value={[profile?.avatar_radius ?? 100]}
@@ -224,9 +229,9 @@ const Dashboard = () => {
 
               {/* Profile Opacity */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Profile Opacity</Label>
-                  <Palette className="w-4 h-4 text-muted-foreground" />
+                <div className="flex items-center justify-between mb-1.5">
+                  <Label className="text-sm">Profile Opacity</Label>
+                  <span className="text-xs bg-card px-2 py-0.5 rounded">{profile?.profile_opacity ?? 100}%</span>
                 </div>
                 <Slider
                   value={[profile?.profile_opacity ?? 100]}
@@ -240,9 +245,9 @@ const Dashboard = () => {
 
               {/* Profile Blur */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Profile Blur</Label>
-                  <Palette className="w-4 h-4 text-muted-foreground" />
+                <div className="flex items-center justify-between mb-1.5">
+                  <Label className="text-sm">Profile Blur</Label>
+                  <span className="text-xs bg-card px-2 py-0.5 rounded">{profile?.profile_blur || 0}px</span>
                 </div>
                 <Slider
                   value={[profile?.profile_blur || 0]}
@@ -256,18 +261,15 @@ const Dashboard = () => {
 
               {/* Background Effects */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Background Effects</Label>
-                  <div className="flex gap-1">
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                  </div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <Label className="text-sm">Background Effects</Label>
+                  <EffectsPreview effect={profile?.background_effect || "none"} />
                 </div>
                 <Select
                   value={profile?.background_effect || "none"}
                   onValueChange={(value) => updateProfile({ background_effect: value })}
                 >
-                  <SelectTrigger className="bg-card/50 border-border">
+                  <SelectTrigger className="bg-card/50 border-border text-sm">
                     <SelectValue placeholder="Select effect" />
                   </SelectTrigger>
                   <SelectContent>
@@ -282,14 +284,12 @@ const Dashboard = () => {
 
               {/* Entry Animation */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Entry Animation</Label>
-                </div>
+                <Label className="text-sm mb-1.5 block">Entry Animation</Label>
                 <Select
                   value={profile?.entry_animation || "none"}
                   onValueChange={(value) => updateProfile({ entry_animation: value })}
                 >
-                  <SelectTrigger className="bg-card/50 border-border">
+                  <SelectTrigger className="bg-card/50 border-border text-sm">
                     <SelectValue placeholder="Select animation" />
                   </SelectTrigger>
                   <SelectContent>
@@ -301,142 +301,110 @@ const Dashboard = () => {
               </div>
 
               {/* Discord Emoji for Entry Screen */}
-              <div className="space-y-3 pt-4 border-t border-border">
-                <h3 className="text-lg font-semibold text-primary">Entry Screen Emoji</h3>
-                <p className="text-xs text-muted-foreground">
-                  Add a Discord emoji to your entry screen. Paste the emoji ID from Discord.
-                </p>
-                <div>
-                  <Label>Discord Emoji ID</Label>
-                  <Input
-                    value={profile?.entry_emoji || ""}
-                    onChange={(e) => updateProfile({ entry_emoji: e.target.value })}
-                    placeholder="e.g., 1234567890123456789"
-                    className="bg-card/50 border-border mt-1"
-                  />
-                </div>
-                <div>
-                  <Label>Emoji Position</Label>
-                  <Select
-                    value={profile?.entry_emoji_position || "start"}
-                    onValueChange={(value) => updateProfile({ entry_emoji_position: value })}
-                  >
-                    <SelectTrigger className="bg-card/50 border-border mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="start">Before Text</SelectItem>
-                      <SelectItem value="end">After Text</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div className="space-y-3 pt-3 border-t border-border">
+                <h3 className="text-sm font-semibold text-primary">Entry Screen Emoji</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-xs mb-1 block">Discord Emoji ID</Label>
+                    <Input
+                      value={profile?.entry_emoji || ""}
+                      onChange={(e) => updateProfile({ entry_emoji: e.target.value })}
+                      placeholder="e.g., <a:name:123456789>"
+                      className="bg-card/50 border-border text-sm"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs mb-1 block">Emoji Position</Label>
+                    <Select
+                      value={profile?.entry_emoji_position || "start"}
+                      onValueChange={(value) => updateProfile({ entry_emoji_position: value })}
+                    >
+                      <SelectTrigger className="bg-card/50 border-border text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="start">Before Text</SelectItem>
+                        <SelectItem value="end">After Text</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
               {/* Scroll Text - Portfolio Theme Only */}
               {profile?.theme === "portfolio" && (
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Scroll Down Text</Label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <Label className="text-sm">Scroll Down Text</Label>
                     <span className="text-xs text-muted-foreground">{(profile?.scroll_text || "").length}/50</span>
                   </div>
                   <Input
                     value={profile?.scroll_text || "Scroll for more"}
                     onChange={(e) => updateProfile({ scroll_text: e.target.value.slice(0, 50) })}
                     placeholder="Scroll for more"
-                    className="bg-card/50 border-border"
+                    className="bg-card/50 border-border text-sm"
                   />
                 </div>
               )}
 
-              <div className="space-y-3 pt-2">
+              {/* Toggle options */}
+              <div className="grid grid-cols-2 gap-3 pt-3">
                 <div className="flex items-center justify-between">
-                  <Label>Show Views</Label>
+                  <Label className="text-sm">Show Views</Label>
                   <Switch
                     checked={profile?.show_views ?? true}
                     onCheckedChange={(checked) => updateProfile({ show_views: checked })}
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label>Views Count Animation</Label>
+                  <Label className="text-sm">Views Animation</Label>
                   <Switch
                     checked={profile?.views_animation ?? true}
                     onCheckedChange={(checked) => updateProfile({ views_animation: checked })}
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label>Show Join Date</Label>
+                  <Label className="text-sm">Show Join Date</Label>
                   <Switch
                     checked={profile?.show_join_date ?? true}
                     onCheckedChange={(checked) => updateProfile({ show_join_date: checked })}
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label>Click Sounds</Label>
+                  <Label className="text-sm">Glow Username</Label>
                   <Switch
-                    checked={profile?.click_sounds ?? false}
-                    onCheckedChange={(checked) => updateProfile({ click_sounds: checked })}
+                    checked={profile?.glow_username}
+                    onCheckedChange={(checked) => updateProfile({ glow_username: checked })}
                   />
                 </div>
-                
-                {/* Custom Click Sound Upload */}
-                {profile?.click_sounds && (
-                  <div className="space-y-2 pt-2">
-                    <Label className="text-sm">Custom Click Sound (MP3)</Label>
-                    <div className="flex gap-2">
-                      <input
-                        type="file"
-                        accept="audio/mp3,audio/mpeg"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-                          try {
-                            const { data: { user } } = await supabase.auth.getUser();
-                            if (!user) throw new Error("Not authenticated");
-                            const fileName = `${user.id}/click-sound-${Date.now()}.mp3`;
-                            const { error } = await supabase.storage
-                              .from("music")
-                              .upload(fileName, file, { upsert: true });
-                            if (error) throw error;
-                            const { data } = supabase.storage.from("music").getPublicUrl(fileName);
-                            updateProfile({ click_sound_url: data.publicUrl });
-                            toast.success("Click sound uploaded!");
-                          } catch (error: any) {
-                            toast.error(error.message);
-                          }
-                        }}
-                        className="hidden"
-                        id="click-sound-upload"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => document.getElementById("click-sound-upload")?.click()}
-                        className="flex-1"
-                      >
-                        {profile?.click_sound_url ? "Change Sound" : "Upload MP3"}
-                      </Button>
-                      {profile?.click_sound_url && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => updateProfile({ click_sound_url: null })}
-                        >
-                          Reset
-                        </Button>
-                      )}
-                    </div>
-                    {profile?.click_sound_url && (
-                      <p className="text-xs text-muted-foreground">Custom sound active</p>
-                    )}
-                  </div>
-                )}
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Glow Socials</Label>
+                  <Switch
+                    checked={profile?.glow_socials}
+                    onCheckedChange={(checked) => updateProfile({ glow_socials: checked })}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Monochrome Icons</Label>
+                  <Switch
+                    checked={profile?.monochrome_icons}
+                    onCheckedChange={(checked) => updateProfile({ monochrome_icons: checked })}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Glow Badges</Label>
+                  <Switch
+                    checked={profile?.glow_badges}
+                    onCheckedChange={(checked) => updateProfile({ glow_badges: checked })}
+                  />
+                </div>
               </div>
 
               {/* Join Date Customization */}
               {profile?.show_join_date && (
-                <div className="space-y-4 pt-4 border-t border-border">
-                  <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
-                    <Calendar className="w-5 h-5" />
+                <div className="space-y-3 pt-3 border-t border-border">
+                  <h3 className="text-sm font-semibold text-primary flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
                     Join Date Format
                   </h3>
                   <JoinDateEditor
@@ -451,13 +419,13 @@ const Dashboard = () => {
 
               {/* Parallax Settings - Basic Theme Only */}
               {(profile?.theme === "basic" || profile?.theme === "default") && (
-                <div className="space-y-4 pt-4 border-t border-border">
-                  <h3 className="text-lg font-semibold text-primary">Parallax Effect</h3>
+                <div className="space-y-3 pt-3 border-t border-border">
+                  <h3 className="text-sm font-semibold text-primary">Parallax Effect</h3>
                   <p className="text-xs text-muted-foreground">
-                    Requires border enabled and profile opacity at least 25%
+                    Requires profile opacity at least 25%
                   </p>
                   <div className="flex items-center justify-between">
-                    <Label>Enable Parallax</Label>
+                    <Label className="text-sm">Enable Parallax</Label>
                     <Switch
                       checked={profile?.parallax_enabled ?? false}
                       onCheckedChange={(checked) => updateProfile({ parallax_enabled: checked })}
@@ -466,9 +434,9 @@ const Dashboard = () => {
                   {profile?.parallax_enabled && (
                     <>
                       <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <Label>Parallax Intensity</Label>
-                          <span className="text-xs bg-card px-2 py-1 rounded">{profile?.parallax_intensity ?? 50}%</span>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <Label className="text-sm">Parallax Intensity</Label>
+                          <span className="text-xs bg-card px-2 py-0.5 rounded">{profile?.parallax_intensity ?? 50}%</span>
                         </div>
                         <Slider
                           value={[profile?.parallax_intensity ?? 50]}
@@ -480,7 +448,7 @@ const Dashboard = () => {
                         />
                       </div>
                       <div className="flex items-center justify-between">
-                        <Label>Invert Parallax</Label>
+                        <Label className="text-sm">Invert Parallax</Label>
                         <Switch
                           checked={profile?.parallax_inverted ?? false}
                           onCheckedChange={(checked) => updateProfile({ parallax_inverted: checked })}
@@ -492,19 +460,13 @@ const Dashboard = () => {
               )}
 
               {/* Username Effects */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Username Effects</Label>
-                  <div className="flex gap-1">
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                </div>
+              <div className="pt-3 border-t border-border">
+                <Label className="text-sm mb-1.5 block">Username Effects</Label>
                 <Select
                   value={profile?.username_effect || "none"}
                   onValueChange={(value) => updateProfile({ username_effect: value })}
                 >
-                  <SelectTrigger className="bg-card/50 border-border">
+                  <SelectTrigger className="bg-card/50 border-border text-sm">
                     <SelectValue placeholder="Select effect" />
                   </SelectTrigger>
                   <SelectContent>
@@ -519,496 +481,181 @@ const Dashboard = () => {
 
               {/* Location */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Location</Label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <Label className="text-sm">Location</Label>
                   <span className="text-xs text-muted-foreground">{(profile?.location || "").length}/32</span>
                 </div>
                 <Input
                   value={profile?.location || ""}
                   onChange={(e) => updateProfile({ location: e.target.value.slice(0, 32) })}
                   placeholder="Enter your location"
-                  className="bg-card/50 border-border"
+                  className="bg-card/50 border-border text-sm"
                 />
               </div>
 
               {/* Entry Text */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="flex items-center gap-1">
-                    Enter Text
-                    <span className="text-lg">😉</span>
-                  </Label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <Label className="text-sm">Entry Text</Label>
                   <span className="text-xs text-muted-foreground">{(profile?.entry_text || "").length}/100</span>
                 </div>
                 <Input
                   value={profile?.entry_text || ""}
                   onChange={(e) => updateProfile({ entry_text: e.target.value.slice(0, 100) })}
                   placeholder="Click to Enter"
-                  className="bg-card/50 border-border"
+                  className="bg-card/50 border-border text-sm"
                 />
               </div>
 
-              {/* Display Name Font */}
-              <div>
-                <Label className="mb-2 block">Display Name Font</Label>
-                <Select
-                  value={profile?.display_name_font || "font-sans"}
-                  onValueChange={(value) => updateProfile({ display_name_font: value })}
-                >
-                  <SelectTrigger className="bg-card/50 border-border">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    <SelectItem value="font-sans">Inter (Default)</SelectItem>
-                    <SelectItem value="font-roboto">Roboto</SelectItem>
-                    <SelectItem value="font-poppins">Poppins</SelectItem>
-                    <SelectItem value="font-montserrat">Montserrat</SelectItem>
-                    <SelectItem value="font-lato">Lato</SelectItem>
-                    <SelectItem value="font-opensans">Open Sans</SelectItem>
-                    <SelectItem value="font-raleway">Raleway</SelectItem>
-                    <SelectItem value="font-ubuntu">Ubuntu</SelectItem>
-                    <SelectItem value="font-nunito">Nunito</SelectItem>
-                    <SelectItem value="font-quicksand">Quicksand</SelectItem>
-                    <SelectItem value="font-worksans">Work Sans</SelectItem>
-                    <SelectItem value="font-oswald">Oswald</SelectItem>
-                    <SelectItem value="font-spacegrotesk">Space Grotesk</SelectItem>
-                    <SelectItem value="font-playfair">Playfair Display</SelectItem>
-                    <SelectItem value="font-merriweather">Merriweather</SelectItem>
-                    <SelectItem value="font-crimson">Crimson Text</SelectItem>
-                    <SelectItem value="font-cormorant">Cormorant Garamond</SelectItem>
-                    <SelectItem value="font-librebaskerville">Libre Baskerville</SelectItem>
-                    <SelectItem value="font-mono">JetBrains Mono</SelectItem>
-                    <SelectItem value="font-firacode">Fira Code</SelectItem>
-                    <SelectItem value="font-sourcecodepro">Source Code Pro</SelectItem>
-                    <SelectItem value="font-robotomono">Roboto Mono</SelectItem>
-                    <SelectItem value="font-lobster">Lobster</SelectItem>
-                    <SelectItem value="font-pacifico">Pacifico</SelectItem>
-                    <SelectItem value="font-permanentmarker">Permanent Marker</SelectItem>
-                    <SelectItem value="font-bebasneue">Bebas Neue</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Font selectors in grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 border-t border-border">
+                {/* Display Name Font */}
+                <div>
+                  <Label className="text-sm mb-1.5 block">Display Name Font</Label>
+                  <Select
+                    value={profile?.display_name_font || "font-sans"}
+                    onValueChange={(value) => updateProfile({ display_name_font: value })}
+                  >
+                    <SelectTrigger className="bg-card/50 border-border text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      <SelectItem value="font-sans">Inter</SelectItem>
+                      <SelectItem value="font-roboto">Roboto</SelectItem>
+                      <SelectItem value="font-poppins">Poppins</SelectItem>
+                      <SelectItem value="font-montserrat">Montserrat</SelectItem>
+                      <SelectItem value="font-mono">JetBrains Mono</SelectItem>
+                      <SelectItem value="font-playfair">Playfair Display</SelectItem>
+                      <SelectItem value="font-bebasneue">Bebas Neue</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              {/* Bio Font */}
-              <div>
-                <Label className="mb-2 block">Bio Font</Label>
-                <Select
-                  value={profile?.bio_font || "font-sans"}
-                  onValueChange={(value) => updateProfile({ bio_font: value })}
-                >
-                  <SelectTrigger className="bg-card/50 border-border">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    <SelectItem value="font-sans">Inter (Default)</SelectItem>
-                    <SelectItem value="font-roboto">Roboto</SelectItem>
-                    <SelectItem value="font-poppins">Poppins</SelectItem>
-                    <SelectItem value="font-montserrat">Montserrat</SelectItem>
-                    <SelectItem value="font-lato">Lato</SelectItem>
-                    <SelectItem value="font-opensans">Open Sans</SelectItem>
-                    <SelectItem value="font-raleway">Raleway</SelectItem>
-                    <SelectItem value="font-ubuntu">Ubuntu</SelectItem>
-                    <SelectItem value="font-nunito">Nunito</SelectItem>
-                    <SelectItem value="font-quicksand">Quicksand</SelectItem>
-                    <SelectItem value="font-mono">JetBrains Mono</SelectItem>
-                    <SelectItem value="font-playfair">Playfair Display</SelectItem>
-                    <SelectItem value="font-merriweather">Merriweather</SelectItem>
-                  </SelectContent>
-                </Select>
+                {/* Bio Font */}
+                <div>
+                  <Label className="text-sm mb-1.5 block">Bio Font</Label>
+                  <Select
+                    value={profile?.bio_font || "font-sans"}
+                    onValueChange={(value) => updateProfile({ bio_font: value })}
+                  >
+                    <SelectTrigger className="bg-card/50 border-border text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      <SelectItem value="font-sans">Inter</SelectItem>
+                      <SelectItem value="font-roboto">Roboto</SelectItem>
+                      <SelectItem value="font-poppins">Poppins</SelectItem>
+                      <SelectItem value="font-mono">JetBrains Mono</SelectItem>
+                      <SelectItem value="font-playfair">Playfair Display</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* About Me */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>About Me</Label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <Label className="text-sm">About Me</Label>
                   <span className="text-xs text-muted-foreground">{(profile?.about_me || "").length}/500</span>
                 </div>
                 <Textarea
                   value={profile?.about_me || ""}
                   onChange={(e) => updateProfile({ about_me: e.target.value.slice(0, 500) })}
                   placeholder="Tell visitors about yourself..."
-                  className="bg-card/50 border-border min-h-[100px]"
+                  className="bg-card/50 border-border min-h-[80px] text-sm"
                 />
-              </div>
-
-              {/* Toggle options */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>Glow Username</Label>
-                  <Switch
-                    checked={profile?.glow_username}
-                    onCheckedChange={(checked) => updateProfile({ glow_username: checked })}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label>Glow Socials</Label>
-                  <Switch
-                    checked={profile?.glow_socials}
-                    onCheckedChange={(checked) => updateProfile({ glow_socials: checked })}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label>Monochrome Icons</Label>
-                  <Switch
-                    checked={profile?.monochrome_icons}
-                    onCheckedChange={(checked) => updateProfile({ monochrome_icons: checked })}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label>Glow Badges</Label>
-                  <Switch
-                    checked={profile?.glow_badges}
-                    onCheckedChange={(checked) => updateProfile({ glow_badges: checked })}
-                  />
-                </div>
               </div>
             </div>
           </div>
 
           {/* Color Customization Section */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-green-500 flex items-center gap-2">
-              <Palette className="w-6 h-6" />
-              Color Customization
+            <h2 className="text-xl font-bold text-green-500 flex items-center gap-2">
+              <Palette className="w-5 h-5" />
+              Colors
             </h2>
             
-            <div className="border border-border rounded-xl p-6 space-y-6 bg-card/30">
-              {/* Username Color */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="flex items-center gap-1">
-                    Username Color
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                  </Label>
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={profile?.display_name_color || "#FFFFFF"}
-                    onChange={(e) => updateProfile({ display_name_color: e.target.value })}
-                    placeholder="#FFFFFF"
-                    className="bg-card/50 border-border flex-1"
-                  />
-                  <input
-                    type="color"
-                    value={profile?.display_name_color?.startsWith('#') ? profile.display_name_color : "#FFFFFF"}
-                    onChange={(e) => updateProfile({ display_name_color: e.target.value })}
-                    className="w-12 h-10 rounded border border-border cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              {/* Bio Color */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="flex items-center gap-1">
-                    Bio & About Me Color
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                  </Label>
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={profile?.bio_color || "#DDDDDD"}
-                    onChange={(e) => updateProfile({ bio_color: e.target.value })}
-                    placeholder="#DDDDDD"
-                    className="bg-card/50 border-border flex-1"
-                  />
-                  <input
-                    type="color"
-                    value={profile?.bio_color?.startsWith('#') ? profile.bio_color : "#DDDDDD"}
-                    onChange={(e) => updateProfile({ bio_color: e.target.value })}
-                    className="w-12 h-10 rounded border border-border cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              {/* Accent Color */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="flex items-center gap-1">
-                    Accent Color
-                    <Palette className="w-4 h-4 text-muted-foreground" />
-                  </Label>
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={profile?.accent_color || "#FFFFFF"}
-                    onChange={(e) => updateProfile({ accent_color: e.target.value })}
-                    placeholder="#FFFFFF"
-                    className="bg-card/50 border-border flex-1"
-                  />
-                  <input
-                    type="color"
-                    value={profile?.accent_color?.startsWith('#') ? profile.accent_color : "#FFFFFF"}
-                    onChange={(e) => updateProfile({ accent_color: e.target.value })}
-                    className="w-12 h-10 rounded border border-border cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              {/* Text Color */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Text Color</Label>
-                  <Palette className="w-4 h-4 text-muted-foreground" />
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={profile?.text_color || "#FFFFFF"}
-                    onChange={(e) => updateProfile({ text_color: e.target.value })}
-                    placeholder="#FFFFFF"
-                    className="bg-card/50 border-border flex-1"
-                  />
-                  <div 
-                    className="w-12 h-10 rounded border border-border"
-                    style={{ backgroundColor: profile?.text_color || "#FFFFFF" }}
-                  />
-                </div>
-              </div>
-
-              {/* Background Color */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Background Color</Label>
-                  <Palette className="w-4 h-4 text-muted-foreground" />
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={profile?.background_color || "#030303"}
-                    onChange={(e) => updateProfile({ background_color: e.target.value })}
-                    placeholder="#030303"
-                    className="bg-card/50 border-border flex-1"
-                  />
-                  <div 
-                    className="w-12 h-10 rounded border border-border"
-                    style={{ backgroundColor: profile?.background_color || "#030303" }}
-                  />
-                </div>
-              </div>
-
-              {/* Secondary Text Color */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Secondary Text Color</Label>
-                  <Palette className="w-4 h-4 text-muted-foreground" />
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={profile?.secondary_text_color || "#DDDDDD"}
-                    onChange={(e) => updateProfile({ secondary_text_color: e.target.value })}
-                    placeholder="#DDDDDD"
-                    className="bg-card/50 border-border flex-1"
-                  />
-                  <div 
-                    className="w-12 h-10 rounded border border-border"
-                    style={{ backgroundColor: profile?.secondary_text_color || "#DDDDDD" }}
-                  />
-                </div>
-              </div>
-
-              {/* Gradient Section */}
-              <div>
-                <Label className="mb-3 block">Gradient</Label>
-                <Button
-                  variant={profile?.gradient_enabled ? "default" : "outline"}
-                  onClick={() => updateProfile({ gradient_enabled: !profile?.gradient_enabled })}
-                  className={profile?.gradient_enabled ? "w-full bg-green-600 hover:bg-green-700" : "w-full border-primary text-primary"}
-                >
-                  {profile?.gradient_enabled ? "Profile Gradient Enabled" : "Enable Profile Gradient"}
-                </Button>
-              </div>
-
-              {profile?.gradient_enabled && (
-                <>
-                  {/* Gradient Colors */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <Label>Primary Color</Label>
-                        <Palette className="w-4 h-4 text-muted-foreground" />
-                      </div>
-                      <div className="flex gap-2">
-                        <Input
-                          value={profile?.gradient_primary || "#0d0d0c"}
-                          onChange={(e) => updateProfile({ gradient_primary: e.target.value })}
-                          placeholder="#0d0d0c"
-                          className="bg-card/50 border-border flex-1"
-                        />
-                        <div 
-                          className="w-10 h-10 rounded border border-border"
-                          style={{ backgroundColor: profile?.gradient_primary || "#0d0d0c" }}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <Label>Secondary Color</Label>
-                        <Palette className="w-4 h-4 text-muted-foreground" />
-                      </div>
-                      <div className="flex gap-2">
-                        <Input
-                          value={profile?.gradient_secondary || "#26262"}
-                          onChange={(e) => updateProfile({ gradient_secondary: e.target.value })}
-                          placeholder="#26262"
-                          className="bg-card/50 border-border flex-1"
-                        />
-                        <div 
-                          className="w-10 h-10 rounded border border-border"
-                          style={{ backgroundColor: profile?.gradient_secondary || "#26262" }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Gradient Angle */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <Label>Gradient Angle</Label>
-                      <Palette className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                    <Slider
-                      value={[profile?.gradient_angle ?? 45]}
-                      onValueChange={([value]) => updateProfile({ gradient_angle: value })}
-                      max={360}
-                      min={0}
-                      step={1}
-                      className="[&>span:first-child]:bg-muted [&_[role=slider]]:bg-primary [&>span:first-child>span]:bg-primary"
+            <div className="border border-border rounded-xl p-4 md:p-6 space-y-4 bg-card/30">
+              {/* Color inputs in grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Username Color */}
+                <div>
+                  <Label className="text-sm mb-1.5 block">Username Color</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={profile?.display_name_color || "#FFFFFF"}
+                      onChange={(e) => updateProfile({ display_name_color: e.target.value })}
+                      placeholder="#FFFFFF"
+                      className="bg-card/50 border-border flex-1 text-sm"
+                    />
+                    <input
+                      type="color"
+                      value={profile?.display_name_color?.startsWith('#') ? profile.display_name_color : "#FFFFFF"}
+                      onChange={(e) => updateProfile({ display_name_color: e.target.value })}
+                      className="w-10 h-9 rounded border border-border cursor-pointer bg-transparent"
                     />
                   </div>
-                </>
-              )}
+                </div>
+
+                {/* Bio Color */}
+                <div>
+                  <Label className="text-sm mb-1.5 block">Bio Color</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={profile?.bio_color || "#DDDDDD"}
+                      onChange={(e) => updateProfile({ bio_color: e.target.value })}
+                      placeholder="#DDDDDD"
+                      className="bg-card/50 border-border flex-1 text-sm"
+                    />
+                    <input
+                      type="color"
+                      value={profile?.bio_color?.startsWith('#') ? profile.bio_color : "#DDDDDD"}
+                      onChange={(e) => updateProfile({ bio_color: e.target.value })}
+                      className="w-10 h-9 rounded border border-border cursor-pointer bg-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Border Customization Section */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
-              <Square className="w-6 h-6" />
-              Border Customization
+            <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+              <Square className="w-5 h-5" />
+              Border
             </h2>
             
-            <div className="border border-border rounded-xl p-6 space-y-6 bg-card/30">
+            <div className="border border-border rounded-xl p-4 md:p-6 space-y-4 bg-card/30">
               {/* Profile Border Toggle */}
-              <div>
-                <Label className="mb-3 block">Profile Border</Label>
-                <Button
-                  variant={profile?.border_enabled ? "default" : "outline"}
-                  onClick={() => updateProfile({ border_enabled: !profile?.border_enabled })}
-                  className={profile?.border_enabled ? "w-full bg-green-600 hover:bg-green-700" : "w-full border-destructive text-destructive"}
-                >
-                  {profile?.border_enabled ? "Border Enabled" : "Border Disabled"}
-                </Button>
-              </div>
-
-              {/* Border Radius */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Border Radius</Label>
-                  <button onClick={() => updateProfile({ border_radius: 16 })} className="p-1 hover:bg-muted rounded">
-                    <RotateCcw className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                </div>
-                <Slider
-                  value={[profile?.border_radius ?? 16]}
-                  onValueChange={([value]) => updateProfile({ border_radius: value })}
-                  max={50}
-                  min={0}
-                  step={1}
-                  className="[&>span:first-child]:bg-muted [&_[role=slider]]:bg-primary [&>span:first-child>span]:bg-primary"
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-semibold">Enable Border</Label>
+                <Switch
+                  checked={profile?.border_enabled ?? false}
+                  onCheckedChange={(checked) => updateProfile({ border_enabled: checked })}
                 />
               </div>
 
-              {/* Border Color */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Border Color</Label>
-                  <button onClick={() => updateProfile({ border_color: "#ffffff" })} className="p-1 hover:bg-muted rounded">
-                    <RotateCcw className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={profile?.border_color || "#ffffff"}
-                    onChange={(e) => updateProfile({ border_color: e.target.value })}
-                    placeholder="#ffffff"
-                    className="bg-card/50 border-border flex-1"
+              {profile?.border_enabled && (
+                <>
+                  {/* Border Effect Selector */}
+                  <BorderEffectSelector
+                    selectedEffect={profile?.border_effect || "default"}
+                    onEffectChange={(effect) => updateProfile({ border_effect: effect })}
                   />
-                  <div 
-                    className="w-12 h-10 rounded border border-border"
-                    style={{ backgroundColor: profile?.border_color || "#ffffff" }}
-                  />
-                </div>
-              </div>
-
-              {/* Border Style */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Border Style</Label>
-                  <button onClick={() => updateProfile({ border_style: "solid" })} className="p-1 hover:bg-muted rounded">
-                    <RotateCcw className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                </div>
-                <Select
-                  value={profile?.border_style || "solid"}
-                  onValueChange={(value) => updateProfile({ border_style: value })}
-                >
-                  <SelectTrigger className="bg-card/50 border-border">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="solid">Solid</SelectItem>
-                    <SelectItem value="dashed">Dashed</SelectItem>
-                    <SelectItem value="dotted">Dotted</SelectItem>
-                    <SelectItem value="double">Double</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Border Width */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Border Width</Label>
-                  <button onClick={() => updateProfile({ border_width: 1 })} className="p-1 hover:bg-muted rounded">
-                    <RotateCcw className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                </div>
-                <Slider
-                  value={[profile?.border_width ?? 1]}
-                  onValueChange={([value]) => updateProfile({ border_width: value })}
-                  max={10}
-                  min={1}
-                  step={1}
-                  className="[&>span:first-child]:bg-muted [&_[role=slider]]:bg-primary [&>span:first-child>span]:bg-primary"
-                />
-              </div>
-
-              {/* Border Opacity */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Border Opacity</Label>
-                  <button onClick={() => updateProfile({ border_opacity: 100 })} className="p-1 hover:bg-muted rounded">
-                    <RotateCcw className="w-4 h-4 text-muted-foreground" />
-                  </button>
-                </div>
-                <Slider
-                  value={[profile?.border_opacity ?? 100]}
-                  onValueChange={([value]) => updateProfile({ border_opacity: value })}
-                  max={100}
-                  min={0}
-                  step={1}
-                  className="[&>span:first-child]:bg-muted [&_[role=slider]]:bg-primary [&>span:first-child>span]:bg-primary"
-                />
-              </div>
+                </>
+              )}
             </div>
           </div>
 
           {/* Theme Selection Section */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-purple-500 flex items-center gap-2">
-              <Sparkles className="w-6 h-6" />
-              Theme Selection
+            <h2 className="text-xl font-bold text-purple-500 flex items-center gap-2">
+              <Sparkles className="w-5 h-5" />
+              Theme
             </h2>
             
-            <div className="border border-border rounded-xl p-6 bg-card/30">
+            <div className="border border-border rounded-xl p-4 md:p-6 bg-card/30">
               <ThemeSelector
                 selectedTheme={profile?.theme || "default"}
                 onThemeChange={(theme) => updateProfile({ theme })}
@@ -1016,18 +663,17 @@ const Dashboard = () => {
             </div>
           </div>
 
-
           {/* Portfolio Theme Features - Only visible for Portfolio theme */}
           {profile?.theme === "portfolio" && (
             <>
               {/* Projects Section */}
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
-                  <FolderKanban className="w-6 h-6" />
-                  Portfolio Theme Settings
+                <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+                  <FolderKanban className="w-5 h-5" />
+                  Portfolio Settings
                 </h2>
                 
-                <div className="border border-border rounded-xl p-6 bg-card/30 space-y-6">
+                <div className="border border-border rounded-xl p-4 md:p-6 bg-card/30 space-y-4">
                   <ProjectsEditor
                     profileId={profile?.id}
                     projects={projects}
@@ -1035,34 +681,32 @@ const Dashboard = () => {
                   />
 
                   {/* Projects Customization */}
-                  <div className="space-y-4 pt-4 border-t border-border">
-                    <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
-                      <Palette className="w-5 h-5" />
-                      Projects Customization
+                  <div className="space-y-3 pt-3 border-t border-border">
+                    <h3 className="text-sm font-semibold text-primary flex items-center gap-2">
+                      <Palette className="w-4 h-4" />
+                      Projects Section
                     </h3>
 
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <Label>Projects Section Title</Label>
+                    <div className="grid grid-cols-1 gap-3">
+                      <div>
+                        <Label className="text-sm mb-1.5 block">Section Title</Label>
+                        <Input
+                          value={profile?.projects_title || "Projects"}
+                          onChange={(e) => updateProfile({ projects_title: e.target.value })}
+                          placeholder="Projects"
+                          className="bg-card/50 border-border text-sm"
+                        />
                       </div>
-                      <Input
-                        value={profile?.projects_title || "Projects"}
-                        onChange={(e) => updateProfile({ projects_title: e.target.value })}
-                        placeholder="Projects"
-                        className="bg-card/50 border-border"
-                      />
-                    </div>
 
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <Label>Projects Section Description</Label>
+                      <div>
+                        <Label className="text-sm mb-1.5 block">Section Description</Label>
+                        <Textarea
+                          value={profile?.projects_description || ""}
+                          onChange={(e) => updateProfile({ projects_description: e.target.value })}
+                          placeholder="Describe your projects section..."
+                          className="bg-card/50 border-border text-sm"
+                        />
                       </div>
-                      <Textarea
-                        value={profile?.projects_description || ""}
-                        onChange={(e) => updateProfile({ projects_description: e.target.value })}
-                        placeholder="Describe your projects section..."
-                        className="bg-card/50 border-border"
-                      />
                     </div>
                   </div>
                 </div>
@@ -1070,24 +714,24 @@ const Dashboard = () => {
 
               {/* Social Cards Section */}
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-pink-500 flex items-center gap-2">
-                  <Share2 className="w-6 h-6" />
+                <h2 className="text-xl font-bold text-pink-500 flex items-center gap-2">
+                  <Share2 className="w-5 h-5" />
                   Social Cards
                 </h2>
                 
-                <div className="border border-border rounded-xl p-6 bg-card/30">
+                <div className="border border-border rounded-xl p-4 md:p-6 bg-card/30">
                   <SocialCardsEditor profileId={profile?.id} />
                 </div>
               </div>
 
               {/* Coding Badges Section */}
               <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-blue-500 flex items-center gap-2">
-                  <Code2 className="w-6 h-6" />
+                <h2 className="text-xl font-bold text-blue-500 flex items-center gap-2">
+                  <Code2 className="w-5 h-5" />
                   Coding Badges
                 </h2>
                 
-                <div className="border border-border rounded-xl p-6 bg-card/30">
+                <div className="border border-border rounded-xl p-4 md:p-6 bg-card/30">
                   <CodingBadgesEditor
                     selectedBadges={profile?.coding_badges || []}
                     onBadgesChange={(badges) => updateProfile({ coding_badges: badges })}
