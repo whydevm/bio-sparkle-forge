@@ -23,19 +23,20 @@ const ParallaxContainer = ({
     }
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
       
       const mouseX = e.clientX - centerX;
       const mouseY = e.clientY - centerY;
       
-      const maxTilt = (intensity / 100) * 15; // Max 15 degrees at intensity 100
+      const maxTilt = (intensity / 100) * 15;
       
-      let rotateX = (mouseY / (rect.height / 2)) * maxTilt * -1;
-      let rotateY = (mouseX / (rect.width / 2)) * maxTilt;
+      let rotateX = (mouseY / centerY) * maxTilt * -1;
+      let rotateY = (mouseX / centerX) * maxTilt;
+
+      // Clamp values
+      rotateX = Math.max(-maxTilt, Math.min(maxTilt, rotateX));
+      rotateY = Math.max(-maxTilt, Math.min(maxTilt, rotateY));
 
       if (inverted) {
         rotateX *= -1;
@@ -49,26 +50,25 @@ const ParallaxContainer = ({
       setTransform({ rotateX: 0, rotateY: 0 });
     };
 
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener("mousemove", handleMouseMove);
-      container.addEventListener("mouseleave", handleMouseLeave);
-    }
+    // Attach to window for global mouse tracking
+    window.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
-      if (container) {
-        container.removeEventListener("mousemove", handleMouseMove);
-        container.removeEventListener("mouseleave", handleMouseLeave);
-      }
+      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [enabled, intensity, inverted]);
 
   return (
     <div
       ref={containerRef}
+      className="w-full"
       style={{
-        transform: `perspective(1000px) rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg)`,
-        transition: "transform 0.1s ease-out",
+        transform: enabled 
+          ? `perspective(1000px) rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg)`
+          : "none",
+        transition: "transform 0.15s ease-out",
         transformStyle: "preserve-3d",
       }}
     >

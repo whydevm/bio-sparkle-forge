@@ -332,6 +332,8 @@ const Profile = () => {
           animation={profile.entry_animation || undefined}
           discordEmoji={profile.entry_emoji}
           emojiPosition={profile.entry_emoji_position || "start"}
+          backgroundUrl={profile.background_url}
+          backgroundType={profile.background_type}
         />
       )}
       
@@ -436,7 +438,6 @@ const Profile = () => {
         {(hasEntered || !hasAudio) && (showContent || !hasAudio) && (
           <ProfileStats
             viewCount={profile.view_count || 0}
-            location={profile.location}
             createdAt={profile.created_at}
             profileOpacity={profile.profile_opacity}
             showViews={profile.show_views ?? true}

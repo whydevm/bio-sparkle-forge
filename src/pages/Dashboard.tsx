@@ -769,7 +769,12 @@ const Dashboard = () => {
         onClose={() => setShowBackgroundManager(false)}
         currentBackground={profile?.background_url}
         backgroundType={profile?.background_type}
+        backgrounds={profile?.backgrounds as any || []}
+        backgroundShuffle={profile?.background_shuffle}
+        backgroundLoop={profile?.background_loop}
+        backgroundDuration={profile?.background_duration}
         onBackgroundChange={(url, type) => updateProfile({ background_url: url, background_type: type })}
+        onSettingsChange={(settings) => updateProfile(settings)}
       />
 
       <AudioManager
