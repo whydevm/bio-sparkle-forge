@@ -300,7 +300,15 @@ const Dashboard = () => {
                 </Select>
               </div>
 
-              {/* Discord Emoji for Entry Screen */}
+              {/* Show Entry Background Toggle */}
+              <div className="flex items-center justify-between">
+                <Label className="text-sm">Show Background on Entry Screen</Label>
+                <Switch
+                  checked={profile?.show_entry_background ?? true}
+                  onCheckedChange={(checked) => updateProfile({ show_entry_background: checked })}
+                />
+              </div>
+
               <div className="space-y-3 pt-3 border-t border-border">
                 <h3 className="text-sm font-semibold text-primary">Entry Screen Emoji</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

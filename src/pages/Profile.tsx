@@ -334,6 +334,7 @@ const Profile = () => {
           emojiPosition={profile.entry_emoji_position || "start"}
           backgroundUrl={profile.background_url}
           backgroundType={profile.background_type}
+          showBackground={profile.show_entry_background ?? true}
         />
       )}
       
@@ -445,7 +446,6 @@ const Profile = () => {
             showLikes={profile.show_likes ?? true}
             viewsAnimation={profile.views_animation ?? true}
             userId={profile.user_id}
-            uidNumber={profile.uid_number}
             joinDateFormat={profile.join_date_format || "MMM dd, yyyy"}
             joinTimeFormat={profile.join_time_format || "12h"}
           />

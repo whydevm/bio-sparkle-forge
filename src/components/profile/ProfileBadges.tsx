@@ -80,7 +80,7 @@ const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorde
 
   return (
     <div className="flex justify-center mt-2 mb-3">
-      <div className="inline-flex items-center gap-2 bg-white/5 backdrop-blur-sm rounded-full px-4 py-2">
+      <div className="inline-flex items-center gap-2 bg-transparent border border-foreground/20 rounded-lg px-4 py-2">
         {badges.map((badge) => {
           const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
           const customColor = badgeColors[badge.id];
@@ -96,7 +96,7 @@ const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorde
                   />
                 </div>
               </TooltipTrigger>
-              <TooltipContent className="bg-background/95 backdrop-blur-sm border-border">
+              <TooltipContent className="bg-background/95 border-border">
                 <p className="font-semibold">{badge.name}</p>
               </TooltipContent>
             </Tooltip>

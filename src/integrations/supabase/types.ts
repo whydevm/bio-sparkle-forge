@@ -287,6 +287,7 @@ export type Database = {
           projects_title: string | null
           scroll_text: string | null
           show_audio_player: boolean | null
+          show_entry_background: boolean | null
           show_join_date: boolean | null
           show_likes: boolean | null
           show_views: boolean | null
@@ -358,6 +359,7 @@ export type Database = {
           projects_title?: string | null
           scroll_text?: string | null
           show_audio_player?: boolean | null
+          show_entry_background?: boolean | null
           show_join_date?: boolean | null
           show_likes?: boolean | null
           show_views?: boolean | null
@@ -429,6 +431,7 @@ export type Database = {
           projects_title?: string | null
           scroll_text?: string | null
           show_audio_player?: boolean | null
+          show_entry_background?: boolean | null
           show_join_date?: boolean | null
           show_likes?: boolean | null
           show_views?: boolean | null
