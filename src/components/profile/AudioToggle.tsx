@@ -15,8 +15,11 @@ const AudioToggle = ({ audioRef }: AudioToggleProps) => {
 
   const toggleMute = () => {
     if (audioRef.current) {
-      audioRef.current.muted = !audioRef.current.muted;
-      setIsMuted(!isMuted);
+      const newMuted = !audioRef.current.muted;
+      audioRef.current.muted = newMuted;
+      setIsMuted(newMuted);
+      // Hide slider when muting, show when unmuting
+      setIsExpanded(!newMuted);
     }
   };
 
@@ -39,7 +42,9 @@ const AudioToggle = ({ audioRef }: AudioToggleProps) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    setIsExpanded(true);
+    if (!isMuted) {
+      setIsExpanded(true);
+    }
   };
 
   const handleMouseLeave = () => {
@@ -65,21 +70,21 @@ const AudioToggle = ({ audioRef }: AudioToggleProps) => {
     >
       <button
         onClick={toggleMute}
-        className="w-10 h-10 rounded-full bg-transparent border border-foreground/20 backdrop-blur-sm flex items-center justify-center transition-all hover:scale-105 hover:border-foreground/40"
+        className="w-9 h-9 rounded-lg bg-transparent border border-foreground/20 flex items-center justify-center transition-all hover:scale-105 hover:border-foreground/40"
       >
         {isMuted || volume === 0 ? (
-          <VolumeX className="w-5 h-5 text-foreground" />
+          <VolumeX className="w-4 h-4 text-foreground" />
         ) : (
-          <Volume2 className="w-5 h-5 text-foreground" />
+          <Volume2 className="w-4 h-4 text-foreground" />
         )}
       </button>
       
       <div 
         className={`overflow-hidden transition-all duration-300 ease-out ${
-          isExpanded ? "w-24 opacity-100" : "w-0 opacity-0"
+          isExpanded && !isMuted ? "w-24 opacity-100" : "w-0 opacity-0"
         }`}
       >
-        <div className="px-3 py-2 rounded-full bg-transparent border border-foreground/20 backdrop-blur-sm">
+        <div className="px-3 py-2 rounded-lg bg-transparent border border-foreground/20">
           <Slider
             value={[volume]}
             onValueChange={handleVolumeChange}

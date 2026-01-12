@@ -10,6 +10,7 @@ interface EntrySplashProps {
   emojiPosition?: "start" | "end";
   backgroundUrl?: string;
   backgroundType?: string;
+  showBackground?: boolean;
 }
 
 const EntrySplash = ({ 
@@ -21,7 +22,8 @@ const EntrySplash = ({
   discordEmoji,
   emojiPosition = "start",
   backgroundUrl,
-  backgroundType
+  backgroundType,
+  showBackground = true
 }: EntrySplashProps) => {
   const [isEntering, setIsEntering] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
@@ -113,11 +115,11 @@ const EntrySplash = ({
   };
 
   const renderBackground = () => {
-    if (!backgroundUrl) {
+    if (!showBackground || !backgroundUrl) {
       return <div className="absolute inset-0 bg-black" />;
     }
 
-    if (backgroundType === "video") {
+    if (backgroundType === "video" || backgroundUrl?.endsWith(".mp4") || backgroundUrl?.endsWith(".webm")) {
       return (
         <video
           autoPlay
@@ -148,7 +150,7 @@ const EntrySplash = ({
       {!isEntering && renderBackground()}
       
       {/* Dark overlay for readability */}
-      {!isEntering && backgroundUrl && (
+      {!isEntering && showBackground && backgroundUrl && (
         <div className="absolute inset-0 bg-black/50" />
       )}
 
@@ -161,7 +163,7 @@ const EntrySplash = ({
               style={{ animation: "slide-left 0.8s ease-in-out forwards" }}
             >
               {renderBackground()}
-              {backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
+              {showBackground && backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden">
@@ -170,7 +172,7 @@ const EntrySplash = ({
               style={{ animation: "slide-right 0.8s ease-in-out forwards" }}
             >
               {renderBackground()}
-              {backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
+              {showBackground && backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
             </div>
           </div>
         </>
@@ -184,7 +186,7 @@ const EntrySplash = ({
               style={{ animation: "slide-up 0.8s ease-in-out forwards" }}
             >
               {renderBackground()}
-              {backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
+              {showBackground && backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
             </div>
           </div>
           <div className="absolute inset-x-0 bottom-0 h-1/2 overflow-hidden">
@@ -193,7 +195,7 @@ const EntrySplash = ({
               style={{ animation: "slide-down 0.8s ease-in-out forwards" }}
             >
               {renderBackground()}
-              {backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
+              {showBackground && backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
             </div>
           </div>
         </>

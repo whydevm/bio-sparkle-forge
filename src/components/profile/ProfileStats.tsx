@@ -1,4 +1,4 @@
-import { Eye, Calendar, ThumbsUp, ThumbsDown, Hash } from "lucide-react";
+import { Eye, Calendar, ThumbsUp, ThumbsDown } from "lucide-react";
 import CountUpAnimation from "./CountUpAnimation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { format } from "date-fns";
@@ -14,7 +14,6 @@ interface ProfileStatsProps {
   viewsAnimation?: boolean;
   displayName?: string;
   userId?: string;
-  uidNumber?: number;
   joinDateFormat?: string;
   joinTimeFormat?: string;
 }
@@ -29,7 +28,6 @@ const ProfileStats = ({
   viewsAnimation = true,
   displayName,
   userId,
-  uidNumber,
   joinDateFormat = "MMM dd, yyyy",
   joinTimeFormat = "12h",
 }: ProfileStatsProps) => {
@@ -59,56 +57,36 @@ const ProfileStats = ({
 
   return (
     <>
-      {/* Main stats in bottom left - smaller and rounded like coding badges */}
+      {/* Main stats in bottom left */}
       <div className="fixed bottom-4 left-4 z-50">
-        <div className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] rounded-full bg-transparent border border-foreground/20 backdrop-blur-sm">
-          {/* UID Number */}
-          {uidNumber && (
+        <div className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] rounded-lg bg-transparent border border-foreground/20">
+          {/* Views */}
+          {showViews && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-1 text-foreground/80 cursor-default">
-                    <Hash className="w-3 h-3" />
-                    <span className="font-medium font-mono">{uidNumber}</span>
+                    <Eye className="w-3 h-3" />
+                    <span className="font-medium">
+                      {viewsAnimation ? (
+                        <CountUpAnimation target={viewCount} duration={400} />
+                      ) : (
+                        viewCount.toLocaleString()
+                      )}
+                    </span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-full">
-                  <p className="font-medium">UID</p>
+                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
+                  <p className="font-medium">Views</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}
 
-          {/* Views */}
-          {showViews && (
-            <>
-              {uidNumber && <div className="w-px h-2.5 bg-foreground/20" />}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1 text-foreground/80 cursor-default">
-                      <Eye className="w-3 h-3" />
-                      <span className="font-medium">
-                        {viewsAnimation ? (
-                          <CountUpAnimation target={viewCount} duration={400} />
-                        ) : (
-                          viewCount.toLocaleString()
-                        )}
-                      </span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-full">
-                    <p className="font-medium">Views</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </>
-          )}
-
           {/* Date */}
           {showJoinDate && formattedDate && (
             <>
-              {(showViews || uidNumber) && <div className="w-px h-2.5 bg-foreground/20" />}
+              {showViews && <div className="w-px h-2.5 bg-foreground/20" />}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -117,7 +95,7 @@ const ProfileStats = ({
                       <span className="font-medium">{formattedDate}</span>
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-full">
+                  <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
                     <p className="font-medium">Join Date</p>
                   </TooltipContent>
                 </Tooltip>
@@ -127,10 +105,10 @@ const ProfileStats = ({
         </div>
       </div>
 
-      {/* Likes/Dislikes in bottom right - smaller and rounded */}
+      {/* Likes/Dislikes in bottom right */}
       {showLikes && (
         <div className="fixed bottom-4 right-4 z-50">
-          <div className="flex items-center gap-2 px-2.5 py-1 text-[10px] rounded-full bg-transparent border border-foreground/20 backdrop-blur-sm">
+          <div className="flex items-center gap-2 px-2.5 py-1 text-[10px] rounded-lg bg-transparent border border-foreground/20">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -139,7 +117,7 @@ const ProfileStats = ({
                     <span className="font-medium">{likes}</span>
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-full">
+                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
                   <p className="font-medium">{likes} likes</p>
                 </TooltipContent>
               </Tooltip>
@@ -152,7 +130,7 @@ const ProfileStats = ({
                     <span className="font-medium">{dislikes}</span>
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-full">
+                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
                   <p className="font-medium">{dislikes} dislikes</p>
                 </TooltipContent>
               </Tooltip>
