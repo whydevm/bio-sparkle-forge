@@ -8,6 +8,8 @@ interface EntrySplashProps {
   animation?: string;
   discordEmoji?: string;
   emojiPosition?: "start" | "end";
+  backgroundUrl?: string;
+  backgroundType?: string;
 }
 
 const EntrySplash = ({ 
@@ -17,7 +19,9 @@ const EntrySplash = ({
   hasAudio, 
   animation,
   discordEmoji,
-  emojiPosition = "start"
+  emojiPosition = "start",
+  backgroundUrl,
+  backgroundType
 }: EntrySplashProps) => {
   const [isEntering, setIsEntering] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
@@ -26,43 +30,32 @@ const EntrySplash = ({
     setIsEntering(true);
     setTimeout(() => {
       onEnter();
-      // Hide the splash screen after animation completes
       setTimeout(() => {
         setIsHidden(true);
       }, 100);
     }, animation && animation !== "none" ? 800 : 500);
   };
 
-  // Don't render at all once hidden
   if (isHidden) return null;
 
   const getEmojiUrl = (emojiId: string) => {
     if (!emojiId) return null;
     
-    // Support various Discord emoji formats:
-    // 1. Full format: <a:name:id> or <:name:id>
-    // 2. Partial: a:name:id or name:id
-    // 3. Just the ID
-    
     let isAnimated = false;
     let cleanId = emojiId.trim();
     
-    // Remove < and > if present
     cleanId = cleanId.replace(/^<|>$/g, "");
     
-    // Check for animated prefix
     if (cleanId.startsWith("a:")) {
       isAnimated = true;
       cleanId = cleanId.slice(2);
     }
     
-    // If it contains colons, get the last part (the ID)
     if (cleanId.includes(":")) {
       const parts = cleanId.split(":");
       cleanId = parts[parts.length - 1];
     }
     
-    // Clean up to just numbers
     cleanId = cleanId.replace(/[^\d]/g, "");
     
     if (!cleanId || cleanId.length < 15) return null;
@@ -119,38 +112,94 @@ const EntrySplash = ({
     return "";
   };
 
+  const renderBackground = () => {
+    if (!backgroundUrl) {
+      return <div className="absolute inset-0 bg-black" />;
+    }
+
+    if (backgroundType === "video") {
+      return (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src={backgroundUrl} type="video/mp4" />
+        </video>
+      );
+    }
+
+    return (
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${backgroundUrl})` }}
+      />
+    );
+  };
+
   return (
     <div
       onClick={handleEnter}
       className={`fixed inset-0 z-50 flex items-center justify-center cursor-pointer ${getAnimationContainerClass()}`}
-      style={{ backgroundColor: "#000000" }}
     >
-      {animation === "horizontal" && isEntering ? (
-        <>
-          <div 
-            className="absolute inset-y-0 left-0 w-1/2 bg-black" 
-            style={{ animation: "slide-left 0.8s ease-in-out forwards" }}
-          />
-          <div 
-            className="absolute inset-y-0 right-0 w-1/2 bg-black"
-            style={{ animation: "slide-right 0.8s ease-in-out forwards" }}
-          />
-        </>
-      ) : animation === "vertical" && isEntering ? (
-        <>
-          <div 
-            className="absolute inset-x-0 top-0 h-1/2 bg-black"
-            style={{ animation: "slide-up 0.8s ease-in-out forwards" }}
-          />
-          <div 
-            className="absolute inset-x-0 bottom-0 h-1/2 bg-black"
-            style={{ animation: "slide-down 0.8s ease-in-out forwards" }}
-          />
-        </>
-      ) : !isEntering ? (
-        <div className="absolute inset-0 bg-black" />
-      ) : null}
+      {/* Background */}
+      {!isEntering && renderBackground()}
       
+      {/* Dark overlay for readability */}
+      {!isEntering && backgroundUrl && (
+        <div className="absolute inset-0 bg-black/50" />
+      )}
+
+      {/* Split animations */}
+      {animation === "horizontal" && isEntering && (
+        <>
+          <div className="absolute inset-y-0 left-0 w-1/2 overflow-hidden">
+            <div 
+              className="absolute inset-0"
+              style={{ animation: "slide-left 0.8s ease-in-out forwards" }}
+            >
+              {renderBackground()}
+              {backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
+            </div>
+          </div>
+          <div className="absolute inset-y-0 right-0 w-1/2 overflow-hidden">
+            <div 
+              className="absolute inset-0 -left-full"
+              style={{ animation: "slide-right 0.8s ease-in-out forwards" }}
+            >
+              {renderBackground()}
+              {backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
+            </div>
+          </div>
+        </>
+      )}
+      
+      {animation === "vertical" && isEntering && (
+        <>
+          <div className="absolute inset-x-0 top-0 h-1/2 overflow-hidden">
+            <div 
+              className="absolute inset-0"
+              style={{ animation: "slide-up 0.8s ease-in-out forwards" }}
+            >
+              {renderBackground()}
+              {backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
+            </div>
+          </div>
+          <div className="absolute inset-x-0 bottom-0 h-1/2 overflow-hidden">
+            <div 
+              className="absolute inset-0 -top-full"
+              style={{ animation: "slide-down 0.8s ease-in-out forwards" }}
+            >
+              {renderBackground()}
+              {backgroundUrl && <div className="absolute inset-0 bg-black/50" />}
+            </div>
+          </div>
+        </>
+      )}
+      
+      {/* Entry content */}
       <div className={`text-center space-y-6 animate-fade-in pointer-events-none transition-opacity duration-300 z-10 ${isEntering ? "opacity-0" : "opacity-100"}`}>
         {renderContent()}
       </div>

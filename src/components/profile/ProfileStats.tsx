@@ -1,4 +1,4 @@
-import { Eye, MapPin, Calendar, ThumbsUp, ThumbsDown, Hash } from "lucide-react";
+import { Eye, Calendar, ThumbsUp, ThumbsDown, Hash } from "lucide-react";
 import CountUpAnimation from "./CountUpAnimation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { format } from "date-fns";
@@ -21,7 +21,6 @@ interface ProfileStatsProps {
 
 const ProfileStats = ({ 
   viewCount, 
-  location, 
   createdAt, 
   profileOpacity,
   showViews = true,
@@ -60,20 +59,20 @@ const ProfileStats = ({
 
   return (
     <>
-      {/* Main stats in bottom left */}
-      <div className="fixed bottom-4 left-4 z-50 flex items-center gap-2">
-        <div className="flex items-center gap-4 px-3 py-1.5 text-xs">
+      {/* Main stats in bottom left - smaller and rounded like coding badges */}
+      <div className="fixed bottom-4 left-4 z-50">
+        <div className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] rounded-full bg-transparent border border-foreground/20 backdrop-blur-sm">
           {/* UID Number */}
           {uidNumber && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1.5 text-foreground cursor-default">
-                    <Hash className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-1 text-foreground/80 cursor-default">
+                    <Hash className="w-3 h-3" />
                     <span className="font-medium font-mono">{uidNumber}</span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-card border-border">
+                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-full">
                   <p className="font-medium">UID</p>
                 </TooltipContent>
               </Tooltip>
@@ -83,12 +82,12 @@ const ProfileStats = ({
           {/* Views */}
           {showViews && (
             <>
-              {uidNumber && <div className="w-px h-3 bg-foreground/30" />}
+              {uidNumber && <div className="w-px h-2.5 bg-foreground/20" />}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1.5 text-foreground cursor-default">
-                      <Eye className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1 text-foreground/80 cursor-default">
+                      <Eye className="w-3 h-3" />
                       <span className="font-medium">
                         {viewsAnimation ? (
                           <CountUpAnimation target={viewCount} duration={400} />
@@ -98,28 +97,8 @@ const ProfileStats = ({
                       </span>
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-card border-border">
+                  <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-full">
                     <p className="font-medium">Views</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </>
-          )}
-
-          {/* Location */}
-          {location && (
-            <>
-              {(showViews || uidNumber) && <div className="w-px h-3 bg-foreground/30" />}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1.5 text-foreground cursor-default">
-                      <MapPin className="w-3.5 h-3.5" />
-                      <span className="font-medium">{location}</span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-card border-border">
-                    <p className="font-medium">Location</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -129,16 +108,16 @@ const ProfileStats = ({
           {/* Date */}
           {showJoinDate && formattedDate && (
             <>
-              {(showViews || location || uidNumber) && <div className="w-px h-3 bg-foreground/30" />}
+              {(showViews || uidNumber) && <div className="w-px h-2.5 bg-foreground/20" />}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1.5 text-foreground cursor-default">
-                      <Calendar className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1 text-foreground/80 cursor-default">
+                      <Calendar className="w-3 h-3" />
                       <span className="font-medium">{formattedDate}</span>
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-card border-border">
+                  <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-full">
                     <p className="font-medium">Join Date</p>
                   </TooltipContent>
                 </Tooltip>
@@ -148,19 +127,19 @@ const ProfileStats = ({
         </div>
       </div>
 
-      {/* Likes/Dislikes in bottom right */}
+      {/* Likes/Dislikes in bottom right - smaller and rounded */}
       {showLikes && (
-        <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2">
-          <div className="flex items-center gap-3 px-3 py-1.5 text-xs">
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className="flex items-center gap-2 px-2.5 py-1 text-[10px] rounded-full bg-transparent border border-foreground/20 backdrop-blur-sm">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1 p-1 hover:opacity-80 text-foreground transition-opacity cursor-pointer">
-                    <ThumbsUp className="w-4 h-4" />
+                  <button className="flex items-center gap-1 hover:opacity-80 text-foreground/80 transition-opacity cursor-pointer">
+                    <ThumbsUp className="w-3 h-3" />
                     <span className="font-medium">{likes}</span>
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-card border-border">
+                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-full">
                   <p className="font-medium">{likes} likes</p>
                 </TooltipContent>
               </Tooltip>
@@ -168,12 +147,12 @@ const ProfileStats = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1 p-1 hover:opacity-80 text-foreground transition-opacity cursor-pointer">
-                    <ThumbsDown className="w-4 h-4" />
+                  <button className="flex items-center gap-1 hover:opacity-80 text-foreground/80 transition-opacity cursor-pointer">
+                    <ThumbsDown className="w-3 h-3" />
                     <span className="font-medium">{dislikes}</span>
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-card border-border">
+                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-full">
                   <p className="font-medium">{dislikes} dislikes</p>
                 </TooltipContent>
               </Tooltip>
