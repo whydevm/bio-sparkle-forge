@@ -23,6 +23,13 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } 
 import { Flag } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
+interface Background {
+  id: string;
+  url: string;
+  type: "image" | "video";
+  enabled: boolean;
+}
+
 const Profile = () => {
   const { username } = useParams();
   const [profile, setProfile] = useState<any>(null);
@@ -33,6 +40,7 @@ const Profile = () => {
   const [hasEntered, setHasEntered] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [currentBackground, setCurrentBackground] = useState<{ url: string; type: string } | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -67,7 +75,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (hasEntered && profile) {
-      if (videoRef.current && profile.background_type === "video") {
+      if (videoRef.current && currentBackground?.type === "video") {
         const playVideo = async () => {
           try {
             videoRef.current!.muted = music.length > 0;
@@ -90,7 +98,28 @@ const Profile = () => {
         playAudio();
       }
     }
-  }, [hasEntered, profile, music]);
+  }, [hasEntered, profile, music, currentBackground]);
+
+  // Handle background rotation on page load
+  useEffect(() => {
+    if (profile) {
+      const backgrounds = (profile.backgrounds || []) as Background[];
+      const enabledBackgrounds = backgrounds.filter(bg => bg.enabled);
+      
+      if (enabledBackgrounds.length > 1 && profile.background_shuffle) {
+        // Random background on each visit
+        const randomIndex = Math.floor(Math.random() * enabledBackgrounds.length);
+        const selectedBg = enabledBackgrounds[randomIndex];
+        setCurrentBackground({ url: selectedBg.url, type: selectedBg.type });
+      } else if (enabledBackgrounds.length > 0) {
+        // Use first enabled background
+        setCurrentBackground({ url: enabledBackgrounds[0].url, type: enabledBackgrounds[0].type });
+      } else if (profile.background_url) {
+        // Fallback to single background
+        setCurrentBackground({ url: profile.background_url, type: profile.background_type || "image" });
+      }
+    }
+  }, [profile]);
 
   const loadProfile = async () => {
     const { data: profileData } = await supabase
@@ -148,14 +177,14 @@ const Profile = () => {
   }
 
   const getBackgroundStyle = () => {
-    if (!profile.background_url) return {};
+    if (!currentBackground?.url) return {};
 
-    if (profile.background_type === "video") {
+    if (currentBackground.type === "video") {
       return {};
     }
 
     return {
-      backgroundImage: `url(${profile.background_url})`,
+      backgroundImage: `url(${currentBackground.url})`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundAttachment: profile.about_me ? "fixed" : undefined,
@@ -167,13 +196,11 @@ const Profile = () => {
   const showBorder = profile.border_enabled && profileOpacity > 0;
   
   // Check if video has audio (we assume videos may have audio)
-  const videoHasAudio = profile.background_type === "video" && profile.background_url;
+  const videoHasAudio = currentBackground?.type === "video" && currentBackground?.url;
   const hasAudio = music.length > 0 || videoHasAudio;
   const shouldShowSplash = hasAudio && !hasEntered;
   const hasAboutMe = profile.about_me && profile.about_me.trim().length > 0;
   
-  // Show audio toggle even when no music tracks but video exists
-  const showAudioToggle = hasAudio && (hasEntered || !hasAudio);
   // Normalize legacy themes to new ones
   const normalizedTheme = profile.theme === "default" || profile.theme === "minimal" || profile.theme === "neon" 
     ? "basic" 
@@ -192,121 +219,107 @@ const Profile = () => {
   const avatarRadius = profile.avatar_radius ?? 100;
   
   // Border effect type
-  const borderEffect = profile.border_effect || "default";
+  const borderEffect = showBorder ? (profile.border_effect || "default") : "none";
 
   const ProfileContent = () => (
     <div
-      className={`p-8 rounded-2xl space-y-6 w-full ${borderEffect === "glass" ? "glass-border-effect" : ""}`}
+      className={`p-6 rounded-xl w-full ${showBorder && borderEffect === "glass" ? "glass-border-effect" : ""}`}
       style={{
         backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
         backgroundColor: profileOpacity === 0 ? "transparent" : `hsl(var(--card) / ${profileOpacity})`,
         borderWidth: showBorder && borderEffect !== "glass" ? "1px" : "0",
         borderColor: showBorder && borderEffect !== "glass" ? "hsl(var(--border))" : "transparent",
-        borderRadius: "1rem",
+        borderRadius: "0.75rem",
       }}
     >
-      {/* Profile Avatar - Centered */}
-      <div className="flex justify-center mb-8">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div 
-                className="relative w-28 h-28 md:w-32 md:h-32"
-                style={{ borderRadius: `${avatarRadius}%` }}
-              >
-                {profile.avatar_url && (
-                  <img
-                    src={profile.avatar_url}
-                    alt={profile.display_name || profile.username}
-                    className="w-full h-full object-cover"
-                    style={{ borderRadius: `${avatarRadius}%` }}
-                  />
-                )}
-                {profile.avatar_decoration_url && (
-                  <img
-                    src={profile.avatar_decoration_url}
-                    alt="Avatar decoration"
-                    className="absolute inset-0 w-full h-full"
-                  />
-                )}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>uid {profile.user_id?.slice(0, 8)}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-
-      <div className="text-center">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="inline-block">
-                <ProfileUsername
-                  username={profile.display_name || profile.username}
-                  effect={profile.username_effect}
-                  glow={profile.glow_username}
-                  fontClass={profile.display_name_font}
-                  colorClass={profile.display_name_color}
-                  customColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
-                />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>uid {profile.user_id?.slice(0, 8)}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        
-        {/* Profile Badges - Under username, above bio */}
-        <ProfileBadges 
-          userId={profile.user_id} 
-          badgeColors={profile.badge_colors}
-        />
-        
-        {bioTexts.length > 0 && (showContent || !hasAudio) && (
-          <p 
-            className={`mt-3 ${profile.bio_font}`}
-            style={{ color: profile.bio_color?.startsWith('#') ? profile.bio_color : undefined }}
+      {/* Top section: Avatar on left, username and badges on right */}
+      <div className="flex items-start gap-4 mb-4">
+        {/* Avatar */}
+        {profile.avatar_url && (
+          <div 
+            className="relative flex-shrink-0 w-20 h-20 md:w-24 md:h-24"
+            style={{ borderRadius: `${avatarRadius}%` }}
           >
-            {cyclingEnabled ? (
-              <TypewriterText 
-                texts={bioTexts} 
-                typingSpeed={100} 
-                deletingSpeed={50}
-                pauseDuration={2500}
-                enableCycling={true}
-              />
-            ) : (
-              <TypewriterText 
-                texts={[bioTexts[0]]} 
-                typingSpeed={100} 
-                deletingSpeed={50}
-                pauseDuration={2500}
-                enableCycling={false}
+            <img
+              src={profile.avatar_url}
+              alt={profile.display_name || profile.username}
+              className="w-full h-full object-cover"
+              style={{ borderRadius: `${avatarRadius}%` }}
+            />
+            {profile.avatar_decoration_url && (
+              <img
+                src={profile.avatar_decoration_url}
+                alt="Avatar decoration"
+                className="absolute inset-0 w-full h-full"
               />
             )}
-          </p>
+          </div>
         )}
+
+        {/* Username and Badges */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <ProfileUsername
+              username={profile.display_name || profile.username}
+              effect={profile.username_effect}
+              glow={profile.glow_username}
+              fontClass={profile.display_name_font}
+              colorClass={profile.display_name_color}
+              customColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
+            />
+            <ProfileBadges 
+              userId={profile.user_id} 
+              badgeColors={profile.badge_colors}
+              inline
+            />
+          </div>
+          
+          {/* Bio under username/badges */}
+          {bioTexts.length > 0 && (showContent || !hasAudio) && (
+            <p 
+              className={`mt-2 text-sm ${profile.bio_font}`}
+              style={{ color: profile.bio_color?.startsWith('#') ? profile.bio_color : "hsl(var(--muted-foreground))" }}
+            >
+              {cyclingEnabled ? (
+                <TypewriterText 
+                  texts={bioTexts} 
+                  typingSpeed={100} 
+                  deletingSpeed={50}
+                  pauseDuration={2500}
+                  enableCycling={true}
+                />
+              ) : (
+                <TypewriterText 
+                  texts={[bioTexts[0]]} 
+                  typingSpeed={100} 
+                  deletingSpeed={50}
+                  pauseDuration={2500}
+                  enableCycling={false}
+                />
+              )}
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* Social Cards for basic theme - above social links */}
+      {/* Social Cards for basic theme */}
       {isBasicTheme && profile && (showContent || !hasAudio) && (
         <SocialCards profileId={profile.id} theme={profile.theme} />
       )}
 
-      {/* Social Links - Larger icons */}
-      <SocialLinks
-        links={links}
-        glow={profile.glow_socials}
-        monochrome={profile.monochrome_icons}
-        linkColors={profile.link_colors}
-      />
+      {/* Social Links */}
+      <div className="mt-4">
+        <SocialLinks
+          links={links}
+          glow={profile.glow_socials}
+          monochrome={profile.monochrome_icons}
+          linkColors={profile.link_colors}
+        />
+      </div>
 
       {/* About Me for basic theme - inside the border */}
       {isBasicTheme && hasAboutMe && (
-        <div className="pt-4 border-t border-foreground/10">
+        <div className="pt-4 mt-4 border-t border-foreground/10">
           <h3 className="text-lg font-semibold mb-2" style={{ color: profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined }}>
             About Me
           </h3>
@@ -316,6 +329,25 @@ const Profile = () => {
           >
             {profile.about_me}
           </p>
+        </div>
+      )}
+
+      {/* Stats inside the border for basic theme */}
+      {isBasicTheme && (hasEntered || !hasAudio) && (showContent || !hasAudio) && (
+        <div className="pt-4 mt-4 border-t border-foreground/10">
+          <ProfileStats
+            viewCount={profile.view_count || 0}
+            createdAt={profile.created_at}
+            profileOpacity={100}
+            showViews={profile.show_views ?? true}
+            showJoinDate={profile.show_join_date ?? true}
+            showLikes={profile.show_likes ?? true}
+            viewsAnimation={profile.views_animation ?? true}
+            userId={profile.user_id}
+            joinDateFormat={profile.join_date_format || "MMM dd, yyyy"}
+            joinTimeFormat={profile.join_time_format || "12h"}
+            insideCard
+          />
         </div>
       )}
     </div>
@@ -328,12 +360,12 @@ const Profile = () => {
           entryText={profile.entry_text || "Click to Enter"}
           entryTextFont={profile.entry_text_font || "font-sans"}
           onEnter={handleEnter}
-          hasAudio={hasAudio}
+          hasAudio={!!hasAudio}
           animation={profile.entry_animation || undefined}
           discordEmoji={profile.entry_emoji}
           emojiPosition={profile.entry_emoji_position || "start"}
-          backgroundUrl={profile.background_url}
-          backgroundType={profile.background_type}
+          backgroundUrl={currentBackground?.url}
+          backgroundType={currentBackground?.type}
           showBackground={profile.show_entry_background ?? true}
         />
       )}
@@ -348,7 +380,7 @@ const Profile = () => {
           <BackgroundEffects effect={profile.background_effect} />
         )}
         
-        {profile.background_type === "video" && profile.background_url && (
+        {currentBackground?.type === "video" && currentBackground?.url && (
           <video
             ref={videoRef}
             loop
@@ -356,7 +388,7 @@ const Profile = () => {
             playsInline
             className="fixed inset-0 w-full h-full object-cover"
           >
-            <source src={profile.background_url} type="video/mp4" />
+            <source src={currentBackground.url} type="video/mp4" />
           </video>
         )}
 
@@ -435,8 +467,8 @@ const Profile = () => {
           </div>
         )}
 
-        {/* Stats in bottom left */}
-        {(hasEntered || !hasAudio) && (showContent || !hasAudio) && (
+        {/* Stats in bottom left - only for portfolio theme */}
+        {isPortfolioTheme && (hasEntered || !hasAudio) && (showContent || !hasAudio) && (
           <ProfileStats
             viewCount={profile.view_count || 0}
             createdAt={profile.created_at}
@@ -445,7 +477,6 @@ const Profile = () => {
             showJoinDate={profile.show_join_date ?? true}
             showLikes={profile.show_likes ?? true}
             viewsAnimation={profile.views_animation ?? true}
-            userId={profile.user_id}
             joinDateFormat={profile.join_date_format || "MMM dd, yyyy"}
             joinTimeFormat={profile.join_time_format || "12h"}
           />

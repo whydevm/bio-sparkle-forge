@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Crown, Wrench, Star, Shield, Gift, Bug, Check, Trophy, Medal, Sparkles, Zap, Heart, Diamond } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 
 interface Badge {
   id: string;
@@ -16,6 +16,7 @@ interface ProfileBadgesProps {
   badgeColors?: Record<string, string>;
   showBorder?: boolean;
   badgeBorder?: boolean;
+  inline?: boolean;
 }
 
 const BADGE_ICONS: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
@@ -40,7 +41,7 @@ const BADGE_ICONS: Record<string, React.ComponentType<{ className?: string; styl
   easter_2025: Sparkles,
 };
 
-const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorder }: ProfileBadgesProps) => {
+const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorder, inline = false }: ProfileBadgesProps) => {
   const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -78,31 +79,62 @@ const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorde
     return null;
   }
 
+  // Inline mode: badges appear next to username without container
+  if (inline) {
+    return (
+      <TooltipProvider>
+        <div className="inline-flex items-center gap-1.5">
+          {badges.map((badge) => {
+            const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
+            const customColor = badgeColors[badge.id];
+            return (
+              <Tooltip key={badge.id}>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
+                    <IconComponent 
+                      className="w-4 h-4 drop-shadow-lg" 
+                      style={{ color: customColor || '#ffffff' }}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="bg-background/95 border-border rounded-lg">
+                  <p className="font-semibold text-xs">{badge.name}</p>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </div>
+      </TooltipProvider>
+    );
+  }
+
   return (
     <div className="flex justify-center mt-2 mb-3">
-      <div className="inline-flex items-center gap-2 bg-transparent border border-foreground/20 rounded-lg px-4 py-2">
-        {badges.map((badge) => {
-          const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
-          const customColor = badgeColors[badge.id];
-          return (
-            <Tooltip key={badge.id}>
-              <TooltipTrigger asChild>
-                <div
-                  className="flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
-                >
-                  <IconComponent 
-                    className="w-5 h-5 drop-shadow-lg" 
-                    style={{ color: customColor || '#ffffff' }}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent className="bg-background/95 border-border">
-                <p className="font-semibold">{badge.name}</p>
-              </TooltipContent>
-            </Tooltip>
-          );
-        })}
-      </div>
+      <TooltipProvider>
+        <div className="inline-flex items-center gap-2 bg-transparent border border-foreground/20 rounded-lg px-4 py-2">
+          {badges.map((badge) => {
+            const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
+            const customColor = badgeColors[badge.id];
+            return (
+              <Tooltip key={badge.id}>
+                <TooltipTrigger asChild>
+                  <div
+                    className="flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+                  >
+                    <IconComponent 
+                      className="w-5 h-5 drop-shadow-lg" 
+                      style={{ color: customColor || '#ffffff' }}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="bg-background/95 border-border rounded-lg">
+                  <p className="font-semibold">{badge.name}</p>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </div>
+      </TooltipProvider>
     </div>
   );
 };

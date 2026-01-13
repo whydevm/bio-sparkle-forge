@@ -109,26 +109,25 @@ All colors MUST be HSL.
     display: none !important;
   }
 
-  /* Glass border effect with animated glow */
+  /* Glass border effect with animated glow - smaller and cleaner */
   .glass-border-effect {
     position: relative;
     overflow: hidden;
-    border-radius: 1rem;
+    border-radius: 0.75rem;
   }
 
   .glass-border-effect::before {
     content: '';
     position: absolute;
-    inset: -2px;
+    inset: -1px;
     background: conic-gradient(
       from 0deg,
-      transparent,
-      hsl(var(--primary) / 0.8),
-      transparent,
-      transparent,
-      transparent
+      transparent 0deg,
+      hsl(var(--primary) / 0.6) 60deg,
+      transparent 120deg,
+      transparent 360deg
     );
-    animation: rotate-border 4s linear infinite;
+    animation: rotate-border 3s linear infinite;
     border-radius: inherit;
     z-index: -1;
   }
@@ -136,7 +135,7 @@ All colors MUST be HSL.
   .glass-border-effect::after {
     content: '';
     position: absolute;
-    inset: 2px;
+    inset: 1px;
     background: hsl(var(--card));
     border-radius: inherit;
     z-index: -1;
