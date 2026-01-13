@@ -16,6 +16,7 @@ interface ProfileStatsProps {
   userId?: string;
   joinDateFormat?: string;
   joinTimeFormat?: string;
+  insideCard?: boolean;
 }
 
 const ProfileStats = ({ 
@@ -30,6 +31,7 @@ const ProfileStats = ({
   userId,
   joinDateFormat = "MMM dd, yyyy",
   joinTimeFormat = "12h",
+  insideCard = false,
 }: ProfileStatsProps) => {
   const formatDate = (dateString?: string) => {
     if (!dateString) return null;
@@ -54,6 +56,46 @@ const ProfileStats = ({
   const formattedDate = formatDate(createdAt);
   const likes = 0;
   const dislikes = 0;
+
+  // Inside card variant
+  if (insideCard) {
+    return (
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <div className="flex items-center gap-3">
+          {showViews && (
+            <div className="flex items-center gap-1">
+              <Eye className="w-3 h-3" />
+              <span>
+                {viewsAnimation ? (
+                  <CountUpAnimation target={viewCount} duration={400} />
+                ) : (
+                  viewCount.toLocaleString()
+                )}
+              </span>
+            </div>
+          )}
+          {showJoinDate && formattedDate && (
+            <div className="flex items-center gap-1">
+              <Calendar className="w-3 h-3" />
+              <span>{formattedDate}</span>
+            </div>
+          )}
+        </div>
+        {showLikes && (
+          <div className="flex items-center gap-2">
+            <button className="flex items-center gap-1 hover:opacity-80 transition-opacity">
+              <ThumbsUp className="w-3 h-3" />
+              <span>{likes}</span>
+            </button>
+            <button className="flex items-center gap-1 hover:opacity-80 transition-opacity">
+              <ThumbsDown className="w-3 h-3" />
+              <span>{dislikes}</span>
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -118,10 +160,13 @@ const ProfileStats = ({
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
-                  <p className="font-medium">{likes} likes</p>
+                  <p className="font-medium">Like</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+
+            <div className="w-px h-2.5 bg-foreground/20" />
+
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -131,7 +176,7 @@ const ProfileStats = ({
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
-                  <p className="font-medium">{dislikes} dislikes</p>
+                  <p className="font-medium">Dislike</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
