@@ -337,6 +337,7 @@ const Profile = () => {
         <div className="pt-4 mt-4 border-t border-foreground/10">
           <ProfileStats
             viewCount={profile.view_count || 0}
+            location={profile.location}
             createdAt={profile.created_at}
             profileOpacity={100}
             showViews={profile.show_views ?? true}
@@ -471,6 +472,7 @@ const Profile = () => {
         {isPortfolioTheme && (hasEntered || !hasAudio) && (showContent || !hasAudio) && (
           <ProfileStats
             viewCount={profile.view_count || 0}
+            location={profile.location}
             createdAt={profile.created_at}
             profileOpacity={profile.profile_opacity}
             showViews={profile.show_views ?? true}

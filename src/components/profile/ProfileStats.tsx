@@ -1,4 +1,4 @@
-import { Eye, Calendar, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Eye, Calendar, ThumbsUp, ThumbsDown, MapPin } from "lucide-react";
 import CountUpAnimation from "./CountUpAnimation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { format } from "date-fns";
@@ -21,6 +21,7 @@ interface ProfileStatsProps {
 
 const ProfileStats = ({ 
   viewCount, 
+  location,
   createdAt, 
   profileOpacity,
   showViews = true,
@@ -57,14 +58,14 @@ const ProfileStats = ({
   const likes = 0;
   const dislikes = 0;
 
-  // Inside card variant
+  // Inside card variant - shows stats at bottom of profile card
   if (insideCard) {
     return (
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between text-xs text-muted-foreground flex-wrap gap-2">
+        <div className="flex items-center gap-3 flex-wrap">
           {showViews && (
             <div className="flex items-center gap-1">
-              <Eye className="w-3 h-3" />
+              <Eye className="w-3.5 h-3.5" />
               <span>
                 {viewsAnimation ? (
                   <CountUpAnimation target={viewCount} duration={400} />
@@ -74,9 +75,15 @@ const ProfileStats = ({
               </span>
             </div>
           )}
+          {location && (
+            <div className="flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5" />
+              <span>{location}</span>
+            </div>
+          )}
           {showJoinDate && formattedDate && (
             <div className="flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
+              <Calendar className="w-3.5 h-3.5" />
               <span>{formattedDate}</span>
             </div>
           )}
@@ -84,11 +91,11 @@ const ProfileStats = ({
         {showLikes && (
           <div className="flex items-center gap-2">
             <button className="flex items-center gap-1 hover:opacity-80 transition-opacity">
-              <ThumbsUp className="w-3 h-3" />
+              <ThumbsUp className="w-3.5 h-3.5" />
               <span>{likes}</span>
             </button>
             <button className="flex items-center gap-1 hover:opacity-80 transition-opacity">
-              <ThumbsDown className="w-3 h-3" />
+              <ThumbsDown className="w-3.5 h-3.5" />
               <span>{dislikes}</span>
             </button>
           </div>
@@ -97,6 +104,7 @@ const ProfileStats = ({
     );
   }
 
+  // Fixed position stats (legacy mode)
   return (
     <>
       {/* Main stats in bottom left */}
@@ -125,10 +133,30 @@ const ProfileStats = ({
             </TooltipProvider>
           )}
 
+          {/* Location */}
+          {location && (
+            <>
+              {showViews && <div className="w-px h-2.5 bg-foreground/20" />}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-1 text-foreground/80 cursor-default">
+                      <MapPin className="w-3 h-3" />
+                      <span className="font-medium">{location}</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
+                    <p className="font-medium">Location</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
+          )}
+
           {/* Date */}
           {showJoinDate && formattedDate && (
             <>
-              {showViews && <div className="w-px h-2.5 bg-foreground/20" />}
+              {(showViews || location) && <div className="w-px h-2.5 bg-foreground/20" />}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
