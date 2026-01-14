@@ -55,49 +55,99 @@ const ProfileStats = ({
   };
 
   const formattedDate = formatDate(createdAt);
-  const likes = 0;
-  const dislikes = 0;
+  const likes = 31;
+  const dislikes = 2;
+
+  // Tooltip content component for consistent styling
+  const StyledTooltipContent = ({ label, count }: { label: string; count?: number | string }) => (
+    <TooltipContent 
+      side="top" 
+      className="bg-card/95 backdrop-blur-md border border-foreground/20 px-3 py-2 rounded-xl shadow-lg"
+    >
+      <div className="flex flex-col items-center gap-1">
+        <span className="text-sm font-medium text-foreground">{label}</span>
+        {count !== undefined && (
+          <span className="text-xs text-muted-foreground">({count})</span>
+        )}
+      </div>
+    </TooltipContent>
+  );
 
   // Inside card variant - shows stats at bottom of profile card
   if (insideCard) {
     return (
-      <div className="flex items-center justify-between text-xs text-muted-foreground flex-wrap gap-2">
-        <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex items-center justify-between text-sm text-muted-foreground flex-wrap gap-3">
+        <div className="flex items-center gap-4 flex-wrap">
           {showViews && (
-            <div className="flex items-center gap-1">
-              <Eye className="w-3.5 h-3.5" />
-              <span>
-                {viewsAnimation ? (
-                  <CountUpAnimation target={viewCount} duration={400} />
-                ) : (
-                  viewCount.toLocaleString()
-                )}
-              </span>
-            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1.5 cursor-default hover:text-foreground transition-colors">
+                    <Eye className="w-4 h-4" />
+                    <span className="font-medium">
+                      {viewsAnimation ? (
+                        <CountUpAnimation target={viewCount} duration={400} />
+                      ) : (
+                        viewCount.toLocaleString()
+                      )}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <StyledTooltipContent label="Views" count={viewCount.toLocaleString()} />
+              </Tooltip>
+            </TooltipProvider>
           )}
           {location && (
-            <div className="flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>{location}</span>
-            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1.5 cursor-default hover:text-foreground transition-colors">
+                    <MapPin className="w-4 h-4" />
+                    <span className="font-medium">{location}</span>
+                  </div>
+                </TooltipTrigger>
+                <StyledTooltipContent label="Location" />
+              </Tooltip>
+            </TooltipProvider>
           )}
           {showJoinDate && formattedDate && (
-            <div className="flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>{formattedDate}</span>
-            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1.5 cursor-default hover:text-foreground transition-colors">
+                    <Calendar className="w-4 h-4" />
+                    <span className="font-medium">{formattedDate}</span>
+                  </div>
+                </TooltipTrigger>
+                <StyledTooltipContent label="Join Date" />
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
         {showLikes && (
-          <div className="flex items-center gap-2">
-            <button className="flex items-center gap-1 hover:opacity-80 transition-opacity">
-              <ThumbsUp className="w-3.5 h-3.5" />
-              <span>{likes}</span>
-            </button>
-            <button className="flex items-center gap-1 hover:opacity-80 transition-opacity">
-              <ThumbsDown className="w-3.5 h-3.5" />
-              <span>{dislikes}</span>
-            </button>
+          <div className="flex items-center gap-3">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
+                    <ThumbsUp className="w-4 h-4" />
+                    <span className="font-medium">{likes}</span>
+                  </button>
+                </TooltipTrigger>
+                <StyledTooltipContent label="Like" count={likes} />
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="flex items-center gap-1.5 hover:text-foreground transition-colors">
+                    <ThumbsDown className="w-4 h-4" />
+                    <span className="font-medium">{dislikes}</span>
+                  </button>
+                </TooltipTrigger>
+                <StyledTooltipContent label="Dislike" count={dislikes} />
+              </Tooltip>
+            </TooltipProvider>
           </div>
         )}
       </div>
@@ -109,14 +159,14 @@ const ProfileStats = ({
     <>
       {/* Main stats in bottom left */}
       <div className="fixed bottom-4 left-4 z-50">
-        <div className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] rounded-lg bg-transparent border border-foreground/20">
+        <div className="flex items-center gap-2 px-3 py-2 text-xs rounded-xl bg-background/40 backdrop-blur-md border border-foreground/20">
           {/* Views */}
           {showViews && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1 text-foreground/80 cursor-default">
-                    <Eye className="w-3 h-3" />
+                  <div className="flex items-center gap-1.5 text-foreground/80 cursor-default hover:text-foreground transition-colors">
+                    <Eye className="w-4 h-4" />
                     <span className="font-medium">
                       {viewsAnimation ? (
                         <CountUpAnimation target={viewCount} duration={400} />
@@ -126,9 +176,7 @@ const ProfileStats = ({
                     </span>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
-                  <p className="font-medium">Views</p>
-                </TooltipContent>
+                <StyledTooltipContent label="Views" count={viewCount.toLocaleString()} />
               </Tooltip>
             </TooltipProvider>
           )}
@@ -136,18 +184,16 @@ const ProfileStats = ({
           {/* Location */}
           {location && (
             <>
-              {showViews && <div className="w-px h-2.5 bg-foreground/20" />}
+              {showViews && <div className="w-px h-4 bg-foreground/20" />}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1 text-foreground/80 cursor-default">
-                      <MapPin className="w-3 h-3" />
+                    <div className="flex items-center gap-1.5 text-foreground/80 cursor-default hover:text-foreground transition-colors">
+                      <MapPin className="w-4 h-4" />
                       <span className="font-medium">{location}</span>
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
-                    <p className="font-medium">Location</p>
-                  </TooltipContent>
+                  <StyledTooltipContent label="Location" />
                 </Tooltip>
               </TooltipProvider>
             </>
@@ -156,18 +202,16 @@ const ProfileStats = ({
           {/* Date */}
           {showJoinDate && formattedDate && (
             <>
-              {(showViews || location) && <div className="w-px h-2.5 bg-foreground/20" />}
+              {(showViews || location) && <div className="w-px h-4 bg-foreground/20" />}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1 text-foreground/80 cursor-default">
-                      <Calendar className="w-3 h-3" />
+                    <div className="flex items-center gap-1.5 text-foreground/80 cursor-default hover:text-foreground transition-colors">
+                      <Calendar className="w-4 h-4" />
                       <span className="font-medium">{formattedDate}</span>
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
-                    <p className="font-medium">Join Date</p>
-                  </TooltipContent>
+                  <StyledTooltipContent label="Join Date" />
                 </Tooltip>
               </TooltipProvider>
             </>
@@ -178,34 +222,30 @@ const ProfileStats = ({
       {/* Likes/Dislikes in bottom right */}
       {showLikes && (
         <div className="fixed bottom-4 right-4 z-50">
-          <div className="flex items-center gap-2 px-2.5 py-1 text-[10px] rounded-lg bg-transparent border border-foreground/20">
+          <div className="flex items-center gap-3 px-3 py-2 text-xs rounded-xl bg-background/40 backdrop-blur-md border border-foreground/20">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1 hover:opacity-80 text-foreground/80 transition-opacity cursor-pointer">
-                    <ThumbsUp className="w-3 h-3" />
+                  <button className="flex items-center gap-1.5 hover:text-foreground text-foreground/80 transition-colors cursor-pointer">
+                    <ThumbsUp className="w-4 h-4" />
                     <span className="font-medium">{likes}</span>
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
-                  <p className="font-medium">Like</p>
-                </TooltipContent>
+                <StyledTooltipContent label="Like" count={likes} />
               </Tooltip>
             </TooltipProvider>
 
-            <div className="w-px h-2.5 bg-foreground/20" />
+            <div className="w-px h-4 bg-foreground/20" />
 
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1 hover:opacity-80 text-foreground/80 transition-opacity cursor-pointer">
-                    <ThumbsDown className="w-3 h-3" />
+                  <button className="flex items-center gap-1.5 hover:text-foreground text-foreground/80 transition-colors cursor-pointer">
+                    <ThumbsDown className="w-4 h-4" />
                     <span className="font-medium">{dislikes}</span>
                   </button>
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-card border-border text-xs px-2 py-1 rounded-lg">
-                  <p className="font-medium">Dislike</p>
-                </TooltipContent>
+                <StyledTooltipContent label="Dislike" count={dislikes} />
               </Tooltip>
             </TooltipProvider>
           </div>
