@@ -223,21 +223,21 @@ const Profile = () => {
 
   const ProfileContent = () => (
     <div
-      className={`p-6 rounded-xl w-full ${showBorder && borderEffect === "glass" ? "glass-border-effect" : ""}`}
+      className={`p-8 rounded-2xl w-full max-w-lg mx-auto ${showBorder && borderEffect === "glass" ? "glass-border-effect" : ""}`}
       style={{
         backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
         backgroundColor: profileOpacity === 0 ? "transparent" : `hsl(var(--card) / ${profileOpacity})`,
         borderWidth: showBorder && borderEffect !== "glass" ? "1px" : "0",
         borderColor: showBorder && borderEffect !== "glass" ? "hsl(var(--border))" : "transparent",
-        borderRadius: "0.75rem",
+        borderRadius: "1rem",
       }}
     >
       {/* Top section: Avatar on left, username and badges on right */}
-      <div className="flex items-start gap-4 mb-4">
-        {/* Avatar */}
+      <div className="flex items-start gap-5 mb-5">
+        {/* Avatar - Bigger */}
         {profile.avatar_url && (
           <div 
-            className="relative flex-shrink-0 w-20 h-20 md:w-24 md:h-24"
+            className="relative flex-shrink-0 w-24 h-24 md:w-28 md:h-28"
             style={{ borderRadius: `${avatarRadius}%` }}
           >
             <img
@@ -277,7 +277,7 @@ const Profile = () => {
           {/* Bio under username/badges */}
           {bioTexts.length > 0 && (showContent || !hasAudio) && (
             <p 
-              className={`mt-2 text-sm ${profile.bio_font}`}
+              className="mt-3 text-sm font-ggsans"
               style={{ color: profile.bio_color?.startsWith('#') ? profile.bio_color : "hsl(var(--muted-foreground))" }}
             >
               {cyclingEnabled ? (
@@ -302,13 +302,15 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* Social Cards for basic theme */}
+      {/* Social Cards for basic theme - centered */}
       {isBasicTheme && profile && (showContent || !hasAudio) && (
-        <SocialCards profileId={profile.id} theme={profile.theme} />
+        <div className="mb-5">
+          <SocialCards profileId={profile.id} theme={profile.theme} />
+        </div>
       )}
 
       {/* Social Links */}
-      <div className="mt-4">
+      <div className="mb-5">
         <SocialLinks
           links={links}
           glow={profile.glow_socials}
@@ -317,24 +319,9 @@ const Profile = () => {
         />
       </div>
 
-      {/* About Me for basic theme - inside the border */}
-      {isBasicTheme && hasAboutMe && (
-        <div className="pt-4 mt-4 border-t border-foreground/10">
-          <h3 className="text-lg font-semibold mb-2" style={{ color: profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined }}>
-            About Me
-          </h3>
-          <p 
-            className="text-sm leading-relaxed"
-            style={{ color: profile.bio_color?.startsWith('#') ? profile.bio_color : "hsl(var(--muted-foreground))" }}
-          >
-            {profile.about_me}
-          </p>
-        </div>
-      )}
-
-      {/* Stats inside the border for basic theme */}
+      {/* Stats inside the border for basic theme - no border line */}
       {isBasicTheme && (hasEntered || !hasAudio) && (showContent || !hasAudio) && (
-        <div className="pt-4 mt-4 border-t border-foreground/10">
+        <div className="pt-4">
           <ProfileStats
             viewCount={profile.view_count || 0}
             location={profile.location}
@@ -403,7 +390,7 @@ const Profile = () => {
         <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center p-4 pb-28 transition-opacity duration-700 ${
           shouldShowSplash ? "opacity-0" : showContent || !hasAudio ? "opacity-100" : "opacity-0"
         }`}>
-          <div className="w-full max-w-md space-y-6 flex flex-col items-center">
+          <div className="w-full max-w-lg space-y-6 flex flex-col items-center">
             {parallaxEnabled ? (
               <ParallaxContainer
                 enabled={true}

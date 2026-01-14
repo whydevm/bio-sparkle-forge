@@ -9,6 +9,7 @@ import { SiRoblox } from "react-icons/si";
 import DiscordPresence from "./DiscordPresence";
 import SpotifyPresence from "./SpotifyPresence";
 import TikTokPresence from "./TikTokPresence";
+import ValorantCard from "./ValorantCard";
 
 interface SocialCard {
   id: string;
@@ -21,6 +22,7 @@ interface SocialCard {
     content_type?: string;
     post_count?: number;
     verified?: boolean;
+    display_mode?: string;
     [key: string]: any;
   };
 }
@@ -41,6 +43,7 @@ const PLATFORMS: Record<string, { icon: any; color: string; name: string }> = {
   github: { icon: FaGithub, color: "#181717", name: "GitHub" },
   steam: { icon: FaSteam, color: "#000000", name: "Steam" },
   roblox: { icon: SiRoblox, color: "#E2231A", name: "Roblox" },
+  valorant: { icon: null, color: "#FF4655", name: "Valorant" },
 };
 
 const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
@@ -82,7 +85,6 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
     return () => clearTimeout(timer);
   }, [profileId]);
 
-  // Don't render if loading
   if (loading) return null;
   if (cards.length === 0) return null;
 
@@ -97,7 +99,7 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
   };
 
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 gap-3 transition-all duration-700 ${
+    <div className={`w-full space-y-3 transition-all duration-700 ${
       isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
     }`}>
       {cards.map((card, index) => {
@@ -121,7 +123,7 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
           );
         }
 
-        // Spotify Rich Presence (if user ID provided for Lanyard)
+        // Spotify Rich Presence
         if (card.platform === "spotify" && contentType === "presence") {
           return (
             <div
@@ -151,6 +153,30 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
           );
         }
 
+        // Valorant Card
+        if (card.platform === "valorant") {
+          const [username, tag] = card.identifier.includes("#") 
+            ? card.identifier.split("#") 
+            : [card.identifier, "NA1"];
+          
+          return (
+            <div
+              key={card.id}
+              style={{ 
+                transitionDelay: `${index * 100}ms`,
+                animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
+              }}
+            >
+              <ValorantCard 
+                username={username} 
+                tag={tag}
+                rank={card.extra_data?.rank || "Ascendant 3"}
+                level={card.extra_data?.level || 291}
+              />
+            </div>
+          );
+        }
+
         const Icon = platform.icon;
         const isVerified = card.extra_data?.verified;
         const postCount = card.extra_data?.post_count;
@@ -158,7 +184,7 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
         return (
           <div
             key={card.id}
-            className="flex items-center gap-3 p-4 rounded-xl border border-foreground/10 bg-background/20 backdrop-blur-md hover:border-foreground/20 transition-all duration-300"
+            className="flex items-center gap-3 p-4 rounded-xl border border-foreground/10 bg-background/30 backdrop-blur-md hover:border-foreground/20 hover:bg-background/40 transition-all duration-300"
             style={{ 
               transitionDelay: `${index * 100}ms`,
               animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
@@ -166,24 +192,24 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
           >
             {/* Avatar/Icon */}
             <div 
-              className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+              className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
               style={{ backgroundColor: platform.color }}
             >
               {card.avatar_url ? (
                 <img 
                   src={card.avatar_url} 
                   alt={card.display_name || card.identifier}
-                  className="w-full h-full rounded-lg object-cover"
+                  className="w-full h-full rounded-xl object-cover"
                 />
-              ) : (
+              ) : Icon ? (
                 <Icon className="w-6 h-6 text-white" />
-              )}
+              ) : null}
             </div>
             
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-medium text-foreground truncate">
+                <span className="font-semibold text-foreground truncate">
                   {card.display_name || card.identifier}
                 </span>
                 {isVerified && (
@@ -194,7 +220,7 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
               </div>
               
               {/* Stats row */}
-              <div className="flex items-center gap-3 text-xs text-foreground/60 mt-0.5">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
                 {card.follower_count !== undefined && card.follower_count > 0 && (
                   <span className="flex items-center gap-1">
                     <FaUsers className="w-3 h-3" />
@@ -211,8 +237,8 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
             </div>
 
             {/* Platform indicator */}
-            <div className="text-xs text-foreground/40 flex items-center gap-1 flex-shrink-0">
-              <Icon className="w-3.5 h-3.5" style={{ color: platform.color }} />
+            <div className="text-xs text-muted-foreground flex items-center gap-1 flex-shrink-0">
+              {Icon && <Icon className="w-3.5 h-3.5" style={{ color: platform.color }} />}
               {platform.name}
             </div>
           </div>

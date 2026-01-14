@@ -9,7 +9,7 @@ interface AudioToggleProps {
 const AudioToggle = ({ audioRef }: AudioToggleProps) => {
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(100);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
@@ -18,8 +18,6 @@ const AudioToggle = ({ audioRef }: AudioToggleProps) => {
       const newMuted = !audioRef.current.muted;
       audioRef.current.muted = newMuted;
       setIsMuted(newMuted);
-      // Hide slider when muting, show when unmuting
-      setIsExpanded(!newMuted);
     }
   };
 
@@ -42,14 +40,12 @@ const AudioToggle = ({ audioRef }: AudioToggleProps) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    if (!isMuted) {
-      setIsExpanded(true);
-    }
+    setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
-      setIsExpanded(false);
+      setIsHovered(false);
     }, 300);
   };
 
@@ -61,39 +57,50 @@ const AudioToggle = ({ audioRef }: AudioToggleProps) => {
     };
   }, []);
 
+  // Show slider when hovered and not muted
+  const showSlider = isHovered && !isMuted;
+
   return (
     <div 
       ref={containerRef}
-      className="flex items-center gap-2"
+      className={`flex items-center transition-all duration-300 ease-out ${
+        showSlider 
+          ? "gap-3 px-4 py-3 rounded-full bg-background/40 backdrop-blur-md border border-foreground/20" 
+          : ""
+      }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      {/* Audio button - circular design like reference */}
       <button
         onClick={toggleMute}
-        className="w-9 h-9 rounded-lg bg-transparent border border-foreground/20 flex items-center justify-center transition-all hover:scale-105 hover:border-foreground/40"
+        className={`flex items-center justify-center transition-all duration-300 ease-out ${
+          showSlider
+            ? "w-10 h-10 rounded-full bg-transparent"
+            : "w-12 h-12 rounded-full bg-background/40 backdrop-blur-md border border-foreground/30 hover:border-foreground/50"
+        }`}
       >
         {isMuted || volume === 0 ? (
-          <VolumeX className="w-4 h-4 text-foreground" />
+          <VolumeX className={`transition-all duration-300 ${showSlider ? "w-5 h-5" : "w-6 h-6"} text-foreground`} />
         ) : (
-          <Volume2 className="w-4 h-4 text-foreground" />
+          <Volume2 className={`transition-all duration-300 ${showSlider ? "w-5 h-5" : "w-6 h-6"} text-foreground`} />
         )}
       </button>
       
+      {/* Volume slider - only shows when hovered and not muted */}
       <div 
         className={`overflow-hidden transition-all duration-300 ease-out ${
-          isExpanded && !isMuted ? "w-24 opacity-100" : "w-0 opacity-0"
+          showSlider ? "w-28 opacity-100" : "w-0 opacity-0"
         }`}
       >
-        <div className="px-3 py-2 rounded-lg bg-transparent border border-foreground/20">
-          <Slider
-            value={[volume]}
-            onValueChange={handleVolumeChange}
-            max={100}
-            min={0}
-            step={1}
-            className="w-full [&>span:first-child]:h-1 [&>span:first-child]:bg-foreground/20 [&_[role=slider]]:h-3 [&_[role=slider]]:w-3 [&_[role=slider]]:bg-foreground [&_[role=slider]]:border-0 [&>span:first-child>span]:bg-foreground"
-          />
-        </div>
+        <Slider
+          value={[volume]}
+          onValueChange={handleVolumeChange}
+          max={100}
+          min={0}
+          step={1}
+          className="w-full [&>span:first-child]:h-1.5 [&>span:first-child]:bg-foreground/30 [&_[role=slider]]:h-4 [&_[role=slider]]:w-4 [&_[role=slider]]:bg-foreground [&_[role=slider]]:border-0 [&>span:first-child>span]:bg-foreground"
+        />
       </div>
     </div>
   );

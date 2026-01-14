@@ -3,15 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Plus, Trash2, X } from "lucide-react";
+import { Plus, Trash2, ChevronDown, ChevronUp, Share2 } from "lucide-react";
 import { 
   FaDiscord, FaTwitter, FaYoutube, FaTwitch, FaSpotify,
   FaInstagram, FaTiktok, FaGithub, FaSteam
 } from "react-icons/fa";
-import { SiRoblox } from "react-icons/si";
+import { SiRoblox, SiValorant } from "react-icons/si";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface SocialCard {
   id: string;
@@ -34,20 +34,83 @@ const PLATFORMS = [
     name: "Discord", 
     icon: FaDiscord, 
     color: "#5865F2", 
+    description: "Show your Discord server, presence, or bot on your profile.",
     contentTypes: [
       { id: "presence", label: "Rich Presence (User ID)", placeholder: "Your Discord User ID (e.g., 123456789012345678)" },
       { id: "server", label: "Server Link", placeholder: "Discord server invite link" },
       { id: "bot", label: "Bot Invite", placeholder: "Discord bot invite link" },
     ]
   },
-  { id: "twitter", name: "Twitter/X", icon: FaTwitter, color: "#1DA1F2", placeholder: "Username (without @)" },
-  { id: "youtube", name: "YouTube", icon: FaYoutube, color: "#FF0000", placeholder: "Channel ID or Username" },
-  { id: "twitch", name: "Twitch", icon: FaTwitch, color: "#9146FF", placeholder: "Username" },
+  { 
+    id: "github", 
+    name: "GitHub", 
+    icon: FaGithub, 
+    color: "#181717", 
+    description: "Show your GitHub profile with followers and repositories count on your profile.",
+    placeholder: "Username" 
+  },
+  { 
+    id: "roblox", 
+    name: "Roblox", 
+    icon: SiRoblox, 
+    color: "#E2231A",
+    description: "Show your Roblox profile with followers and friends count on your profile.",
+    contentTypes: [
+      { id: "user", label: "Player Profile", placeholder: "Roblox username or user ID" },
+      { id: "game", label: "Game/Experience", placeholder: "Roblox game/experience link" },
+      { id: "group", label: "Group", placeholder: "Roblox group link" },
+    ]
+  },
+  { 
+    id: "telegram", 
+    name: "Telegram", 
+    icon: FaDiscord, 
+    color: "#0088cc",
+    description: "Show your Telegram channel with member count on your profile.",
+    placeholder: "Channel username" 
+  },
+  { 
+    id: "lastfm", 
+    name: "Last.fm", 
+    icon: FaSpotify, 
+    color: "#d51007",
+    description: "Show your Last.fm profile with scrobbles or recent tracks on your profile.",
+    placeholder: "Username" 
+  },
+  { 
+    id: "statsfm", 
+    name: "Stats.fm", 
+    icon: FaSpotify, 
+    color: "#1DB954",
+    description: "Show your Stats.fm profile with scrobbles or recent tracks on your profile.",
+    placeholder: "Username" 
+  },
+  { 
+    id: "valorant", 
+    name: "Valorant", 
+    icon: SiValorant, 
+    color: "#FF4655",
+    description: "Show your Valorant rank, stats and level on your profile.",
+    placeholder: "Username (e.g. curet#1234)",
+    hasDisplayMode: true,
+  },
+  { 
+    id: "chess", 
+    name: "Chess", 
+    icon: FaGithub, 
+    color: "#769656",
+    description: "Show your Chess player or club info on your profile.",
+    placeholder: "Username" 
+  },
+  { id: "twitter", name: "X (Twitter)", icon: FaTwitter, color: "#1DA1F2", description: "Show your X (Twitter) profile with follower and following count on your profile.", placeholder: "Username (without @)" },
+  { id: "youtube", name: "YouTube", icon: FaYoutube, color: "#FF0000", description: "Show your YouTube profile with subscriber count on your profile.", placeholder: "Channel ID or Username" },
+  { id: "twitch", name: "Twitch", icon: FaTwitch, color: "#9146FF", description: "Show your Twitch profile with follower count on your profile.", placeholder: "Username" },
   { 
     id: "spotify", 
     name: "Spotify", 
     icon: FaSpotify, 
     color: "#1DB954",
+    description: "Show your Spotify track, album, or playlist on your profile.",
     contentTypes: [
       { id: "presence", label: "Now Playing (Discord ID)", placeholder: "Your Discord User ID for Spotify presence" },
       { id: "profile", label: "Profile Link", placeholder: "Spotify profile URL" },
@@ -57,29 +120,19 @@ const PLATFORMS = [
       { id: "artist", label: "Artist Link", placeholder: "Spotify artist link" },
     ]
   },
-  { id: "instagram", name: "Instagram", icon: FaInstagram, color: "#E4405F", placeholder: "Username (without @)" },
-  { id: "tiktok", name: "TikTok", icon: FaTiktok, color: "#000000", placeholder: "Username (without @)" },
-  { id: "github", name: "GitHub", icon: FaGithub, color: "#181717", placeholder: "Username" },
-  { id: "steam", name: "Steam", icon: FaSteam, color: "#000000", placeholder: "Profile URL or Username" },
-  { 
-    id: "roblox", 
-    name: "Roblox", 
-    icon: SiRoblox, 
-    color: "#E2231A",
-    contentTypes: [
-      { id: "user", label: "Player Profile", placeholder: "Roblox username or user ID" },
-      { id: "game", label: "Game/Experience", placeholder: "Roblox game/experience link" },
-      { id: "group", label: "Group", placeholder: "Roblox group link" },
-    ]
-  },
+  { id: "instagram", name: "Instagram", icon: FaInstagram, color: "#E4405F", description: "Show your Instagram profile with follower count on your profile.", placeholder: "Username (without @)" },
+  { id: "tiktok", name: "TikTok", icon: FaTiktok, color: "#000000", description: "Show your TikTok profile with follower count and hearts on your profile.", placeholder: "Username (without @)" },
+  { id: "steam", name: "Steam", icon: FaSteam, color: "#000000", description: "Show your Steam profile with avatar, username, friends count, and level on your profile.", placeholder: "Profile URL or Username" },
+  { id: "minecraft", name: "Minecraft", icon: FaGithub, color: "#62B47A", description: "Show your Minecraft server with player count on your profile.", placeholder: "Server IP" },
+  { id: "clashofclans", name: "Clash of Clans", icon: FaGithub, color: "#f5c211", description: "Show your Clash of Clans player or clan info on your profile.", placeholder: "Player tag" },
 ];
 
 const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
   const [cards, setCards] = useState<SocialCard[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedPlatform, setSelectedPlatform] = useState("");
-  const [selectedContentType, setSelectedContentType] = useState("");
-  const [identifier, setIdentifier] = useState("");
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Set<string>>(new Set());
+  const [expandedPlatform, setExpandedPlatform] = useState<string | null>(null);
+  const [formData, setFormData] = useState<Record<string, { identifier: string; contentType?: string; displayMode?: string }>>({});
+  const [isEnabled, setIsEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -92,51 +145,91 @@ const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
       .select("*")
       .eq("profile_id", profileId)
       .order("order_index");
-    setCards((data as SocialCard[]) || []);
+    
+    const cardsData = (data as SocialCard[]) || [];
+    setCards(cardsData);
+    
+    // Initialize selected platforms and form data from existing cards
+    const selected = new Set<string>();
+    const formDataInit: Record<string, { identifier: string; contentType?: string; displayMode?: string }> = {};
+    
+    cardsData.forEach(card => {
+      selected.add(card.platform);
+      formDataInit[card.platform] = {
+        identifier: card.identifier,
+        contentType: card.extra_data?.content_type,
+        displayMode: card.extra_data?.display_mode || "current",
+      };
+    });
+    
+    setSelectedPlatforms(selected);
+    setFormData(formDataInit);
   };
 
-  const handleAddCard = async () => {
-    if (!selectedPlatform || !identifier.trim()) {
-      toast.error("Please select a platform and enter an identifier");
-      return;
+  const handlePlatformToggle = async (platformId: string) => {
+    const newSelected = new Set(selectedPlatforms);
+    
+    if (newSelected.has(platformId)) {
+      // Remove the card
+      const cardToRemove = cards.find(c => c.platform === platformId);
+      if (cardToRemove) {
+        await supabase.from("social_cards").delete().eq("id", cardToRemove.id);
+      }
+      newSelected.delete(platformId);
+      setExpandedPlatform(null);
+    } else {
+      // Select the platform (don't add to DB yet - wait for form submission)
+      newSelected.add(platformId);
+      setExpandedPlatform(platformId);
     }
+    
+    setSelectedPlatforms(newSelected);
+    loadCards();
+  };
 
-    // Check if content type is required but not selected
-    const platform = getSelectedPlatform();
-    if (platform && 'contentTypes' in platform && platform.contentTypes && !selectedContentType) {
-      toast.error("Please select a content type");
-      return;
-    }
-
-    if (cards.length >= 3) {
-      toast.error("You can only have up to 3 social cards");
+  const handleSaveCard = async (platformId: string) => {
+    const data = formData[platformId];
+    if (!data?.identifier?.trim()) {
+      toast.error("Please enter the required information");
       return;
     }
 
     setLoading(true);
     try {
-      // Build extra_data with content_type if applicable
+      const existingCard = cards.find(c => c.platform === platformId);
       const extraData: Record<string, any> = {};
-      if (selectedContentType) {
-        extraData.content_type = selectedContentType;
+      
+      if (data.contentType) {
+        extraData.content_type = data.contentType;
+      }
+      if (data.displayMode) {
+        extraData.display_mode = data.displayMode;
       }
 
-      const { error } = await supabase
-        .from("social_cards")
-        .insert({
-          profile_id: profileId,
-          platform: selectedPlatform,
-          identifier: identifier.trim(),
-          order_index: cards.length,
-          extra_data: Object.keys(extraData).length > 0 ? extraData : null,
-        });
+      if (existingCard) {
+        // Update existing card
+        await supabase
+          .from("social_cards")
+          .update({
+            identifier: data.identifier.trim(),
+            extra_data: Object.keys(extraData).length > 0 ? extraData : null,
+          })
+          .eq("id", existingCard.id);
+      } else {
+        // Create new card
+        await supabase
+          .from("social_cards")
+          .insert({
+            profile_id: profileId,
+            platform: platformId,
+            identifier: data.identifier.trim(),
+            order_index: cards.length,
+            extra_data: Object.keys(extraData).length > 0 ? extraData : null,
+          });
+      }
 
-      if (error) throw error;
-      toast.success("Social card added!");
-      setIsDialogOpen(false);
-      setSelectedPlatform("");
-      setSelectedContentType("");
-      setIdentifier("");
+      toast.success("Social card saved!");
+      setExpandedPlatform(null);
       loadCards();
     } catch (error: any) {
       toast.error(error.message);
@@ -144,18 +237,16 @@ const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
     setLoading(false);
   };
 
-  const handleDeleteCard = async (cardId: string) => {
-    try {
-      const { error } = await supabase
-        .from("social_cards")
-        .delete()
-        .eq("id", cardId);
-
-      if (error) throw error;
-      toast.success("Social card removed!");
+  const handleDeleteCard = async (platformId: string) => {
+    const card = cards.find(c => c.platform === platformId);
+    if (card) {
+      await supabase.from("social_cards").delete().eq("id", card.id);
+      const newSelected = new Set(selectedPlatforms);
+      newSelected.delete(platformId);
+      setSelectedPlatforms(newSelected);
+      setExpandedPlatform(null);
       loadCards();
-    } catch (error: any) {
-      toast.error(error.message);
+      toast.success("Social card removed!");
     }
   };
 
@@ -163,173 +254,181 @@ const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
     return PLATFORMS.find(p => p.id === platformId);
   };
 
-  const getSelectedPlatform = () => getPlatformInfo(selectedPlatform);
-  const hasContentTypes = () => {
-    const platform = getSelectedPlatform();
-    return platform && 'contentTypes' in platform && platform.contentTypes;
-  };
-  
-  const getPlaceholder = () => {
-    const platform = getSelectedPlatform();
-    if (!platform) return "Enter identifier";
-    
-    if ('contentTypes' in platform && platform.contentTypes && selectedContentType) {
-      const contentType = platform.contentTypes.find(ct => ct.id === selectedContentType);
-      return contentType?.placeholder || "Enter identifier";
-    }
-    
-    return 'placeholder' in platform ? platform.placeholder : "Enter identifier";
-  };
-
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-bold text-primary flex items-center gap-2">
-          <span className="text-2xl">🔗</span>
-          Social Cards
+        <h3 className="text-2xl font-bold text-primary flex items-center gap-3">
+          <Share2 className="w-6 h-6" />
+          Social Integration
         </h3>
-        <Button
-          variant="outline"
-          onClick={() => setIsDialogOpen(true)}
-          disabled={cards.length >= 3}
-          className="border-primary text-primary hover:bg-primary/10"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Card
-        </Button>
+        <div className="flex items-center gap-2">
+          <span className={`text-sm ${isEnabled ? "text-green-500" : "text-muted-foreground"}`}>
+            {isEnabled ? "● Enabled" : "○ Disabled"}
+          </span>
+          <Switch checked={isEnabled} onCheckedChange={setIsEnabled} />
+        </div>
       </div>
 
-      <p className="text-sm text-muted-foreground">
-        Add up to 3 social cards to display on your profile. ({cards.length}/3)
-      </p>
+      {/* Platform Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {PLATFORMS.map((platform) => {
+          const Icon = platform.icon;
+          const isSelected = selectedPlatforms.has(platform.id);
+          const isExpanded = expandedPlatform === platform.id;
+          const hasContentTypes = 'contentTypes' in platform && platform.contentTypes;
 
-      {cards.length === 0 ? (
-        <div className="text-center py-8 text-muted-foreground">
-          No social cards yet. Add your first one!
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {cards.map((card) => {
-            const platform = getPlatformInfo(card.platform);
-            const Icon = platform?.icon;
-            return (
+          return (
+            <Collapsible
+              key={platform.id}
+              open={isExpanded}
+              onOpenChange={(open) => setExpandedPlatform(open ? platform.id : null)}
+            >
               <div
-                key={card.id}
-                className="flex items-center gap-4 p-4 rounded-lg border border-border bg-card/30"
+                className={`rounded-xl border transition-all duration-200 ${
+                  isSelected 
+                    ? "border-primary/50 bg-primary/5" 
+                    : "border-foreground/10 bg-card/30 hover:border-foreground/20"
+                }`}
               >
-                {Icon && (
-                  <div 
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: platform?.color }}
+                {/* Platform Header */}
+                <CollapsibleTrigger asChild>
+                  <button
+                    className="w-full flex items-center gap-3 p-4 text-left"
+                    onClick={() => {
+                      if (!isSelected) {
+                        handlePlatformToggle(platform.id);
+                      }
+                    }}
                   >
-                    <Icon className="w-5 h-5 text-white" />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-medium">{platform?.name}</h4>
-                  <p className="text-sm text-muted-foreground truncate">
-                    {card.identifier}
-                  </p>
-                </div>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="w-8 h-8 bg-red-600/20 border-red-600 hover:bg-red-600/30"
-                  onClick={() => handleDeleteCard(card.id)}
-                >
-                  <Trash2 className="w-4 h-4 text-red-400" />
-                </Button>
-              </div>
-            );
-          })}
-        </div>
-      )}
+                    <div 
+                      className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: isSelected ? platform.color : `${platform.color}40` }}
+                    >
+                      <Icon className="w-5 h-5 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-sm">{platform.name}</h4>
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        {platform.description}
+                      </p>
+                    </div>
+                    {isSelected && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteCard(platform.id);
+                        }}
+                        className="w-8 h-8 rounded-lg bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-400" />
+                      </button>
+                    )}
+                    {isSelected && (
+                      isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </button>
+                </CollapsibleTrigger>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-md bg-card border-border">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-white text-lg">🔗</span>
-              </div>
-              <div>
-                <div className="font-semibold">Add Social Card</div>
-                <div className="text-sm text-muted-foreground font-normal">
-                  Connect your social accounts
-                </div>
-              </div>
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4 mt-4">
-            <div>
-              <Label className="mb-2 block">Platform</Label>
-              <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
-                <SelectTrigger className="bg-card/50 border-border">
-                  <SelectValue placeholder="Select a platform" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PLATFORMS.map((platform) => {
-                    const Icon = platform.icon;
-                    return (
-                      <SelectItem key={platform.id} value={platform.id}>
-                        <div className="flex items-center gap-2">
-                          <Icon className="w-4 h-4" style={{ color: platform.color }} />
-                          {platform.name}
+                {/* Expanded Configuration */}
+                <CollapsibleContent>
+                  <div className="px-4 pb-4 space-y-4 border-t border-foreground/10 pt-4">
+                    {/* Content Type Selection for platforms with multiple types */}
+                    {hasContentTypes && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground mb-2 block">Content Type</Label>
+                        <div className="flex flex-wrap gap-2">
+                          {(platform as any).contentTypes.map((ct: any) => (
+                            <button
+                              key={ct.id}
+                              onClick={() => setFormData(prev => ({
+                                ...prev,
+                                [platform.id]: { ...prev[platform.id], contentType: ct.id }
+                              }))}
+                              className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
+                                formData[platform.id]?.contentType === ct.id
+                                  ? "border-primary bg-primary/20 text-primary"
+                                  : "border-foreground/20 hover:border-foreground/40"
+                              }`}
+                            >
+                              {ct.label}
+                            </button>
+                          ))}
                         </div>
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
+                      </div>
+                    )}
 
-            {/* Content Type Selection - only for platforms with content types */}
-            {hasContentTypes() && (
-              <div>
-                <Label className="mb-2 block">Content Type</Label>
-                <Select value={selectedContentType} onValueChange={setSelectedContentType}>
-                  <SelectTrigger className="bg-card/50 border-border">
-                    <SelectValue placeholder="Select content type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(getSelectedPlatform() as any)?.contentTypes?.map((ct: any) => (
-                      <SelectItem key={ct.id} value={ct.id}>
-                        {ct.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                    {/* Username/Identifier Input */}
+                    <div>
+                      <Label className="text-xs text-muted-foreground mb-2 block">
+                        {hasContentTypes && formData[platform.id]?.contentType
+                          ? (platform as any).contentTypes.find((ct: any) => ct.id === formData[platform.id]?.contentType)?.placeholder
+                          : (platform as any).placeholder || "Username"}
+                      </Label>
+                      <Input
+                        value={formData[platform.id]?.identifier || ""}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          [platform.id]: { ...prev[platform.id], identifier: e.target.value }
+                        }))}
+                        placeholder={hasContentTypes && formData[platform.id]?.contentType
+                          ? (platform as any).contentTypes.find((ct: any) => ct.id === formData[platform.id]?.contentType)?.placeholder
+                          : (platform as any).placeholder || "Enter username"}
+                        className="bg-card/50 border-foreground/20"
+                      />
+                    </div>
+
+                    {/* Display Mode for Valorant */}
+                    {platform.id === "valorant" && (
+                      <div>
+                        <Label className="text-xs text-muted-foreground mb-2 block">Display Mode</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={() => setFormData(prev => ({
+                              ...prev,
+                              [platform.id]: { ...prev[platform.id], displayMode: "current" }
+                            }))}
+                            className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
+                              (formData[platform.id]?.displayMode || "current") === "current"
+                                ? "border-primary bg-primary/20 text-primary"
+                                : "border-foreground/20 hover:border-foreground/40"
+                            }`}
+                          >
+                            Current
+                          </button>
+                          <button
+                            onClick={() => setFormData(prev => ({
+                              ...prev,
+                              [platform.id]: { ...prev[platform.id], displayMode: "highest" }
+                            }))}
+                            className={`px-4 py-2 text-sm rounded-lg border transition-colors ${
+                              formData[platform.id]?.displayMode === "highest"
+                                ? "border-foreground bg-foreground/10"
+                                : "border-foreground/20 hover:border-foreground/40"
+                            }`}
+                          >
+                            Highest
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Save Button */}
+                    <Button
+                      onClick={() => handleSaveCard(platform.id)}
+                      disabled={loading || !formData[platform.id]?.identifier?.trim()}
+                      className="w-full"
+                      size="sm"
+                    >
+                      {loading ? "Saving..." : "Save"}
+                    </Button>
+                  </div>
+                </CollapsibleContent>
               </div>
-            )}
-
-            <div>
-              <Label className="mb-2 block">
-                {getPlaceholder()}
-              </Label>
-              <Input
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                placeholder={getPlaceholder()}
-                className="bg-card/50 border-border"
-              />
-            </div>
-
-            <div className="flex gap-3 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleAddCard} disabled={loading} className="flex-1">
-                {loading ? "Adding..." : "Add Card"}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+            </Collapsible>
+          );
+        })}
+      </div>
     </div>
   );
 };
