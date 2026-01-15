@@ -21,7 +21,6 @@ import ParallaxContainer from "@/components/profile/ParallaxContainer";
 import { useClickSound } from "@/hooks/useClickSound";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { Flag } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Background {
   id: string;
@@ -100,7 +99,7 @@ const Profile = () => {
     }
   }, [hasEntered, profile, music, currentBackground]);
 
-  // Handle background rotation on page load
+  // Handle background rotation on page load - random on each visit
   useEffect(() => {
     if (profile) {
       const backgrounds = (profile.backgrounds || []) as Background[];
@@ -212,8 +211,8 @@ const Profile = () => {
   const bioTexts = profile.bio ? profile.bio.split("\n").filter((t: string) => t.trim()) : [];
   const cyclingEnabled = profile.cycling_bio_enabled ?? false;
 
-  // Parallax settings - works without border requirement
-  const parallaxEnabled = isBasicTheme && profile.parallax_enabled && profile.profile_opacity >= 25;
+  // Parallax settings - works at any opacity now
+  const parallaxEnabled = isBasicTheme && profile.parallax_enabled;
 
   // Avatar radius
   const avatarRadius = profile.avatar_radius ?? 100;
@@ -221,9 +220,19 @@ const Profile = () => {
   // Border effect type
   const borderEffect = showBorder ? (profile.border_effect || "default") : "none";
 
+  // Entry text handling - if empty string, don't show default text
+  const getEntryText = () => {
+    // If entry_text is undefined or null, return empty string (no text)
+    // If it has a value (even just spaces), use it trimmed
+    if (profile.entry_text === undefined || profile.entry_text === null || profile.entry_text.trim() === "") {
+      return "";
+    }
+    return profile.entry_text;
+  };
+
   const ProfileContent = () => (
     <div
-      className={`p-8 rounded-2xl w-full max-w-lg mx-auto ${showBorder && borderEffect === "glass" ? "glass-border-effect" : ""}`}
+      className={`p-8 rounded-2xl w-full mx-auto ${showBorder && borderEffect === "glass" ? "glass-border-effect" : ""}`}
       style={{
         backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
         backgroundColor: profileOpacity === 0 ? "transparent" : `hsl(var(--card) / ${profileOpacity})`,
@@ -237,7 +246,7 @@ const Profile = () => {
         {/* Avatar - Bigger */}
         {profile.avatar_url && (
           <div 
-            className="relative flex-shrink-0 w-24 h-24 md:w-28 md:h-28"
+            className="relative flex-shrink-0 w-28 h-28 md:w-32 md:h-32"
             style={{ borderRadius: `${avatarRadius}%` }}
           >
             <img
@@ -258,12 +267,12 @@ const Profile = () => {
 
         {/* Username and Badges */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap">
             <ProfileUsername
               username={profile.display_name || profile.username}
               effect={profile.username_effect}
               glow={profile.glow_username}
-              fontClass={profile.display_name_font}
+              fontClass={profile.display_name_font || "font-ggsans"}
               colorClass={profile.display_name_color}
               customColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
             />
@@ -277,8 +286,8 @@ const Profile = () => {
           {/* Bio under username/badges */}
           {bioTexts.length > 0 && (showContent || !hasAudio) && (
             <p 
-              className="mt-3 text-sm font-ggsans"
-              style={{ color: profile.bio_color?.startsWith('#') ? profile.bio_color : "hsl(var(--muted-foreground))" }}
+              className="mt-3 text-sm font-ggsans text-white"
+              style={{ color: profile.bio_color?.startsWith('#') ? profile.bio_color : undefined }}
             >
               {cyclingEnabled ? (
                 <TypewriterText 
@@ -305,7 +314,7 @@ const Profile = () => {
       {/* Social Cards for basic theme - centered */}
       {isBasicTheme && profile && (showContent || !hasAudio) && (
         <div className="mb-5">
-          <SocialCards profileId={profile.id} theme={profile.theme} />
+          <SocialCards profileId={profile.id} theme={profile.theme} profileOpacity={profileOpacity} />
         </div>
       )}
 
@@ -345,8 +354,8 @@ const Profile = () => {
     <>
       {shouldShowSplash && (
         <EntrySplash
-          entryText={profile.entry_text || "Click to Enter"}
-          entryTextFont={profile.entry_text_font || "font-sans"}
+          entryText={getEntryText()}
+          entryTextFont={profile.entry_text_font || "font-ggsans"}
           onEnter={handleEnter}
           hasAudio={!!hasAudio}
           animation={profile.entry_animation || undefined}
@@ -390,7 +399,8 @@ const Profile = () => {
         <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center p-4 pb-28 transition-opacity duration-700 ${
           shouldShowSplash ? "opacity-0" : showContent || !hasAudio ? "opacity-100" : "opacity-0"
         }`}>
-          <div className="w-full max-w-lg space-y-6 flex flex-col items-center">
+          {/* Profile container - BIGGER */}
+          <div className="w-full max-w-xl space-y-6 flex flex-col items-center">
             {parallaxEnabled ? (
               <ParallaxContainer
                 enabled={true}
@@ -431,7 +441,7 @@ const Profile = () => {
         {/* Social Cards - only for portfolio theme */}
         {isPortfolioTheme && profile && (showContent || !hasAudio) && (
           <div className="relative z-10 px-8 pb-4">
-            <SocialCards profileId={profile.id} theme={profile.theme} />
+            <SocialCards profileId={profile.id} theme={profile.theme} profileOpacity={profileOpacity} />
           </div>
         )}
         

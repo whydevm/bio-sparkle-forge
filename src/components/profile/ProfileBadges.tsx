@@ -79,11 +79,11 @@ const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorde
     return null;
   }
 
-  // Inline mode: badges appear next to username without container
+  // Inline mode: badges appear next to username with a pill container and border
   if (inline) {
     return (
       <TooltipProvider>
-        <div className="inline-flex items-center gap-1.5">
+        <div className="inline-flex items-center gap-1.5 bg-black/30 backdrop-blur-sm border border-white/20 rounded-full px-3 py-1.5">
           {badges.map((badge) => {
             const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
             const customColor = badgeColors[badge.id];
@@ -97,8 +97,8 @@ const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorde
                     />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent className="bg-background/95 border-border rounded-lg">
-                  <p className="font-semibold text-xs">{badge.name}</p>
+                <TooltipContent className="bg-black/90 backdrop-blur-sm border-0 px-3 py-1.5 rounded-2xl">
+                  <p className="font-semibold text-xs text-white font-ggsans">{badge.name}</p>
                 </TooltipContent>
               </Tooltip>
             );
@@ -111,7 +111,7 @@ const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorde
   return (
     <div className="flex justify-center mt-2 mb-3">
       <TooltipProvider>
-        <div className="inline-flex items-center gap-2 bg-transparent border border-foreground/20 rounded-lg px-4 py-2">
+        <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2">
           {badges.map((badge) => {
             const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
             const customColor = badgeColors[badge.id];
@@ -127,8 +127,8 @@ const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorde
                     />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent className="bg-background/95 border-border rounded-lg">
-                  <p className="font-semibold">{badge.name}</p>
+                <TooltipContent className="bg-black/90 backdrop-blur-sm border-0 px-3 py-1.5 rounded-2xl">
+                  <p className="font-semibold text-white font-ggsans">{badge.name}</p>
                 </TooltipContent>
               </Tooltip>
             );

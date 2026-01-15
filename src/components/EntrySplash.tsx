@@ -70,6 +70,7 @@ const EntrySplash = ({
     const hasEmoji = discordEmoji && discordEmoji.trim().length > 0;
     const emojiUrl = hasEmoji ? getEmojiUrl(discordEmoji) : null;
 
+    // If emoji with valid URL but NO text - just show emoji
     if (hasEmoji && emojiUrl && !hasText) {
       return (
         <img 
@@ -83,6 +84,7 @@ const EntrySplash = ({
       );
     }
 
+    // If emoji with valid URL AND text - show both
     if (hasEmoji && emojiUrl && hasText) {
       const emoji = (
         <img 
@@ -103,9 +105,15 @@ const EntrySplash = ({
       );
     }
 
-    return (
-      <h1 className={`text-4xl font-bold text-white ${entryTextFont}`}>{entryText}</h1>
-    );
+    // If only text (no emoji)
+    if (hasText) {
+      return (
+        <h1 className={`text-4xl font-bold text-white ${entryTextFont}`}>{entryText}</h1>
+      );
+    }
+
+    // If no text and no emoji - show nothing (just the click area)
+    return null;
   };
 
   const getAnimationContainerClass = () => {

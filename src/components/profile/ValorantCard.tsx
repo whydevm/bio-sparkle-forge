@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { X, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
 
 interface ValorantCardProps {
   username: string;
@@ -44,13 +44,19 @@ const ValorantCard = ({ username, tag, rank = "Ascendant 3", level = 291, rankIc
   ];
 
   const displayRankIcon = rankIcon || getRankIcon(rank);
+  const trackerUrl = `https://tracker.gg/valorant/profile/riot/${encodeURIComponent(username)}%23${encodeURIComponent(tag)}`;
+
+  const handleViewProfile = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(trackerUrl, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <>
       {/* Valorant Card - Compact display */}
       <div
         onClick={() => setIsDialogOpen(true)}
-        className="flex items-center gap-3 p-4 rounded-xl border border-foreground/10 bg-background/30 backdrop-blur-md hover:border-foreground/20 hover:bg-background/40 transition-all duration-300 cursor-pointer group"
+        className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-black/30 backdrop-blur-md hover:border-white/20 hover:bg-black/40 transition-all duration-300 cursor-pointer group"
       >
         {/* Rank Icon */}
         <div className="w-12 h-12 flex-shrink-0">
@@ -64,7 +70,7 @@ const ValorantCard = ({ username, tag, rank = "Ascendant 3", level = 291, rankIc
         {/* Player Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-foreground truncate">
+            <span className="font-semibold text-white truncate font-ggsans">
               {username}#{tag}
             </span>
             {/* Valorant Logo */}
@@ -72,11 +78,11 @@ const ValorantCard = ({ username, tag, rank = "Ascendant 3", level = 291, rankIc
               <path d="M2 4.5L12.5 20.5L14 18V8L2 4.5Z"/>
               <path d="M22 4.5L12.5 20.5L11 18V8L22 4.5Z" opacity="0.5"/>
             </svg>
-            <span className="text-xs text-red-500 font-medium">Valorant</span>
+            <span className="text-xs text-red-500 font-medium font-ggsans">Valorant</span>
           </div>
           
           {/* Stats row */}
-          <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+          <div className="flex items-center gap-4 mt-1 text-xs text-white/60 font-ggsans">
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-green-500"></span>
               {rank}
@@ -89,14 +95,17 @@ const ValorantCard = ({ username, tag, rank = "Ascendant 3", level = 291, rankIc
         </div>
 
         {/* View Profile Button */}
-        <button className="px-3 py-1.5 text-xs font-medium bg-foreground/10 hover:bg-foreground/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
+        <button 
+          onClick={handleViewProfile}
+          className="px-3 py-1.5 text-xs font-medium bg-white/10 hover:bg-white/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100 text-white font-ggsans"
+        >
           View Profile
         </button>
       </div>
 
-      {/* Match History Dialog */}
+      {/* Match History Dialog - unscrollable */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl bg-card/95 backdrop-blur-xl border-border">
+        <DialogContent className="max-w-2xl bg-black/95 backdrop-blur-xl border-white/10 overflow-hidden max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               <svg className="w-8 h-8 text-red-500" viewBox="0 0 24 24" fill="currentColor">
@@ -104,25 +113,25 @@ const ValorantCard = ({ username, tag, rank = "Ascendant 3", level = 291, rankIc
                 <path d="M22 4.5L12.5 20.5L11 18V8L22 4.5Z" opacity="0.5"/>
               </svg>
               <div>
-                <div className="font-bold text-lg">Valorant Match History - {username}#{tag}</div>
-                <div className="text-sm text-muted-foreground font-normal">
+                <div className="font-bold text-lg text-white font-ggsans">Valorant Match History - {username}#{tag}</div>
+                <div className="text-sm text-white/60 font-normal font-ggsans">
                   Here you can see the match history and MMR changes from this user.
                 </div>
               </div>
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-3 mt-4 max-h-96 overflow-y-auto">
+          <div className="space-y-3 mt-4">
             {matchHistory.map((match, index) => (
               <div 
                 key={index}
-                className="flex items-center justify-between p-4 rounded-xl border border-foreground/10 bg-background/30"
+                className="flex items-center justify-between p-4 rounded-xl border border-white/10 bg-white/5"
               >
                 <div className="flex items-center gap-3">
                   {/* Rank icon for the match */}
-                  <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                     {match.result === "Unrated" ? (
-                      <span className="text-muted-foreground text-lg">?</span>
+                      <span className="text-white/60 text-lg">?</span>
                     ) : (
                       <img 
                         src={getRankIcon(match.result)} 
@@ -133,23 +142,33 @@ const ValorantCard = ({ username, tag, rank = "Ascendant 3", level = 291, rankIc
                   </div>
                   
                   <div>
-                    <div className="font-semibold">{match.result}</div>
-                    <div className="text-xs text-muted-foreground">{match.map}</div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
+                    <div className="font-semibold text-white font-ggsans">{match.result}</div>
+                    <div className="text-xs text-white/60 font-ggsans">{match.map}</div>
+                    <div className="text-xs text-white/40 mt-0.5 font-ggsans">
                       Season ec876e6c-43e8-fa63-ffc1-2e8d4db25525
                     </div>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <div className={`font-semibold ${match.eloChange > 0 ? "text-green-500" : match.eloChange < 0 ? "text-red-500" : "text-muted-foreground"}`}>
+                  <div className={`font-semibold font-ggsans ${match.eloChange > 0 ? "text-green-500" : match.eloChange < 0 ? "text-red-500" : "text-white/60"}`}>
                     {match.eloChange > 0 ? `↑ +${match.eloChange}` : match.eloChange < 0 ? `↓ ${match.eloChange}` : "— 0"}
                   </div>
-                  <div className="text-xs text-muted-foreground">{match.elo} ELO</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">{match.date}</div>
+                  <div className="text-xs text-white/60 font-ggsans">{match.elo} ELO</div>
+                  <div className="text-xs text-white/40 mt-0.5 font-ggsans">{match.date}</div>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* View Profile Button */}
+          <div className="mt-4 flex justify-center">
+            <button
+              onClick={handleViewProfile}
+              className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors font-ggsans"
+            >
+              View Full Profile on Tracker.gg
+            </button>
           </div>
         </DialogContent>
       </Dialog>

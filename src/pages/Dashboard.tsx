@@ -430,7 +430,7 @@ const Dashboard = () => {
                 <div className="space-y-3 pt-3 border-t border-border">
                   <h3 className="text-sm font-semibold text-primary">Parallax Effect</h3>
                   <p className="text-xs text-muted-foreground">
-                    Requires profile opacity at least 25%
+                    Adds a 3D tilt effect when hovering over your profile card
                   </p>
                   <div className="flex items-center justify-between">
                     <Label className="text-sm">Enable Parallax</Label>

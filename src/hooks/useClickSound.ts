@@ -8,8 +8,13 @@ export const useClickSound = (enabled: boolean, customSoundUrl?: string | null) 
 
   useEffect(() => {
     if (enabled) {
+      // Create audio element and preload it
       audioRef.current = new Audio(soundUrl);
       audioRef.current.volume = 0.3;
+      audioRef.current.preload = "auto";
+      
+      // Load the audio
+      audioRef.current.load();
     }
 
     return () => {
@@ -22,8 +27,10 @@ export const useClickSound = (enabled: boolean, customSoundUrl?: string | null) 
 
   const playClickSound = useCallback(() => {
     if (enabled && audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {
+      // Clone the audio to allow overlapping sounds
+      const sound = audioRef.current.cloneNode() as HTMLAudioElement;
+      sound.volume = 0.3;
+      sound.play().catch(() => {
         // Ignore autoplay errors
       });
     }
@@ -34,19 +41,29 @@ export const useClickSound = (enabled: boolean, customSoundUrl?: string | null) 
 
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (
+      
+      // Check if the clicked element or its parents are interactive
+      const isInteractive = 
         target.tagName === "BUTTON" ||
         target.tagName === "A" ||
+        target.tagName === "INPUT" ||
+        target.tagName === "SELECT" ||
+        target.tagName === "TEXTAREA" ||
         target.closest("button") ||
         target.closest("a") ||
-        target.classList.contains("cursor-pointer")
-      ) {
+        target.closest("[role='button']") ||
+        target.closest("[data-clickable]") ||
+        target.classList.contains("cursor-pointer") ||
+        getComputedStyle(target).cursor === "pointer";
+      
+      if (isInteractive) {
         playClickSound();
       }
     };
 
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
+    // Use capture phase to catch clicks before they might be stopped
+    document.addEventListener("click", handleClick, true);
+    return () => document.removeEventListener("click", handleClick, true);
   }, [enabled, playClickSound]);
 
   return playClickSound;

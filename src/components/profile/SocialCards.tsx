@@ -30,6 +30,7 @@ interface SocialCard {
 interface SocialCardsProps {
   profileId: string;
   theme?: string;
+  profileOpacity?: number;
 }
 
 const PLATFORMS: Record<string, { icon: any; color: string; name: string }> = {
@@ -46,7 +47,7 @@ const PLATFORMS: Record<string, { icon: any; color: string; name: string }> = {
   valorant: { icon: null, color: "#FF4655", name: "Valorant" },
 };
 
-const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
+const SocialCards = ({ profileId, theme, profileOpacity = 1 }: SocialCardsProps) => {
   const [cards, setCards] = useState<SocialCard[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -96,6 +97,15 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
       return `${(count / 1000).toFixed(1)}K`;
     }
     return count.toString();
+  };
+
+  // Card style with same opacity as profile, blurred backdrop if transparent
+  const getCardStyle = () => {
+    const isTransparent = profileOpacity < 0.5;
+    return {
+      backgroundColor: `hsl(0 0% 0% / ${Math.max(0.3, profileOpacity * 0.5)})`,
+      backdropFilter: isTransparent ? 'blur(12px)' : 'blur(8px)',
+    };
   };
 
   return (
@@ -184,8 +194,9 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
         return (
           <div
             key={card.id}
-            className="flex items-center gap-3 p-4 rounded-xl border border-foreground/10 bg-background/30 backdrop-blur-md hover:border-foreground/20 hover:bg-background/40 transition-all duration-300"
+            className="flex items-center gap-3 p-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300"
             style={{ 
+              ...getCardStyle(),
               transitionDelay: `${index * 100}ms`,
               animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
             }}
@@ -209,7 +220,7 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-foreground truncate">
+                <span className="font-semibold text-white truncate font-ggsans">
                   {card.display_name || card.identifier}
                 </span>
                 {isVerified && (
@@ -220,7 +231,7 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
               </div>
               
               {/* Stats row */}
-              <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+              <div className="flex items-center gap-3 text-xs text-white/60 mt-0.5 font-ggsans">
                 {card.follower_count !== undefined && card.follower_count > 0 && (
                   <span className="flex items-center gap-1">
                     <FaUsers className="w-3 h-3" />
@@ -237,7 +248,7 @@ const SocialCards = ({ profileId, theme }: SocialCardsProps) => {
             </div>
 
             {/* Platform indicator */}
-            <div className="text-xs text-muted-foreground flex items-center gap-1 flex-shrink-0">
+            <div className="text-xs text-white/60 flex items-center gap-1 flex-shrink-0 font-ggsans">
               {Icon && <Icon className="w-3.5 h-3.5" style={{ color: platform.color }} />}
               {platform.name}
             </div>
