@@ -31,6 +31,7 @@ interface SocialCardsProps {
   profileId: string;
   theme?: string;
   profileOpacity?: number;
+  globalRadius?: number;
 }
 
 const PLATFORMS: Record<string, { icon: any; color: string; name: string }> = {
@@ -47,10 +48,13 @@ const PLATFORMS: Record<string, { icon: any; color: string; name: string }> = {
   valorant: { icon: null, color: "#FF4655", name: "Valorant" },
 };
 
-const SocialCards = ({ profileId, theme, profileOpacity = 1 }: SocialCardsProps) => {
+const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }: SocialCardsProps) => {
   const [cards, setCards] = useState<SocialCard[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Calculate border radius based on global setting
+  const borderRadius = `${Math.round((globalRadius / 100) * 16)}px`;
 
   useEffect(() => {
     const loadCards = async () => {

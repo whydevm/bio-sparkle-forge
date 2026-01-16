@@ -267,6 +267,7 @@ export type Database = {
           entry_emoji_position: string | null
           entry_text: string | null
           entry_text_font: string | null
+          global_radius: number | null
           glow_badges: boolean | null
           glow_socials: boolean | null
           glow_username: boolean | null
@@ -291,6 +292,7 @@ export type Database = {
           show_join_date: boolean | null
           show_likes: boolean | null
           show_views: boolean | null
+          text_color: string | null
           theme: string | null
           uid_number: number
           updated_at: string | null
@@ -339,6 +341,7 @@ export type Database = {
           entry_emoji_position?: string | null
           entry_text?: string | null
           entry_text_font?: string | null
+          global_radius?: number | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
           glow_username?: boolean | null
@@ -363,6 +366,7 @@ export type Database = {
           show_join_date?: boolean | null
           show_likes?: boolean | null
           show_views?: boolean | null
+          text_color?: string | null
           theme?: string | null
           uid_number?: number
           updated_at?: string | null
@@ -411,6 +415,7 @@ export type Database = {
           entry_emoji_position?: string | null
           entry_text?: string | null
           entry_text_font?: string | null
+          global_radius?: number | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
           glow_username?: boolean | null
@@ -435,6 +440,7 @@ export type Database = {
           show_join_date?: boolean | null
           show_likes?: boolean | null
           show_views?: boolean | null
+          text_color?: string | null
           theme?: string | null
           uid_number?: number
           updated_at?: string | null

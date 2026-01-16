@@ -217,6 +217,15 @@ const Profile = () => {
   // Avatar radius
   const avatarRadius = profile.avatar_radius ?? 100;
   
+  // Global radius for badges, social cards, etc.
+  const globalRadius = profile.global_radius ?? 50;
+  
+  // Text color (default white)
+  const textColor = profile.text_color || "#FFFFFF";
+
+  // Calculate profile border radius based on global_radius
+  const profileBorderRadius = `${Math.round((globalRadius / 100) * 24)}px`;
+  
   // Border effect type
   const borderEffect = showBorder ? (profile.border_effect || "default") : "none";
 
@@ -232,13 +241,14 @@ const Profile = () => {
 
   const ProfileContent = () => (
     <div
-      className={`p-8 rounded-2xl w-full mx-auto ${showBorder && borderEffect === "glass" ? "glass-border-effect" : ""}`}
+      className={`p-8 w-full mx-auto ${showBorder && borderEffect === "glass" ? "glass-border-effect" : ""}`}
       style={{
         backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
         backgroundColor: profileOpacity === 0 ? "transparent" : `hsl(var(--card) / ${profileOpacity})`,
         borderWidth: showBorder && borderEffect !== "glass" ? "1px" : "0",
         borderColor: showBorder && borderEffect !== "glass" ? "hsl(var(--border))" : "transparent",
-        borderRadius: "1rem",
+        borderRadius: profileBorderRadius,
+        color: textColor,
       }}
     >
       {/* Top section: Avatar on left, username and badges on right */}
@@ -280,6 +290,7 @@ const Profile = () => {
               userId={profile.user_id} 
               badgeColors={profile.badge_colors}
               inline
+              globalRadius={globalRadius}
             />
           </div>
           
@@ -314,7 +325,7 @@ const Profile = () => {
       {/* Social Cards for basic theme - centered */}
       {isBasicTheme && profile && (showContent || !hasAudio) && (
         <div className="mb-5">
-          <SocialCards profileId={profile.id} theme={profile.theme} profileOpacity={profileOpacity} />
+          <SocialCards profileId={profile.id} theme={profile.theme} profileOpacity={profileOpacity} globalRadius={globalRadius} />
         </div>
       )}
 
@@ -441,7 +452,7 @@ const Profile = () => {
         {/* Social Cards - only for portfolio theme */}
         {isPortfolioTheme && profile && (showContent || !hasAudio) && (
           <div className="relative z-10 px-8 pb-4">
-            <SocialCards profileId={profile.id} theme={profile.theme} profileOpacity={profileOpacity} />
+            <SocialCards profileId={profile.id} theme={profile.theme} profileOpacity={profileOpacity} globalRadius={globalRadius} />
           </div>
         )}
         
@@ -449,7 +460,7 @@ const Profile = () => {
         {isPortfolioTheme && profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
           <div className="relative z-10 flex justify-center px-8 pb-8">
             <div className="max-w-md">
-              <CodingBadges badges={profile.coding_badges} glow={profile.glow_badges} />
+              <CodingBadges badges={profile.coding_badges} glow={profile.glow_badges} globalRadius={globalRadius} />
             </div>
           </div>
         )}
