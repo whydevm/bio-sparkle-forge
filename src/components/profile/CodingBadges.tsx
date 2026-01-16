@@ -74,6 +74,7 @@ import { Code, Smartphone, Palette, Gamepad2 } from "lucide-react";
 interface CodingBadgesProps {
   badges: string[];
   glow?: boolean;
+  globalRadius?: number;
 }
 
 // Organized by category as shown in reference
@@ -178,9 +179,12 @@ const BADGE_CONFIG: Record<string, { label: string; Icon: React.ElementType; url
   robloxstudio: { label: "Roblox Studio", Icon: SiRobloxstudio, url: "https://create.roblox.com", category: "Game" },
 };
 
-const CodingBadges = ({ badges, glow }: CodingBadgesProps) => {
+const CodingBadges = ({ badges, glow, globalRadius = 50 }: CodingBadgesProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
+
+  // Calculate border radius based on global setting
+  const borderRadius = `${Math.round((globalRadius / 100) * 9999)}px`;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -221,9 +225,10 @@ const CodingBadges = ({ badges, glow }: CodingBadgesProps) => {
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border border-foreground/30 bg-background/20 backdrop-blur-sm hover:bg-foreground/10 transition-all ${
+            className={`flex items-center gap-2 px-3 py-1.5 border border-foreground/30 bg-background/20 backdrop-blur-sm hover:bg-foreground/10 transition-all font-ggsans ${
               glow ? "shadow-[0_0_10px_hsl(var(--primary)/0.5)]" : ""
             }`}
+            style={{ borderRadius }}
           >
             <Icon className="w-4 h-4 text-foreground" />
             <span className="text-sm font-medium text-foreground">{label}</span>

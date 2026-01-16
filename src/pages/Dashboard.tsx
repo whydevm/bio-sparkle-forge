@@ -243,6 +243,25 @@ const Dashboard = () => {
                 />
               </div>
 
+              {/* Global Radius */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <Label className="text-sm">Global Radius</Label>
+                  <span className="text-xs bg-card px-2 py-0.5 rounded">{profile?.global_radius ?? 50}%</span>
+                </div>
+                <Slider
+                  value={[profile?.global_radius ?? 50]}
+                  onValueChange={([value]) => updateProfile({ global_radius: value })}
+                  max={100}
+                  min={0}
+                  step={1}
+                  className="[&>span:first-child]:bg-muted [&_[role=slider]]:bg-primary [&>span:first-child>span]:bg-primary"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Controls roundness of badges, social cards, profile border, and coding badges
+                </p>
+              </div>
+
               {/* Profile Blur */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
@@ -521,13 +540,14 @@ const Dashboard = () => {
                 <div>
                   <Label className="text-sm mb-1.5 block">Display Name Font</Label>
                   <Select
-                    value={profile?.display_name_font || "font-sans"}
+                    value={profile?.display_name_font || "font-ggsans"}
                     onValueChange={(value) => updateProfile({ display_name_font: value })}
                   >
                     <SelectTrigger className="bg-card/50 border-border text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="max-h-[200px]">
+                      <SelectItem value="font-ggsans">gg sans (default)</SelectItem>
                       <SelectItem value="font-sans">Inter</SelectItem>
                       <SelectItem value="font-roboto">Roboto</SelectItem>
                       <SelectItem value="font-poppins">Poppins</SelectItem>
@@ -543,13 +563,14 @@ const Dashboard = () => {
                 <div>
                   <Label className="text-sm mb-1.5 block">Bio Font</Label>
                   <Select
-                    value={profile?.bio_font || "font-sans"}
+                    value={profile?.bio_font || "font-ggsans"}
                     onValueChange={(value) => updateProfile({ bio_font: value })}
                   >
                     <SelectTrigger className="bg-card/50 border-border text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="max-h-[200px]">
+                      <SelectItem value="font-ggsans">gg sans (default)</SelectItem>
                       <SelectItem value="font-sans">Inter</SelectItem>
                       <SelectItem value="font-roboto">Roboto</SelectItem>
                       <SelectItem value="font-poppins">Poppins</SelectItem>
@@ -586,6 +607,26 @@ const Dashboard = () => {
             <div className="border border-border rounded-xl p-4 md:p-6 space-y-4 bg-card/30">
               {/* Color inputs in grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Text Color (General) */}
+                <div>
+                  <Label className="text-sm mb-1.5 block">Text Color</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={profile?.text_color || "#FFFFFF"}
+                      onChange={(e) => updateProfile({ text_color: e.target.value })}
+                      placeholder="#FFFFFF"
+                      className="bg-card/50 border-border flex-1 text-sm"
+                    />
+                    <input
+                      type="color"
+                      value={profile?.text_color?.startsWith('#') ? profile.text_color : "#FFFFFF"}
+                      onChange={(e) => updateProfile({ text_color: e.target.value })}
+                      className="w-10 h-9 rounded border border-border cursor-pointer bg-transparent"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">General text color for your profile</p>
+                </div>
+
                 {/* Username Color */}
                 <div>
                   <Label className="text-sm mb-1.5 block">Username Color</Label>
@@ -610,14 +651,14 @@ const Dashboard = () => {
                   <Label className="text-sm mb-1.5 block">Bio Color</Label>
                   <div className="flex gap-2">
                     <Input
-                      value={profile?.bio_color || "#DDDDDD"}
+                      value={profile?.bio_color || "#FFFFFF"}
                       onChange={(e) => updateProfile({ bio_color: e.target.value })}
-                      placeholder="#DDDDDD"
+                      placeholder="#FFFFFF"
                       className="bg-card/50 border-border flex-1 text-sm"
                     />
                     <input
                       type="color"
-                      value={profile?.bio_color?.startsWith('#') ? profile.bio_color : "#DDDDDD"}
+                      value={profile?.bio_color?.startsWith('#') ? profile.bio_color : "#FFFFFF"}
                       onChange={(e) => updateProfile({ bio_color: e.target.value })}
                       className="w-10 h-9 rounded border border-border cursor-pointer bg-transparent"
                     />
@@ -671,6 +712,18 @@ const Dashboard = () => {
             </div>
           </div>
 
+          {/* Social Cards Section - Available for all themes */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold text-pink-500 flex items-center gap-2">
+              <Share2 className="w-5 h-5" />
+              Social Cards
+            </h2>
+            
+            <div className="border border-border rounded-xl p-4 md:p-6 bg-card/30">
+              <SocialCardsEditor profileId={profile?.id} />
+            </div>
+          </div>
+
           {/* Portfolio Theme Features - Only visible for Portfolio theme */}
           {profile?.theme === "portfolio" && (
             <>
@@ -717,18 +770,6 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Social Cards Section */}
-              <div className="space-y-4">
-                <h2 className="text-xl font-bold text-pink-500 flex items-center gap-2">
-                  <Share2 className="w-5 h-5" />
-                  Social Cards
-                </h2>
-                
-                <div className="border border-border rounded-xl p-4 md:p-6 bg-card/30">
-                  <SocialCardsEditor profileId={profile?.id} />
                 </div>
               </div>
 

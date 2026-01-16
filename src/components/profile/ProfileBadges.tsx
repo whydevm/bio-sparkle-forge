@@ -17,6 +17,7 @@ interface ProfileBadgesProps {
   showBorder?: boolean;
   badgeBorder?: boolean;
   inline?: boolean;
+  globalRadius?: number;
 }
 
 const BADGE_ICONS: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
@@ -41,9 +42,13 @@ const BADGE_ICONS: Record<string, React.ComponentType<{ className?: string; styl
   easter_2025: Sparkles,
 };
 
-const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorder, inline = false }: ProfileBadgesProps) => {
+const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorder, inline = false, globalRadius = 50 }: ProfileBadgesProps) => {
   const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Calculate border radius based on global setting
+  const inlineBorderRadius = `${Math.round((globalRadius / 100) * 9999)}px`;
+  const normalBorderRadius = `${Math.round((globalRadius / 100) * 12)}px`;
 
   useEffect(() => {
     if (userId) {
@@ -83,7 +88,10 @@ const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorde
   if (inline) {
     return (
       <TooltipProvider>
-        <div className="inline-flex items-center gap-1.5 bg-black/30 backdrop-blur-sm border border-white/20 rounded-full px-3 py-1.5">
+        <div 
+          className="inline-flex items-center gap-1.5 bg-black/30 backdrop-blur-sm border border-white/20 px-3 py-1.5"
+          style={{ borderRadius: inlineBorderRadius }}
+        >
           {badges.map((badge) => {
             const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
             const customColor = badgeColors[badge.id];
@@ -111,7 +119,10 @@ const ProfileBadges = ({ userId, badgeColors = {}, showBorder = true, badgeBorde
   return (
     <div className="flex justify-center mt-2 mb-3">
       <TooltipProvider>
-        <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2">
+        <div 
+          className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm border border-white/20 px-4 py-2"
+          style={{ borderRadius: normalBorderRadius }}
+        >
           {badges.map((badge) => {
             const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
             const customColor = badgeColors[badge.id];
