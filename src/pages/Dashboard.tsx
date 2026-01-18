@@ -521,22 +521,6 @@ const Dashboard = () => {
                 />
               </div>
 
-              {/* Discord User ID */}
-              <div>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <FaDiscord className="w-4 h-4 text-[#5865F2]" />
-                  <Label className="text-sm">Discord User ID</Label>
-                </div>
-                <Input
-                  value={profile?.discord_user_id || ""}
-                  onChange={(e) => updateProfile({ discord_user_id: e.target.value.replace(/\D/g, '').slice(0, 20) })}
-                  placeholder="e.g., 123456789012345678"
-                  className="bg-card/50 border-border text-sm"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Your Discord User ID for rich presence. Must be on <a href="https://discord.gg/lanyard" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">discord.gg/lanyard</a> for live status.
-                </p>
-              </div>
 
               {/* Entry Text */}
               <div>
