@@ -53,9 +53,6 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Calculate border radius based on global setting
-  const borderRadius = `${Math.round((globalRadius / 100) * 16)}px`;
-
   useEffect(() => {
     const loadCards = async () => {
       if (!profileId) {
@@ -101,15 +98,6 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
       return `${(count / 1000).toFixed(1)}K`;
     }
     return count.toString();
-  };
-
-  // Card style with same opacity as profile, blurred backdrop if transparent
-  const getCardStyle = () => {
-    const isTransparent = profileOpacity < 0.5;
-    return {
-      backgroundColor: `hsl(0 0% 0% / ${Math.max(0.3, profileOpacity * 0.5)})`,
-      backdropFilter: isTransparent ? 'blur(12px)' : 'blur(8px)',
-    };
   };
 
   return (
@@ -198,9 +186,8 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
         return (
           <div
             key={card.id}
-            className="flex items-center gap-3 p-4 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300"
+            className="flex items-center gap-3 p-4 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 bg-black/40 backdrop-blur-xl"
             style={{ 
-              ...getCardStyle(),
               transitionDelay: `${index * 100}ms`,
               animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
             }}
@@ -235,7 +222,7 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
               </div>
               
               {/* Stats row */}
-              <div className="flex items-center gap-3 text-xs text-white/60 mt-0.5 font-ggsans">
+              <div className="flex items-center gap-3 text-xs text-white/50 mt-0.5 font-ggsans">
                 {card.follower_count !== undefined && card.follower_count > 0 && (
                   <span className="flex items-center gap-1">
                     <FaUsers className="w-3 h-3" />
@@ -252,7 +239,7 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
             </div>
 
             {/* Platform indicator */}
-            <div className="text-xs text-white/60 flex items-center gap-1 flex-shrink-0 font-ggsans">
+            <div className="text-xs text-white/50 flex items-center gap-1 flex-shrink-0 font-ggsans">
               {Icon && <Icon className="w-3.5 h-3.5" style={{ color: platform.color }} />}
               {platform.name}
             </div>
