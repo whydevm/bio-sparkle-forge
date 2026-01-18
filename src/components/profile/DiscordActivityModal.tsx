@@ -74,7 +74,7 @@ const DiscordActivityModal = ({ open, onOpenChange, username, activities = [] }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="font-ggsans bg-[#1e1f22] border-none rounded-2xl max-w-md p-0 overflow-hidden">
+      <DialogContent className="font-ggsans bg-[#1e1f22] border-none rounded-lg max-w-md p-0 overflow-hidden">
         {/* Header */}
         <div className="flex items-start gap-4 p-6 pb-4">
           <div className="w-14 h-14 rounded-xl bg-[#5865F2] flex items-center justify-center flex-shrink-0">

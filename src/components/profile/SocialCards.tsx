@@ -101,7 +101,7 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
   };
 
   return (
-    <div className={`w-full space-y-3 transition-all duration-700 ${
+    <div className={`font-ggsans w-full space-y-3 transition-all duration-700 ${
       isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
     }`}>
       {cards.map((card, index) => {
@@ -186,7 +186,7 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
         return (
           <div
             key={card.id}
-            className="flex items-center gap-3 p-4 rounded-2xl border border-white/10 hover:border-white/20 transition-all duration-300 bg-black/40 backdrop-blur-xl"
+            className="flex items-center gap-3 p-4 rounded-lg border border-foreground/30 hover:border-foreground/50 transition-all duration-300 backdrop-blur-xl"
             style={{ 
               transitionDelay: `${index * 100}ms`,
               animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
@@ -211,7 +211,7 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-white truncate font-ggsans">
+                <span className="font-semibold text-white truncate">
                   {card.display_name || card.identifier}
                 </span>
                 {isVerified && (
@@ -222,7 +222,7 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
               </div>
               
               {/* Stats row */}
-              <div className="flex items-center gap-3 text-xs text-white/50 mt-0.5 font-ggsans">
+              <div className="flex items-center gap-3 text-xs text-white/50 mt-0.5">
                 {card.follower_count !== undefined && card.follower_count > 0 && (
                   <span className="flex items-center gap-1">
                     <FaUsers className="w-3 h-3" />
@@ -239,7 +239,7 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
             </div>
 
             {/* Platform indicator */}
-            <div className="text-xs text-white/50 flex items-center gap-1 flex-shrink-0 font-ggsans">
+            <div className="text-xs text-white/50 flex items-center gap-1 flex-shrink-0">
               {Icon && <Icon className="w-3.5 h-3.5" style={{ color: platform.color }} />}
               {platform.name}
             </div>
