@@ -257,8 +257,11 @@ export type Database = {
           custom_cursor: string | null
           cycling_bio_enabled: boolean | null
           discord_avatar_enabled: boolean | null
+          discord_avatar_sync: boolean | null
           discord_avatar_url: string | null
+          discord_decoration_sync: boolean | null
           discord_decoration_url: string | null
+          discord_user_id: string | null
           display_name: string | null
           display_name_color: string | null
           display_name_font: string | null
@@ -331,8 +334,11 @@ export type Database = {
           custom_cursor?: string | null
           cycling_bio_enabled?: boolean | null
           discord_avatar_enabled?: boolean | null
+          discord_avatar_sync?: boolean | null
           discord_avatar_url?: string | null
+          discord_decoration_sync?: boolean | null
           discord_decoration_url?: string | null
+          discord_user_id?: string | null
           display_name?: string | null
           display_name_color?: string | null
           display_name_font?: string | null
@@ -405,8 +411,11 @@ export type Database = {
           custom_cursor?: string | null
           cycling_bio_enabled?: boolean | null
           discord_avatar_enabled?: boolean | null
+          discord_avatar_sync?: boolean | null
           discord_avatar_url?: string | null
+          discord_decoration_sync?: boolean | null
           discord_decoration_url?: string | null
+          discord_user_id?: string | null
           display_name?: string | null
           display_name_color?: string | null
           display_name_font?: string | null

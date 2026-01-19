@@ -53,6 +53,9 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Calculate border radius based on global setting
+  const borderRadius = `${Math.round((globalRadius / 100) * 24)}px`;
+
   useEffect(() => {
     const loadCards = async () => {
       if (!profileId) {
@@ -186,10 +189,11 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
         return (
           <div
             key={card.id}
-            className="flex items-center gap-3 p-4 rounded-lg border border-foreground/30 hover:border-foreground/50 transition-all duration-300 backdrop-blur-xl"
+            className="flex items-center gap-3 p-4 border border-foreground/20 hover:border-foreground/40 transition-all duration-300 backdrop-blur-xl"
             style={{ 
               transitionDelay: `${index * 100}ms`,
-              animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
+              animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined,
+              borderRadius,
             }}
           >
             {/* Avatar/Icon */}
