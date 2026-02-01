@@ -812,6 +812,11 @@ const Dashboard = () => {
             updateProfile({ avatar_url: url });
             setShowAvatarManager(false);
           }}
+          discordUserId={profile?.discord_user_id}
+          discordAvatarSync={profile?.discord_avatar_sync ?? false}
+          discordDecorationSync={profile?.discord_decoration_sync ?? false}
+          onDiscordAvatarSyncChange={(enabled) => updateProfile({ discord_avatar_sync: enabled })}
+          onDiscordDecorationSyncChange={(enabled) => updateProfile({ discord_decoration_sync: enabled })}
         />
       )}
 

@@ -7,9 +7,11 @@ import {
 import { HiPhotograph } from "react-icons/hi";
 import { SiRoblox } from "react-icons/si";
 import DiscordPresence from "./DiscordPresence";
+import DiscordServerCard from "./DiscordServerCard";
 import SpotifyPresence from "./SpotifyPresence";
 import TikTokPresence from "./TikTokPresence";
 import ValorantCard from "./ValorantCard";
+import WeatherCard from "./WeatherCard";
 
 interface SocialCard {
   id: string;
@@ -46,6 +48,7 @@ const PLATFORMS: Record<string, { icon: any; color: string; name: string }> = {
   steam: { icon: FaSteam, color: "#000000", name: "Steam" },
   roblox: { icon: SiRoblox, color: "#E2231A", name: "Roblox" },
   valorant: { icon: null, color: "#FF4655", name: "Valorant" },
+  weather: { icon: null, color: "#3B82F6", name: "Weather" },
 };
 
 const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }: SocialCardsProps) => {
@@ -113,7 +116,7 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
 
         const contentType = card.extra_data?.content_type;
 
-        // Discord Rich Presence
+        // Discord Rich Presence (User ID)
         if (card.platform === "discord" && contentType === "presence") {
           return (
             <div
@@ -123,7 +126,22 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
                 animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
               }}
             >
-              <DiscordPresence userId={card.identifier} />
+              <DiscordPresence userId={card.identifier} globalRadius={globalRadius} />
+            </div>
+          );
+        }
+
+        // Discord Server Card
+        if (card.platform === "discord" && contentType === "server") {
+          return (
+            <div
+              key={card.id}
+              style={{ 
+                transitionDelay: `${index * 100}ms`,
+                animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
+              }}
+            >
+              <DiscordServerCard inviteCode={card.identifier} globalRadius={globalRadius} />
             </div>
           );
         }
@@ -178,6 +196,21 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
                 rank={card.extra_data?.rank || "Ascendant 3"}
                 level={card.extra_data?.level || 291}
               />
+            </div>
+          );
+        }
+
+        // Weather Card
+        if (card.platform === "weather") {
+          return (
+            <div
+              key={card.id}
+              style={{ 
+                transitionDelay: `${index * 100}ms`,
+                animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
+              }}
+            >
+              <WeatherCard location={card.identifier} globalRadius={globalRadius} />
             </div>
           );
         }
