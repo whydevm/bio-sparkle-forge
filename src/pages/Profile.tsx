@@ -352,6 +352,7 @@ const Profile = () => {
             showLikes={profile.show_likes ?? true}
             viewsAnimation={profile.views_animation ?? true}
             userId={profile.user_id}
+            uidNumber={profile.uid_number}
             joinDateFormat={profile.join_date_format || "MMM dd, yyyy"}
             joinTimeFormat={profile.join_time_format || "12h"}
             insideCard
@@ -403,7 +404,7 @@ const Profile = () => {
         {/* Audio toggle button in top left when player is hidden or when only video has audio */}
         {((music.length > 0 && profile.show_audio_player === false) || (music.length === 0 && videoHasAudio)) && (hasEntered || !hasAudio) && (
           <div className="fixed top-6 left-6 z-50">
-            <AudioToggle audioRef={videoHasAudio && music.length === 0 ? videoRef as any : audioRef} />
+            <AudioToggle audioRef={videoHasAudio && music.length === 0 ? videoRef as any : audioRef} profileOpacity={profile.profile_opacity ?? 100} />
           </div>
         )}
 

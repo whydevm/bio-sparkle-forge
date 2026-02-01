@@ -3,9 +3,10 @@ import { Volume2, VolumeX } from "lucide-react";
 
 interface AudioToggleProps {
   audioRef: React.RefObject<HTMLAudioElement | HTMLVideoElement>;
+  profileOpacity?: number;
 }
 
-const AudioToggle = ({ audioRef }: AudioToggleProps) => {
+const AudioToggle = ({ audioRef, profileOpacity = 100 }: AudioToggleProps) => {
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(100);
   const [isHovered, setIsHovered] = useState(false);
@@ -100,28 +101,35 @@ const AudioToggle = ({ audioRef }: AudioToggleProps) => {
     };
   }, []);
 
-  // Show slider when hovered and not muted
-  const showSlider = isHovered && !isMuted;
+  // Calculate background opacity based on profile opacity setting
+  const bgOpacity = Math.max(0.4, profileOpacity / 100 * 0.6);
+  const showSlider = isHovered;
 
   return (
     <div 
       ref={containerRef}
       className={`flex items-center transition-all duration-500 ease-out ${
         showSlider 
-          ? "gap-3 px-4 py-3 rounded-full bg-black/60 backdrop-blur-md border border-white/20" 
+          ? "gap-3 px-4 py-3 rounded-full backdrop-blur-md border border-white/20" 
           : ""
       }`}
+      style={{
+        backgroundColor: showSlider ? `rgba(0, 0, 0, ${bgOpacity})` : undefined,
+      }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Audio button - circular design */}
+      {/* Audio button - circular design matching reference image */}
       <button
         onClick={toggleMute}
         className={`flex items-center justify-center transition-all duration-500 ease-out ${
           showSlider
             ? "w-10 h-10 rounded-full bg-transparent"
-            : "w-12 h-12 rounded-full bg-black/60 backdrop-blur-md border border-white/30 hover:border-white/50"
+            : "w-12 h-12 rounded-full backdrop-blur-md border border-white/30 hover:border-white/50"
         }`}
+        style={{
+          backgroundColor: showSlider ? undefined : `rgba(0, 0, 0, ${bgOpacity})`,
+        }}
       >
         {isMuted || volume === 0 ? (
           <VolumeX className={`transition-all duration-300 ${showSlider ? "w-5 h-5" : "w-6 h-6"} text-white`} />
@@ -130,7 +138,7 @@ const AudioToggle = ({ audioRef }: AudioToggleProps) => {
         )}
       </button>
       
-      {/* Volume slider - only shows when hovered and not muted */}
+      {/* Volume slider - shows when hovered */}
       <div 
         className={`overflow-hidden transition-all duration-500 ease-out ${
           showSlider ? "w-28 opacity-100" : "w-0 opacity-0"

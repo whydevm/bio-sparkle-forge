@@ -125,6 +125,14 @@ const PLATFORMS = [
   { id: "steam", name: "Steam", icon: FaSteam, color: "#000000", description: "Show your Steam profile with avatar, username, friends count, and level on your profile.", placeholder: "Profile URL or Username" },
   { id: "minecraft", name: "Minecraft", icon: FaGithub, color: "#62B47A", description: "Show your Minecraft server with player count on your profile.", placeholder: "Server IP" },
   { id: "clashofclans", name: "Clash of Clans", icon: FaGithub, color: "#f5c211", description: "Show your Clash of Clans player or clan info on your profile.", placeholder: "Player tag" },
+  { 
+    id: "weather", 
+    name: "Weather", 
+    icon: FaGithub, 
+    color: "#3B82F6", 
+    description: "Show real-time weather for any location on your profile.",
+    placeholder: "City name (e.g., New York, London, Tokyo)",
+  },
 ];
 
 const SocialCardsEditor = ({ profileId }: SocialCardsEditorProps) => {
