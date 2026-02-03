@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import ProfileUsername from "@/components/profile/ProfileUsername";
 import SocialLinks from "@/components/profile/SocialLinks";
 import MusicPlayer from "@/components/profile/MusicPlayer";
+import PremiumMusicPlayer from "@/components/profile/PremiumMusicPlayer";
 import CustomCursor from "@/components/CustomCursor";
 import EntrySplash from "@/components/EntrySplash";
 import TypewriterText from "@/components/profile/TypewriterText";
@@ -40,6 +41,7 @@ const Profile = () => {
   const [showContent, setShowContent] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [currentBackground, setCurrentBackground] = useState<{ url: string; type: string } | null>(null);
+  const [hasPremiumBadge, setHasPremiumBadge] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -119,6 +121,30 @@ const Profile = () => {
       }
     }
   }, [profile]);
+
+  // Check if user has premium badge for premium player
+  useEffect(() => {
+    const checkPremiumBadge = async () => {
+      if (!profile?.user_id) return;
+      
+      const { data } = await supabase
+        .from("user_badges")
+        .select(`
+          badge_id,
+          badges (badge_type)
+        `)
+        .eq("user_id", profile.user_id);
+      
+      if (data) {
+        const hasPremium = data.some((ub: any) => 
+          ub.badges?.badge_type === "premium" || ub.badges?.badge_type === "owner"
+        );
+        setHasPremiumBadge(hasPremium);
+      }
+    };
+    
+    checkPremiumBadge();
+  }, [profile?.user_id]);
 
   const loadProfile = async () => {
     const { data: profileData } = await supabase
@@ -229,6 +255,9 @@ const Profile = () => {
   // Border effect type
   const borderEffect = showBorder ? (profile.border_effect || "default") : "none";
 
+  // Show badges on profile setting
+  const showBadgesOnProfile = (profile as any).show_badges_on_profile ?? true;
+
   // Entry text handling - if empty string, don't show default text
   const getEntryText = () => {
     // If entry_text is undefined or null, return empty string (no text)
@@ -286,12 +315,14 @@ const Profile = () => {
               colorClass={profile.display_name_color}
               customColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
             />
-            <ProfileBadges 
-              userId={profile.user_id} 
-              badgeColors={profile.badge_colors}
-              inline
-              globalRadius={globalRadius}
-            />
+            {showBadgesOnProfile && (
+              <ProfileBadges 
+                userId={profile.user_id} 
+                badgeColors={profile.badge_colors}
+                inline
+                globalRadius={globalRadius}
+              />
+            )}
           </div>
           
           {/* Bio under username/badges */}
@@ -425,11 +456,25 @@ const Profile = () => {
               <ProfileContent />
             )}
 
-            {/* Music player - Sticky option */}
+            {/* Music player - Sticky option or Premium bottom player */}
             {music.length > 0 && profile.show_audio_player !== false && (
-              <div className={profile.audio_sticky ? "fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-40" : ""}>
-                <MusicPlayer music={music} audioRef={audioRef} shuffle={profile.audio_shuffle} />
-              </div>
+              <>
+                {hasPremiumBadge ? (
+                  <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-lg px-4 z-40">
+                    <PremiumMusicPlayer 
+                      music={music} 
+                      audioRef={audioRef} 
+                      shuffle={profile.audio_shuffle}
+                      profileOpacity={profile.profile_opacity ?? 100}
+                      globalRadius={globalRadius}
+                    />
+                  </div>
+                ) : (
+                  <div className={profile.audio_sticky ? "fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-40" : ""}>
+                    <MusicPlayer music={music} audioRef={audioRef} shuffle={profile.audio_shuffle} />
+                  </div>
+                )}
+              </>
             )}
 
             {/* Scroll indicator - Larger and more prominent */}

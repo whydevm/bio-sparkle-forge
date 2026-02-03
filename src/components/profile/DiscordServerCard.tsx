@@ -80,7 +80,7 @@ const DiscordServerCard = ({ inviteCode, globalRadius = 50 }: DiscordServerCardP
   if (loading) {
     return (
       <div 
-        className="font-ggsans flex items-center gap-3 px-4 py-3 border border-foreground/20 backdrop-blur-xl animate-pulse"
+        className="font-ggsans flex items-center gap-3 px-4 py-3 border border-white/10 backdrop-blur-sm animate-pulse"
         style={{ borderRadius }}
       >
         <div className="w-14 h-14 rounded-xl bg-white/10" />
@@ -95,7 +95,7 @@ const DiscordServerCard = ({ inviteCode, globalRadius = 50 }: DiscordServerCardP
   if (error || !serverData) {
     return (
       <div 
-        className="font-ggsans flex items-center gap-3 px-4 py-3 border border-foreground/20 backdrop-blur-xl"
+        className="font-ggsans flex items-center gap-3 px-4 py-3 border border-white/10 backdrop-blur-sm"
         style={{ borderRadius }}
       >
         <div className="w-14 h-14 rounded-xl bg-[#5865F2] flex items-center justify-center">
@@ -120,7 +120,7 @@ const DiscordServerCard = ({ inviteCode, globalRadius = 50 }: DiscordServerCardP
 
   return (
     <div 
-      className="font-ggsans flex items-center gap-3 px-4 py-3 border border-foreground/20 backdrop-blur-xl hover:border-foreground/40 transition-all duration-300"
+      className="font-ggsans relative flex items-center gap-3 px-4 py-3 border border-white/10 backdrop-blur-sm hover:border-white/20 transition-all duration-300"
       style={{ borderRadius }}
     >
       {/* Server Icon */}

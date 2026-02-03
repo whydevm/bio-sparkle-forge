@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import BadgeColorEditor from "@/components/dashboard/BadgeColorEditor";
 import { Crown, Wrench, Star, Shield, Gift, Bug, Check, Trophy, Medal, Sparkles, Zap, Heart, Diamond, GripVertical, Palette } from "lucide-react";
@@ -36,6 +37,7 @@ const Badges = () => {
   const [loading, setLoading] = useState(true);
   const [colorEditorOpen, setColorEditorOpen] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<any>(null);
+  const [showBadgesOnProfile, setShowBadgesOnProfile] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,6 +59,8 @@ const Badges = () => {
 
     if (profileData) {
       setProfile(profileData);
+      // Check if show_badges_on_profile exists, default to true
+      setShowBadgesOnProfile((profileData as any).show_badges_on_profile ?? true);
     }
 
     // Load all badges
@@ -116,6 +120,24 @@ const Badges = () => {
     }
   };
 
+  const handleToggleBadgeVisibility = async (checked: boolean) => {
+    try {
+      // Use raw update since column may not be in types yet
+      const { error } = await supabase
+        .from("profiles")
+        .update({ show_badges_on_profile: checked } as any)
+        .eq("id", profile.id);
+
+      if (error) throw error;
+
+      setShowBadgesOnProfile(checked);
+      setProfile({ ...profile, show_badges_on_profile: checked });
+      toast.success(checked ? "Badges are now visible on your profile" : "Badges are now hidden from your profile");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   const getBadgeAction = (badgeType: string) => {
     const actions: Record<string, { label: string; enabled: boolean }> = {
       helper: { label: "Join Discord", enabled: true },
@@ -146,6 +168,23 @@ const Badges = () => {
   return (
     <DashboardLayout username={profile.username}>
       <div className="container max-w-2xl mx-auto p-6 space-y-6">
+        {/* Badge Visibility Toggle */}
+        <div className="flex items-center justify-between p-4 bg-card border border-border rounded-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+              <Star className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <div className="font-medium">Show Badges on Profile</div>
+              <div className="text-sm text-muted-foreground">Display your badges next to your username</div>
+            </div>
+          </div>
+          <Switch
+            checked={showBadgesOnProfile}
+            onCheckedChange={handleToggleBadgeVisibility}
+          />
+        </div>
+
         {/* My Badges Section */}
         {userBadges.length > 0 && (
           <div className="space-y-3">
@@ -157,7 +196,7 @@ const Badges = () => {
               Click on a badge to customize its color. Drag to reorder.
             </p>
             <div className="space-y-2">
-              {userBadges.map((badge, index) => {
+              {userBadges.map((badge) => {
                 const IconComponent = BADGE_ICONS[badge.badge_type] || Star;
                 const customColor = profile?.badge_colors?.[badge.id];
                 return (

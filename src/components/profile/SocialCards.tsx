@@ -222,7 +222,7 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
         return (
           <div
             key={card.id}
-            className="flex items-center gap-3 p-4 border border-foreground/20 hover:border-foreground/40 transition-all duration-300 backdrop-blur-xl"
+            className="flex items-center gap-3 p-4 border border-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-sm"
             style={{ 
               transitionDelay: `${index * 100}ms`,
               animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined,
