@@ -85,7 +85,7 @@ const WeatherCard = ({ location, globalRadius = 50 }: WeatherCardProps) => {
   if (loading) {
     return (
       <div 
-        className="font-ggsans flex items-center gap-3 px-4 py-3 border border-foreground/20 backdrop-blur-xl animate-pulse"
+        className="font-ggsans flex items-center gap-3 px-4 py-3 border border-white/10 backdrop-blur-sm animate-pulse"
         style={{ borderRadius }}
       >
         <div className="w-12 h-12 rounded-xl bg-white/10" />
@@ -100,7 +100,7 @@ const WeatherCard = ({ location, globalRadius = 50 }: WeatherCardProps) => {
   if (error || !weather) {
     return (
       <div 
-        className="font-ggsans flex items-center gap-3 px-4 py-3 border border-foreground/20 backdrop-blur-xl"
+        className="font-ggsans flex items-center gap-3 px-4 py-3 border border-white/10 backdrop-blur-sm"
         style={{ borderRadius }}
       >
         <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
@@ -118,7 +118,7 @@ const WeatherCard = ({ location, globalRadius = 50 }: WeatherCardProps) => {
 
   return (
     <div 
-      className="font-ggsans relative flex items-center gap-3 px-4 py-3 border border-foreground/20 backdrop-blur-xl"
+      className="font-ggsans relative flex items-center gap-3 px-4 py-3 border border-white/10 backdrop-blur-sm"
       style={{ borderRadius }}
     >
       {/* Weather Icon */}
