@@ -1,22 +1,33 @@
 import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { MousePointer, Hand, X, Trash2 } from "lucide-react";
+import { MousePointer, Hand, Trash2 } from "lucide-react";
 
 interface CursorManagerProps {
   open: boolean;
   onClose: () => void;
   currentCursor?: string;
   onCursorChange: (url: string | null) => void;
+  trailingEnabled?: boolean;
+  onTrailingChange?: (enabled: boolean) => void;
+  trailCount?: number;
+  onTrailCountChange?: (count: number) => void;
 }
 
 const CursorManager = ({ 
   open, 
   onClose, 
   currentCursor,
-  onCursorChange 
+  onCursorChange,
+  trailingEnabled = false,
+  onTrailingChange,
+  trailCount = 8,
+  onTrailCountChange,
 }: CursorManagerProps) => {
   const [regularCursor, setRegularCursor] = useState<string | null>(currentCursor || null);
   const [pointerCursor, setPointerCursor] = useState<string | null>(null);
@@ -88,7 +99,7 @@ const CursorManager = ({
             <div>
               <DialogTitle className="text-lg">Cursor Manager</DialogTitle>
               <p className="text-sm text-muted-foreground">
-                Upload and manage your custom cursors. You can upload a regular cursor and a pointer cursor.
+                Upload and manage your custom cursors.
               </p>
             </div>
           </div>
@@ -172,6 +183,39 @@ const CursorManager = ({
               />
             </div>
           </div>
+
+          {/* Trailing Effect Option */}
+          {regularCursor && (
+            <div className="space-y-4 pt-4 border-t border-border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label className="text-sm font-medium">Cursor Trail Effect</Label>
+                  <p className="text-xs text-muted-foreground">Multiple cursors follow your main cursor</p>
+                </div>
+                <Switch
+                  checked={trailingEnabled}
+                  onCheckedChange={onTrailingChange}
+                />
+              </div>
+
+              {trailingEnabled && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm">Trail Length</Label>
+                    <span className="text-sm text-muted-foreground">{trailCount}</span>
+                  </div>
+                  <Slider
+                    value={[trailCount]}
+                    onValueChange={([val]) => onTrailCountChange?.(val)}
+                    min={3}
+                    max={15}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
