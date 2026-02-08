@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DiscordActivityModal from "./DiscordActivityModal";
+import DiscordStatusIcon from "./DiscordStatusIcon";
 import { FaSpotify } from "react-icons/fa";
 
 interface DiscordPresenceProps {
@@ -71,13 +72,6 @@ interface DiscordPresenceData {
   kv?: Record<string, string>;
 }
 
-const statusColors: Record<string, string> = {
-  online: "#23a55a",
-  idle: "#f0b232",
-  dnd: "#f23f43",
-  offline: "#80848e",
-};
-
 // Complete Discord badge flags - ALL known badges from public_flags
 const DISCORD_BADGE_FLAGS: Record<number, { name: string; asset: string }> = {
   1: { name: "Discord Staff", asset: "5e74e9b61934fc1f67c65515d1f7e60d" },
@@ -85,14 +79,12 @@ const DISCORD_BADGE_FLAGS: Record<number, { name: string; asset: string }> = {
   4: { name: "HypeSquad Events", asset: "bf01d1073931f921909045f3a39fd264" },
   8: { name: "Bug Hunter Level 1", asset: "2717692c7dca7289b35297368a940dd0" },
   64: { name: "HypeSquad Bravery", asset: "8a88d63823d8a71cd5e390baa45efa02" },
-  128: { name: "HypeSquad Brilliance", asset: "011940fd013da3f7fb926e4a1cd2e618" },
+  128: { name: "HypeSquad Brilliance", asset: "011940fd013da3f7fb926e4a1cd2e018" },
   256: { name: "HypeSquad Balance", asset: "3aa41de486fa12454c3761e8e223442e" },
   512: { name: "Early Supporter", asset: "7060786766c9c840eb3019e725d2b358" },
   16384: { name: "Bug Hunter Level 2", asset: "848f79194d4be5ff5f81505cbd0ce1e6" },
-  65536: { name: "Verified Bot", asset: "verified_bot" },
   131072: { name: "Early Verified Bot Developer", asset: "6df5892e0f35b051f8b61eace34d4571" },
   262144: { name: "Discord Certified Moderator", asset: "fee1624003e2fee35cb398e125dc479b" },
-  524288: { name: "HTTP Interactions Bot", asset: "http_bot" },
   4194304: { name: "Active Developer", asset: "6bdc42827a38498929a4920da12695d9" },
 };
 
@@ -103,24 +95,10 @@ const NITRO_BADGES: Record<number, { name: string; asset: string }> = {
   3: { name: "Nitro Basic", asset: "d99c59263c6576c94b0c520acc707796" },
 };
 
-// Special badges from Lanyard KV or other sources
+// Special badges from Lanyard KV or decoration detection
 const SPECIAL_BADGES: Record<string, { name: string; asset: string }> = {
-  boost_1: { name: "Server Boosting", asset: "51040c70d4f20a921ad6674ff86ce1c" },
-  boost_2: { name: "Server Boosting (2 Months)", asset: "0e4080d1d333bc7ad29ef6528b6f2fb7" },
-  boost_3: { name: "Server Boosting (3 Months)", asset: "72bed924410c304dbe3d00a6e593ff59" },
-  boost_6: { name: "Server Boosting (6 Months)", asset: "df199d2050d3ed4ebf84d64ae83989f8" },
-  boost_9: { name: "Server Boosting (9 Months)", asset: "ec92202290b48d0879b7413d2dde3bab" },
-  boost_12: { name: "Server Boosting (12 Months)", asset: "fc4e51298c7c66197f3d259a2c76c8cb" },
-  boost_15: { name: "Server Boosting (15 Months)", asset: "a3c8a0b45bd2f69a8b42c9e7aef46e0f" },
-  boost_18: { name: "Server Boosting (18 Months)", asset: "83f9fdb7d7dced98873e0c2f1fc9fef0" },
-  boost_24: { name: "Server Boosting (24 Months)", asset: "6b95c5bef6c76e79e1a4cb28e6aa3c4e" },
   quest: { name: "Completed a Quest", asset: "7d9ae358c8c5e118768335dbe68b4fb8" },
   legacy_username: { name: "Originally Known As", asset: "6de6d34650760ba5551a79732e98ed60" },
-  golden_orbs: { name: "Golden Orbs", asset: "f1cdd68ab6de24dc3a6a8f5ee2f21b63" },
-  silver_orbs: { name: "Silver Orbs", asset: "e0b6c4f7a3d2e1c5b9a8f7d6e5c4b3a2" },
-  bronze_orbs: { name: "Bronze Orbs", asset: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6" },
-  automod: { name: "AutoMod", asset: "f2459b691ac7453ed6039571c32f5e4e" },
-  uses_automod: { name: "Supports AutoMod", asset: "f2459b691ac7453ed6039571c32f5e4e" },
 };
 
 const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) => {
@@ -203,10 +181,7 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
     if (flags) {
       for (const [bit, badge] of Object.entries(DISCORD_BADGE_FLAGS)) {
         if (flags & parseInt(bit)) {
-          // Skip special "verified_bot" and "http_bot" text assets
-          if (badge.asset !== "verified_bot" && badge.asset !== "http_bot") {
-            badges.push(badge);
-          }
+          badges.push(badge);
         }
       }
     }
@@ -216,7 +191,7 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
       badges.push(NITRO_BADGES[premiumType]);
     }
     
-    // Check KV store for additional badges (quest, orbs, etc.)
+    // Check KV store for additional badges
     if (kv) {
       if (kv.quest_completed === "true") {
         badges.push(SPECIAL_BADGES.quest);
@@ -224,25 +199,17 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
       if (kv.legacy_username) {
         badges.push(SPECIAL_BADGES.legacy_username);
       }
-      if (kv.golden_orbs === "true") {
-        badges.push(SPECIAL_BADGES.golden_orbs);
-      }
     }
     
     return badges;
   };
 
-  // Get avatar decoration URL - supports animated and handles special formats
+  // Get avatar decoration URL
   const getAvatarDecorationUrl = () => {
     if (!presence?.discord_user?.avatar_decoration_data?.asset) return null;
     const asset = presence.discord_user.avatar_decoration_data.asset;
-    // Check if animated (starts with a_)
     const isAnimated = asset.startsWith('a_');
     const extension = isAnimated ? 'gif' : 'png';
-    // Handle both old and new decoration URL formats
-    if (asset.includes('/')) {
-      return `https://cdn.discordapp.com/avatar-decoration-presets/${asset}.${extension}?size=160&passthrough=true`;
-    }
     return `https://cdn.discordapp.com/avatar-decoration-presets/${asset}.${extension}?size=160&passthrough=true`;
   };
 
@@ -326,7 +293,7 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
         {/* Avatar with decoration and status indicator */}
         <div className="relative flex-shrink-0" style={{ width: 56, height: 56 }}>
           {/* Avatar circle */}
-          <div className="relative w-full h-full rounded-full">
+          <div className="relative w-full h-full rounded-full overflow-hidden">
             <img
               src={avatarUrl}
               alt={presence.discord_user.username}
@@ -337,7 +304,7 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
             />
           </div>
           
-          {/* Avatar Decoration Overlay - properly centered and supports animation */}
+          {/* Avatar Decoration Overlay */}
           {avatarDecorationUrl && (
             <img
               src={avatarDecorationUrl}
@@ -352,17 +319,15 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
                 imageRendering: 'auto',
               }}
               onError={(e) => {
-                // Hide the decoration if it fails to load
                 e.currentTarget.style.display = 'none';
               }}
             />
           )}
           
-          {/* Status indicator */}
-          <div
-            className="absolute bottom-0 right-0 w-4 h-4 rounded-full border-[3px] border-black z-10"
-            style={{ backgroundColor: statusColors[presence.discord_status] }}
-          />
+          {/* Status indicator - Real Discord icon */}
+          <div className="absolute -bottom-0.5 -right-0.5 z-10">
+            <DiscordStatusIcon status={presence.discord_status} size={20} />
+          </div>
         </div>
 
         {/* User info */}
@@ -446,7 +411,7 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
             </div>
           )}
           
-          {/* Last seen for offline users (when no custom status and not listening to Spotify) */}
+          {/* Last seen for offline users */}
           {!isListeningToSpotify && presence.discord_status === "offline" && lastSeenText && !customStatus?.state && (
             <span className="text-xs text-white/50">
               {lastSeenText}
