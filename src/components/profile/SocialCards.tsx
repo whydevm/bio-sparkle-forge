@@ -4,11 +4,12 @@ import {
   FaDiscord, FaTwitter, FaYoutube, FaTwitch, FaSpotify,
   FaInstagram, FaTiktok, FaGithub, FaSteam, FaUsers
 } from "react-icons/fa";
-import { HiPhotograph } from "react-icons/hi";
+import { HiPhotograph, HiOutlineExternalLink } from "react-icons/hi";
 import { SiRoblox } from "react-icons/si";
 import DiscordPresence from "./DiscordPresence";
 import DiscordServerCard from "./DiscordServerCard";
 import SpotifyPresence from "./SpotifyPresence";
+import SpotifyPlaylistCard from "./SpotifyPlaylistCard";
 import TikTokPresence from "./TikTokPresence";
 import ValorantCard from "./ValorantCard";
 import WeatherCard from "./WeatherCard";
@@ -25,6 +26,10 @@ interface SocialCard {
     post_count?: number;
     verified?: boolean;
     display_mode?: string;
+    playlist_name?: string;
+    playlist_creator?: string;
+    playlist_tracks?: number;
+    playlist_cover?: string;
     [key: string]: any;
   };
 }
@@ -51,10 +56,17 @@ const PLATFORMS: Record<string, { icon: any; color: string; name: string }> = {
   weather: { icon: null, color: "#3B82F6", name: "Weather" },
 };
 
+// Parse Spotify playlist URL to get ID
+const parseSpotifyPlaylistId = (url: string): string | null => {
+  const match = url.match(/playlist\/([a-zA-Z0-9]+)/);
+  return match ? match[1] : null;
+};
+
 const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }: SocialCardsProps) => {
   const [cards, setCards] = useState<SocialCard[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [playlistData, setPlaylistData] = useState<Record<string, any>>({});
 
   // Calculate border radius based on global setting
   const borderRadius = `${Math.round((globalRadius / 100) * 24)}px`;
@@ -92,6 +104,37 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, [profileId]);
+
+  // Fetch Spotify playlist data for playlist cards
+  useEffect(() => {
+    const fetchPlaylistData = async () => {
+      const playlistCards = cards.filter(
+        c => c.platform === "spotify" && c.extra_data?.content_type === "playlist"
+      );
+      
+      for (const card of playlistCards) {
+        const playlistId = parseSpotifyPlaylistId(card.identifier);
+        if (playlistId && !playlistData[card.id]) {
+          // For now, use static data or embed info from the URL
+          // In a real implementation, you'd fetch from Spotify API
+          setPlaylistData(prev => ({
+            ...prev,
+            [card.id]: {
+              name: card.display_name || "Playlist",
+              creator: "Spotify User",
+              tracks: 0,
+              cover: null,
+              url: card.identifier,
+            }
+          }));
+        }
+      }
+    };
+    
+    if (cards.length > 0) {
+      fetchPlaylistData();
+    }
+  }, [cards]);
 
   if (loading) return null;
   if (cards.length === 0) return null;
@@ -157,6 +200,28 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
               }}
             >
               <SpotifyPresence userId={card.identifier} />
+            </div>
+          );
+        }
+
+        // Spotify Playlist Card
+        if (card.platform === "spotify" && contentType === "playlist") {
+          return (
+            <div
+              key={card.id}
+              style={{ 
+                transitionDelay: `${index * 100}ms`,
+                animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined
+              }}
+            >
+              <SpotifyPlaylistCard
+                playlistName={card.display_name || card.extra_data?.playlist_name || "Playlist"}
+                creatorName={card.extra_data?.playlist_creator || "Spotify User"}
+                coverUrl={card.avatar_url || card.extra_data?.playlist_cover}
+                trackCount={card.extra_data?.playlist_tracks}
+                playlistUrl={card.identifier}
+                globalRadius={globalRadius}
+              />
             </div>
           );
         }
