@@ -848,6 +848,10 @@ const Dashboard = () => {
         onClose={() => setShowCursorManager(false)}
         currentCursor={profile?.custom_cursor}
         onCursorChange={(url) => updateProfile({ custom_cursor: url })}
+        trailingEnabled={profile?.cursor_trailing_enabled ?? false}
+        onTrailingChange={(enabled) => updateProfile({ cursor_trailing_enabled: enabled })}
+        trailCount={profile?.cursor_trail_count ?? 8}
+        onTrailCountChange={(count) => updateProfile({ cursor_trail_count: count })}
       />
     </DashboardLayout>
   );

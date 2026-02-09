@@ -254,6 +254,8 @@ export type Database = {
           click_sounds: boolean | null
           coding_badges: string[] | null
           created_at: string | null
+          cursor_trail_count: number | null
+          cursor_trailing_enabled: boolean | null
           custom_cursor: string | null
           cycling_bio_enabled: boolean | null
           discord_avatar_enabled: boolean | null
@@ -332,6 +334,8 @@ export type Database = {
           click_sounds?: boolean | null
           coding_badges?: string[] | null
           created_at?: string | null
+          cursor_trail_count?: number | null
+          cursor_trailing_enabled?: boolean | null
           custom_cursor?: string | null
           cycling_bio_enabled?: boolean | null
           discord_avatar_enabled?: boolean | null
@@ -410,6 +414,8 @@ export type Database = {
           click_sounds?: boolean | null
           coding_badges?: string[] | null
           created_at?: string | null
+          cursor_trail_count?: number | null
+          cursor_trailing_enabled?: boolean | null
           custom_cursor?: string | null
           cycling_bio_enabled?: boolean | null
           discord_avatar_enabled?: boolean | null
