@@ -19,6 +19,7 @@ import SocialCards from "@/components/profile/SocialCards";
 import ProfileBadges from "@/components/profile/ProfileBadges";
 import ReportDialog from "@/components/profile/ReportDialog";
 import ParallaxContainer from "@/components/profile/ParallaxContainer";
+import PortfolioLayout from "@/components/profile/PortfolioLayout";
 import { useClickSound } from "@/hooks/useClickSound";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { Flag } from "lucide-react";
@@ -413,7 +414,11 @@ const Profile = () => {
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <div className="min-h-screen relative pb-24 md:pb-28 cursor-default" style={getBackgroundStyle()}>
-        <CustomCursor cursorUrl={profile.custom_cursor} />
+        <CustomCursor 
+          cursorUrl={profile.custom_cursor} 
+          trailingEnabled={profile.cursor_trailing_enabled ?? false}
+          trailCount={profile.cursor_trail_count ?? 8}
+        />
         
         {/* Background Effects */}
         {profile.background_effect && profile.background_effect !== "none" && (
@@ -442,18 +447,33 @@ const Profile = () => {
         <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center p-4 pb-28 transition-opacity duration-700 ${
           shouldShowSplash ? "opacity-0" : showContent || !hasAudio ? "opacity-100" : "opacity-0"
         }`}>
-          {/* Profile container - BIGGER */}
+          {/* Profile container */}
           <div className="w-full max-w-xl space-y-6 flex flex-col items-center">
-            {parallaxEnabled ? (
-              <ParallaxContainer
-                enabled={true}
-                intensity={profile.parallax_intensity || 50}
-                inverted={profile.parallax_inverted || false}
-              >
-                <ProfileContent />
-              </ParallaxContainer>
+            {isPortfolioTheme ? (
+              // Portfolio theme - centered layout
+              <PortfolioLayout
+                profile={profile}
+                links={links}
+                showContent={showContent}
+                hasAudio={!!hasAudio}
+                avatarRadius={avatarRadius}
+                globalRadius={globalRadius}
+                textColor={textColor}
+                showBadgesOnProfile={showBadgesOnProfile}
+              />
             ) : (
-              <ProfileContent />
+              // Basic theme - card layout with parallax support
+              parallaxEnabled ? (
+                <ParallaxContainer
+                  enabled={true}
+                  intensity={profile.parallax_intensity || 50}
+                  inverted={profile.parallax_inverted || false}
+                >
+                  <ProfileContent />
+                </ParallaxContainer>
+              ) : (
+                <ProfileContent />
+              )
             )}
 
             {/* Music player - Sticky option or Premium bottom player */}
@@ -492,6 +512,7 @@ const Profile = () => {
             profileBlur={profileBlur}
             titleColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
             textColor={profile.bio_color?.startsWith('#') ? profile.bio_color : undefined}
+            globalRadius={globalRadius}
           />
         )}
 
