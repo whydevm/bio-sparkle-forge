@@ -8,7 +8,7 @@ interface AudioToggleProps {
 
 const AudioToggle = ({ audioRef, profileOpacity = 100 }: AudioToggleProps) => {
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(100);
+  const [volume, setVolume] = useState(25);
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

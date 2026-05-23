@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ProfileUsernameProps {
   username: string;
@@ -7,9 +8,18 @@ interface ProfileUsernameProps {
   fontClass?: string;
   colorClass?: string;
   customColor?: string;
+  uidNumber?: number;
 }
 
-const ProfileUsername = ({ username, effect, glow, fontClass = "font-ggsans", colorClass = "text-foreground", customColor }: ProfileUsernameProps) => {
+const ProfileUsername = ({
+  username,
+  effect,
+  glow,
+  fontClass = "font-ggsans",
+  colorClass = "text-foreground",
+  customColor,
+  uidNumber,
+}: ProfileUsernameProps) => {
   const [displayText, setDisplayText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -43,9 +53,9 @@ const ProfileUsername = ({ username, effect, glow, fontClass = "font-ggsans", co
   const gradientClass = getGradientClass();
   const baseColorClass = gradientClass || customColor ? "" : colorClass;
 
-  return (
+  const heading = (
     <h1
-      className={`text-3xl font-bold ${fontClass} ${baseColorClass} ${glow ? "glow-text" : ""} ${getEffectClass()} ${gradientClass}`}
+      className={`text-3xl font-bold ${fontClass} ${baseColorClass} ${glow ? "glow-text" : ""} ${getEffectClass()} ${gradientClass} cursor-default`}
       style={customColor && !gradientClass ? { color: customColor } : undefined}
     >
       {displayText}
@@ -53,6 +63,22 @@ const ProfileUsername = ({ username, effect, glow, fontClass = "font-ggsans", co
         <span className="animate-pulse">|</span>
       )}
     </h1>
+  );
+
+  if (!uidNumber) return heading;
+
+  return (
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>{heading}</TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="bg-black/95 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-full shadow-2xl"
+        >
+          <span className="font-ggsans text-sm font-semibold text-white">UID {uidNumber}</span>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
