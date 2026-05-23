@@ -514,7 +514,7 @@ const Profile = () => {
             profileBlur={profileBlur}
             titleColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
             textColor={profile.bio_color?.startsWith('#') ? profile.bio_color : undefined}
-            description={profile.about_me_description || (bioTexts.length > 1 ? bioTexts.slice(1).join(' ') : undefined)}
+            description={(profile as any).about_me_description || (bioTexts.length > 1 ? bioTexts.slice(1).join(' ') : undefined)}
             globalRadius={globalRadius}
           />
         )}
