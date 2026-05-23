@@ -13,7 +13,7 @@ const AudioToggle = ({ audioRef, profileOpacity = 100 }: AudioToggleProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();

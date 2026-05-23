@@ -25,7 +25,7 @@ import {
   SiPaypal,
   SiApplemusic,
   SiGitlab,
-  SiLinkedin,
+  SiLinkerd as SiLinkedin,
   SiReddit,
   SiSteam,
   SiRoblox,
