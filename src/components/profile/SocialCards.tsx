@@ -13,6 +13,8 @@ import SpotifyPlaylistCard from "./SpotifyPlaylistCard";
 import TikTokPresence from "./TikTokPresence";
 import ValorantCard from "./ValorantCard";
 import WeatherCard from "./WeatherCard";
+import GitHubCard from "./GitHubCard";
+import RobloxCard from "./RobloxCard";
 
 interface SocialCard {
   id: string;
@@ -276,6 +278,36 @@ const SocialCards = ({ profileId, theme, profileOpacity = 1, globalRadius = 50 }
               }}
             >
               <WeatherCard location={card.identifier} globalRadius={globalRadius} />
+            </div>
+          );
+        }
+
+        // GitHub Card with real data and repo modal
+        if (card.platform === "github") {
+          return (
+            <div
+              key={card.id}
+              style={{
+                transitionDelay: `${index * 100}ms`,
+                animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined,
+              }}
+            >
+              <GitHubCard username={card.identifier} globalRadius={globalRadius} />
+            </div>
+          );
+        }
+
+        // Roblox Card with real data
+        if (card.platform === "roblox") {
+          return (
+            <div
+              key={card.id}
+              style={{
+                transitionDelay: `${index * 100}ms`,
+                animation: isVisible ? `fade-in 0.5s ease-out ${index * 0.1}s both` : undefined,
+              }}
+            >
+              <RobloxCard identifier={card.identifier} globalRadius={globalRadius} />
             </div>
           );
         }

@@ -78,13 +78,34 @@ const AboutMeSection = ({
     <div
       id="about-section"
       ref={sectionRef}
-      className="flex items-center justify-center p-4 pt-8 pb-4"
+      className="flex flex-col items-center justify-center p-4 pt-8 pb-4"
     >
+      {/* Header above the card */}
       <div
-        className={`w-full max-w-2xl p-8 text-center transition-all duration-700 ease-out ${
-          isVisible 
-            ? "opacity-100 translate-y-0 scale-100" 
-            : "opacity-0 translate-y-8 scale-75"
+        className={`w-full max-w-2xl text-center mb-4 transition-all duration-700 ease-out ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
+        <h2
+          className="text-3xl font-bold mb-2 font-ggsans"
+          style={{ color: titleColor || undefined }}
+        >
+          About Me
+        </h2>
+        {description && (
+          <p
+            className="text-sm font-ggsans"
+            style={{ color: textColor || "hsl(var(--muted-foreground))" }}
+          >
+            {description}
+          </p>
+        )}
+      </div>
+
+      {/* Card with body text */}
+      <div
+        className={`w-full max-w-2xl p-6 text-center transition-all duration-700 ease-out ${
+          isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-95"
         }`}
         style={{
           backdropFilter: profileOpacity === 0 ? "none" : `blur(${profileBlur}px)`,
@@ -94,19 +115,8 @@ const AboutMeSection = ({
           borderRadius,
         }}
       >
-        <h2 
-          className="text-3xl font-bold mb-3 font-ggsans"
-          style={{ color: titleColor || undefined }}
-        >
-          About Me
-        </h2>
-        {description && (
-          <p className="text-sm text-white/60 mb-6 italic">
-            {description}
-          </p>
-        )}
-        <div 
-          className="leading-relaxed text-left"
+        <div
+          className="leading-relaxed text-center font-ggsans"
           style={{ color: textColor || "hsl(var(--muted-foreground))" }}
         >
           {parseAboutMe(aboutMe)}

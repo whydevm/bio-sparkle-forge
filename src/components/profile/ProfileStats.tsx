@@ -2,6 +2,8 @@ import { Eye, Calendar, ThumbsUp, ThumbsDown, MapPin, Hash } from "lucide-react"
 import CountUpAnimation from "./CountUpAnimation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { format } from "date-fns";
+import { useProfileLikes } from "@/hooks/useProfileLikes";
+import { toast } from "@/hooks/use-toast";
 
 interface ProfileStatsProps {
   viewCount: number;
@@ -18,6 +20,7 @@ interface ProfileStatsProps {
   joinDateFormat?: string;
   joinTimeFormat?: string;
   insideCard?: boolean;
+  profileId?: string;
 }
 
 const ProfileStats = ({ 
@@ -35,7 +38,17 @@ const ProfileStats = ({
   joinDateFormat = "MMM dd, yyyy",
   joinTimeFormat = "12h",
   insideCard = false,
+  profileId,
 }: ProfileStatsProps) => {
+  const { likes, dislikes, myReaction, react, isSignedIn } = useProfileLikes(profileId);
+
+  const handleReact = async (r: "like" | "dislike") => {
+    const result = await react(r);
+    if (!result.ok && result.reason === "not-signed-in") {
+      toast({ title: "Sign in to react", description: "You need an account to like profiles." });
+    }
+  };
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return null;
     const date = new Date(dateString);
@@ -48,17 +61,15 @@ const ProfileStats = ({
       }
       return formatted;
     } catch {
-      return date.toLocaleDateString("en-US", { 
-        month: "short", 
-        day: "numeric", 
-        year: "numeric" 
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       });
     }
   };
 
   const formattedDate = formatDate(createdAt);
-  const likes = 31;
-  const dislikes = 2;
 
   // Styled tooltip with UID display like reference image
   const UidTooltipContent = ({ uidNum }: { uidNum: number }) => (
@@ -160,8 +171,14 @@ const ProfileStats = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1.5 hover:text-white transition-colors">
-                    <ThumbsUp className="w-4 h-4" />
+                  <button
+                    onClick={() => handleReact("like")}
+                    className={`flex items-center gap-1.5 transition-colors ${
+                      myReaction === "like" ? "text-green-400" : "hover:text-white"
+                    }`}
+                  >
+                    <ThumbsUp className="w-4 h-4" fill={myReaction === "like" ? "currentColor" : "none"} />
+                    <span className="text-xs font-medium">{likes}</span>
                   </button>
                 </TooltipTrigger>
                 <StyledTooltipContent label="Likes" count={likes} showCount />
@@ -170,8 +187,14 @@ const ProfileStats = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1.5 hover:text-white transition-colors">
-                    <ThumbsDown className="w-4 h-4" />
+                  <button
+                    onClick={() => handleReact("dislike")}
+                    className={`flex items-center gap-1.5 transition-colors ${
+                      myReaction === "dislike" ? "text-red-400" : "hover:text-white"
+                    }`}
+                  >
+                    <ThumbsDown className="w-4 h-4" fill={myReaction === "dislike" ? "currentColor" : "none"} />
+                    <span className="text-xs font-medium">{dislikes}</span>
                   </button>
                 </TooltipTrigger>
                 <StyledTooltipContent label="Dislikes" count={dislikes} showCount />
@@ -273,8 +296,14 @@ const ProfileStats = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1.5 hover:text-white text-white/80 transition-colors cursor-pointer">
-                    <ThumbsUp className="w-4 h-4" />
+                  <button
+                    onClick={() => handleReact("like")}
+                    className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
+                      myReaction === "like" ? "text-green-400" : "hover:text-white text-white/80"
+                    }`}
+                  >
+                    <ThumbsUp className="w-4 h-4" fill={myReaction === "like" ? "currentColor" : "none"} />
+                    <span className="font-medium">{likes}</span>
                   </button>
                 </TooltipTrigger>
                 <StyledTooltipContent label="Likes" count={likes} showCount />
@@ -286,8 +315,14 @@ const ProfileStats = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1.5 hover:text-white text-white/80 transition-colors cursor-pointer">
-                    <ThumbsDown className="w-4 h-4" />
+                  <button
+                    onClick={() => handleReact("dislike")}
+                    className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
+                      myReaction === "dislike" ? "text-red-400" : "hover:text-white text-white/80"
+                    }`}
+                  >
+                    <ThumbsDown className="w-4 h-4" fill={myReaction === "dislike" ? "currentColor" : "none"} />
+                    <span className="font-medium">{dislikes}</span>
                   </button>
                 </TooltipTrigger>
                 <StyledTooltipContent label="Dislikes" count={dislikes} showCount />

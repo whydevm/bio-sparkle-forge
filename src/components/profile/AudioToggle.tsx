@@ -8,12 +8,12 @@ interface AudioToggleProps {
 
 const AudioToggle = ({ audioRef, profileOpacity = 100 }: AudioToggleProps) => {
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(100);
+  const [volume, setVolume] = useState(25);
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -87,11 +87,19 @@ const AudioToggle = ({ audioRef, profileOpacity = 100 }: AudioToggleProps) => {
 
   const handleMouseLeave = () => {
     if (!isDragging) {
+      // Small grace period to avoid flicker
       timeoutRef.current = setTimeout(() => {
         setIsHovered(false);
-      }, 300);
+      }, 150);
     }
   };
+
+  // Apply default low volume on mount
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.25;
+    }
+  }, [audioRef]);
 
   useEffect(() => {
     return () => {

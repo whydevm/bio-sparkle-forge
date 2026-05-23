@@ -19,7 +19,7 @@ import {
   SiKotlin, 
   SiFlutter,
   SiHtml5,
-  SiCss3,
+  SiCss as SiCss3,
   SiBootstrap,
   SiWebpack,
   SiVite,
@@ -49,7 +49,6 @@ import {
   SiRedis,
   SiElasticsearch,
   SiSupabase,
-  SiAmazonwebservices,
   SiGooglecloud,
   SiCloudflare,
   SiVercel,
@@ -59,8 +58,6 @@ import {
   SiPostman,
   SiInsomnia,
   SiFigma,
-  SiAdobeillustrator,
-  SiAdobephotoshop,
   SiCanva,
   SiBlender,
   SiUnity,
@@ -141,7 +138,7 @@ const BADGE_CONFIG: Record<string, { label: string; Icon: React.ElementType; url
   supabase: { label: "Supabase", Icon: SiSupabase, url: "https://supabase.com", category: "Database" },
 
   // Cloud
-  aws: { label: "AWS", Icon: SiAmazonwebservices, url: "https://aws.amazon.com", category: "Cloud" },
+  aws: { label: "AWS", Icon: Code, url: "https://aws.amazon.com", category: "Cloud" },
   azure: { label: "Azure", Icon: VscAzure, url: "https://azure.microsoft.com", category: "Cloud" },
   gcloud: { label: "Google Cloud", Icon: SiGooglecloud, url: "https://cloud.google.com", category: "Cloud" },
   cloudflare: { label: "Cloudflare", Icon: SiCloudflare, url: "https://cloudflare.com", category: "Cloud" },
@@ -167,8 +164,8 @@ const BADGE_CONFIG: Record<string, { label: string; Icon: React.ElementType; url
 
   // Design
   figma: { label: "Figma", Icon: SiFigma, url: "https://figma.com", category: "Design" },
-  illustrator: { label: "Illustrator", Icon: SiAdobeillustrator, url: "https://adobe.com/products/illustrator", category: "Design" },
-  photoshop: { label: "Photoshop", Icon: SiAdobephotoshop, url: "https://adobe.com/products/photoshop", category: "Design" },
+  illustrator: { label: "Illustrator", Icon: Palette, url: "https://adobe.com/products/illustrator", category: "Design" },
+  photoshop: { label: "Photoshop", Icon: Palette, url: "https://adobe.com/products/photoshop", category: "Design" },
   canva: { label: "Canva", Icon: SiCanva, url: "https://canva.com", category: "Design" },
   blender: { label: "Blender", Icon: SiBlender, url: "https://blender.org", category: "Design" },
 

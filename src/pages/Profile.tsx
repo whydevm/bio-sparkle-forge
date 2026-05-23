@@ -315,6 +315,7 @@ const Profile = () => {
               fontClass={profile.display_name_font || "font-ggsans"}
               colorClass={profile.display_name_color}
               customColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
+              uidNumber={profile.uid_number}
             />
             {showBadgesOnProfile && (
               <ProfileBadges 
@@ -388,6 +389,7 @@ const Profile = () => {
             joinDateFormat={profile.join_date_format || "MMM dd, yyyy"}
             joinTimeFormat={profile.join_time_format || "12h"}
             insideCard
+            profileId={profile.id}
           />
         </div>
       )}
@@ -512,6 +514,7 @@ const Profile = () => {
             profileBlur={profileBlur}
             titleColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
             textColor={profile.bio_color?.startsWith('#') ? profile.bio_color : undefined}
+            description={(profile as any).about_me_description || (bioTexts.length > 1 ? bioTexts.slice(1).join(' ') : undefined)}
             globalRadius={globalRadius}
           />
         )}
@@ -556,6 +559,8 @@ const Profile = () => {
             viewsAnimation={profile.views_animation ?? true}
             joinDateFormat={profile.join_date_format || "MMM dd, yyyy"}
             joinTimeFormat={profile.join_time_format || "12h"}
+            uidNumber={profile.uid_number}
+            profileId={profile.id}
           />
         )}
 
