@@ -171,8 +171,14 @@ const ProfileStats = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1.5 hover:text-white transition-colors">
-                    <ThumbsUp className="w-4 h-4" />
+                  <button
+                    onClick={() => handleReact("like")}
+                    className={`flex items-center gap-1.5 transition-colors ${
+                      myReaction === "like" ? "text-green-400" : "hover:text-white"
+                    }`}
+                  >
+                    <ThumbsUp className="w-4 h-4" fill={myReaction === "like" ? "currentColor" : "none"} />
+                    <span className="text-xs font-medium">{likes}</span>
                   </button>
                 </TooltipTrigger>
                 <StyledTooltipContent label="Likes" count={likes} showCount />
@@ -181,8 +187,14 @@ const ProfileStats = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button className="flex items-center gap-1.5 hover:text-white transition-colors">
-                    <ThumbsDown className="w-4 h-4" />
+                  <button
+                    onClick={() => handleReact("dislike")}
+                    className={`flex items-center gap-1.5 transition-colors ${
+                      myReaction === "dislike" ? "text-red-400" : "hover:text-white"
+                    }`}
+                  >
+                    <ThumbsDown className="w-4 h-4" fill={myReaction === "dislike" ? "currentColor" : "none"} />
+                    <span className="text-xs font-medium">{dislikes}</span>
                   </button>
                 </TooltipTrigger>
                 <StyledTooltipContent label="Dislikes" count={dislikes} showCount />
