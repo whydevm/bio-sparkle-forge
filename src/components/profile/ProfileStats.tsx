@@ -2,6 +2,8 @@ import { Eye, Calendar, ThumbsUp, ThumbsDown, MapPin, Hash } from "lucide-react"
 import CountUpAnimation from "./CountUpAnimation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { format } from "date-fns";
+import { useProfileLikes } from "@/hooks/useProfileLikes";
+import { toast } from "@/hooks/use-toast";
 
 interface ProfileStatsProps {
   viewCount: number;
@@ -18,6 +20,7 @@ interface ProfileStatsProps {
   joinDateFormat?: string;
   joinTimeFormat?: string;
   insideCard?: boolean;
+  profileId?: string;
 }
 
 const ProfileStats = ({ 
@@ -35,7 +38,17 @@ const ProfileStats = ({
   joinDateFormat = "MMM dd, yyyy",
   joinTimeFormat = "12h",
   insideCard = false,
+  profileId,
 }: ProfileStatsProps) => {
+  const { likes, dislikes, myReaction, react, isSignedIn } = useProfileLikes(profileId);
+
+  const handleReact = async (r: "like" | "dislike") => {
+    const result = await react(r);
+    if (!result.ok && result.reason === "not-signed-in") {
+      toast({ title: "Sign in to react", description: "You need an account to like profiles." });
+    }
+  };
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return null;
     const date = new Date(dateString);
@@ -48,17 +61,15 @@ const ProfileStats = ({
       }
       return formatted;
     } catch {
-      return date.toLocaleDateString("en-US", { 
-        month: "short", 
-        day: "numeric", 
-        year: "numeric" 
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       });
     }
   };
 
   const formattedDate = formatDate(createdAt);
-  const likes = 31;
-  const dislikes = 2;
 
   // Styled tooltip with UID display like reference image
   const UidTooltipContent = ({ uidNum }: { uidNum: number }) => (
