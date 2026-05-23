@@ -67,6 +67,7 @@ const PortfolioLayout = ({
           fontClass={profile.display_name_font || "font-ggsans"}
           colorClass={profile.display_name_color}
           customColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
+          uidNumber={profile.uid_number}
         />
 
         {/* Centered Badges */}
