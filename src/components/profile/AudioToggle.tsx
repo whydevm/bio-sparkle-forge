@@ -87,9 +87,10 @@ const AudioToggle = ({ audioRef, profileOpacity = 100 }: AudioToggleProps) => {
 
   const handleMouseLeave = () => {
     if (!isDragging) {
+      // Small grace period to avoid flicker
       timeoutRef.current = setTimeout(() => {
         setIsHovered(false);
-      }, 300);
+      }, 150);
     }
   };
 
