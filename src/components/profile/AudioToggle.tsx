@@ -93,6 +93,13 @@ const AudioToggle = ({ audioRef, profileOpacity = 100 }: AudioToggleProps) => {
     }
   };
 
+  // Apply default low volume on mount
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.25;
+    }
+  }, [audioRef]);
+
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
