@@ -118,7 +118,7 @@ const AudioToggle = ({ audioRef, profileOpacity = 100 }: AudioToggleProps) => {
       ref={containerRef}
       className={`flex items-center transition-all duration-500 ease-out ${
         showSlider 
-          ? "gap-3 px-4 py-3 rounded-full backdrop-blur-md border border-white/20" 
+          ? "gap-4 pl-4 pr-5 py-3 rounded-full backdrop-blur-md border border-white/20" 
           : ""
       }`}
       style={{
@@ -127,12 +127,12 @@ const AudioToggle = ({ audioRef, profileOpacity = 100 }: AudioToggleProps) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Audio button - circular design matching reference image */}
+      {/* Audio button */}
       <button
         onClick={toggleMute}
         className={`flex items-center justify-center transition-all duration-500 ease-out ${
           showSlider
-            ? "w-10 h-10 rounded-full bg-transparent"
+            ? "w-7 h-7 rounded-full bg-transparent"
             : "w-12 h-12 rounded-full backdrop-blur-md border border-white/30 hover:border-white/50"
         }`}
         style={{
@@ -140,33 +140,33 @@ const AudioToggle = ({ audioRef, profileOpacity = 100 }: AudioToggleProps) => {
         }}
       >
         {isMuted || volume === 0 ? (
-          <VolumeX className={`transition-all duration-300 ${showSlider ? "w-5 h-5" : "w-6 h-6"} text-white`} />
+          <VolumeX className={`transition-all duration-300 ${showSlider ? "w-6 h-6" : "w-6 h-6"} text-white`} />
         ) : (
-          <Volume2 className={`transition-all duration-300 ${showSlider ? "w-5 h-5" : "w-6 h-6"} text-white`} />
+          <Volume2 className={`transition-all duration-300 ${showSlider ? "w-6 h-6" : "w-6 h-6"} text-white`} />
         )}
       </button>
       
       {/* Volume slider - shows when hovered */}
       <div 
         className={`overflow-hidden transition-all duration-500 ease-out ${
-          showSlider ? "w-28 opacity-100" : "w-0 opacity-0"
+          showSlider ? "w-36 opacity-100" : "w-0 opacity-0"
         }`}
       >
         <div 
           ref={sliderRef}
-          className="relative h-1.5 bg-white/30 rounded-full cursor-pointer select-none"
+          className="relative h-1 bg-white/25 rounded-full cursor-pointer select-none"
           onClick={handleSliderClick}
           onMouseDown={handleMouseDown}
         >
           {/* Fill */}
           <div 
-            className="absolute h-full bg-white rounded-full transition-all duration-100 ease-out"
+            className="absolute h-full bg-white/80 rounded-full"
             style={{ width: `${volume}%` }}
           />
-          {/* Thumb */}
+          {/* Thumb - circular dot */}
           <div 
-            className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-lg cursor-grab active:cursor-grabbing transition-transform duration-100 hover:scale-110"
-            style={{ left: `calc(${volume}% - 8px)` }}
+            className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-white rounded-full shadow-md cursor-grab active:cursor-grabbing transition-transform duration-100 hover:scale-125"
+            style={{ left: `calc(${volume}% - 7px)` }}
           />
         </div>
       </div>
