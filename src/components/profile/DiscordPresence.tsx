@@ -219,11 +219,14 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
     return `https://cdn.discordapp.com/avatar-decoration-presets/${asset}.${extension}?size=160&passthrough=true`;
   };
 
-  // Get clan badge URL
+  // Get clan/primary_guild badge URL (Discord renamed `clan` → `primary_guild`)
+  const getGuild = () =>
+    presence?.discord_user?.primary_guild ?? presence?.discord_user?.clan ?? null;
+
   const getClanBadgeUrl = () => {
-    if (!presence?.discord_user?.clan?.badge) return null;
-    const { identity_guild_id, badge } = presence.discord_user.clan;
-    return `https://cdn.discordapp.com/clan-badges/${identity_guild_id}/${badge}.png?size=32`;
+    const g = getGuild();
+    if (!g?.badge) return null;
+    return `https://cdn.discordapp.com/clan-badges/${g.identity_guild_id}/${g.badge}.png?size=32`;
   };
 
   // Get custom status from activities
