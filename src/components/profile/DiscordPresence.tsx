@@ -288,7 +288,7 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
   const displayName = presence.discord_user.display_name || presence.discord_user.username;
   const avatarDecorationUrl = getAvatarDecorationUrl();
   const clanBadgeUrl = getClanBadgeUrl();
-  const clan = presence.discord_user.clan;
+  const clan = getGuild();
   const customStatus = getCustomStatus();
   const isListeningToSpotify = presence.listening_to_spotify && presence.spotify;
 
