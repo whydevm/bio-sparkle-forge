@@ -347,7 +347,7 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
             </span>
             
             {/* Clan/Guild Tag */}
-            {clan && clan.identity_enabled && (
+            {clan && clan.tag && (clan.identity_enabled ?? true) && (
               <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/10">
                 {clanBadgeUrl && (
                   <img
