@@ -26,6 +26,12 @@ interface DiscordUser {
     badge: string;
     identity_enabled: boolean;
   };
+  primary_guild?: {
+    identity_guild_id: string;
+    tag: string;
+    badge: string;
+    identity_enabled: boolean;
+  };
 }
 
 interface Activity {
@@ -213,11 +219,14 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
     return `https://cdn.discordapp.com/avatar-decoration-presets/${asset}.${extension}?size=160&passthrough=true`;
   };
 
-  // Get clan badge URL
+  // Get clan/primary_guild badge URL (Discord renamed `clan` → `primary_guild`)
+  const getGuild = () =>
+    presence?.discord_user?.primary_guild ?? presence?.discord_user?.clan ?? null;
+
   const getClanBadgeUrl = () => {
-    if (!presence?.discord_user?.clan?.badge) return null;
-    const { identity_guild_id, badge } = presence.discord_user.clan;
-    return `https://cdn.discordapp.com/clan-badges/${identity_guild_id}/${badge}.png?size=32`;
+    const g = getGuild();
+    if (!g?.badge) return null;
+    return `https://cdn.discordapp.com/clan-badges/${g.identity_guild_id}/${g.badge}.png?size=32`;
   };
 
   // Get custom status from activities
@@ -279,7 +288,7 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
   const displayName = presence.discord_user.display_name || presence.discord_user.username;
   const avatarDecorationUrl = getAvatarDecorationUrl();
   const clanBadgeUrl = getClanBadgeUrl();
-  const clan = presence.discord_user.clan;
+  const clan = getGuild();
   const customStatus = getCustomStatus();
   const isListeningToSpotify = presence.listening_to_spotify && presence.spotify;
 
@@ -338,7 +347,7 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
             </span>
             
             {/* Clan/Guild Tag */}
-            {clan && clan.identity_enabled && (
+            {clan && clan.tag && (clan.identity_enabled ?? true) && (
               <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/10">
                 {clanBadgeUrl && (
                   <img

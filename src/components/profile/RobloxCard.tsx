@@ -26,22 +26,21 @@ const RobloxCard = ({ identifier, globalRadius = 50 }: RobloxCardProps) => {
     let cancelled = false;
     const load = async () => {
       try {
-        // Roblox APIs are CORS-blocked from browser. Use a public proxy.
-        const proxy = (u: string) => `https://corsproxy.io/?${encodeURIComponent(u)}`;
+        // roproxy.com is a CORS-enabled mirror of Roblox APIs
         let userId: number | null = null;
         let displayName = "";
         let name = "";
 
         if (/^\d+$/.test(identifier)) {
           userId = parseInt(identifier, 10);
-          const r = await fetch(proxy(`https://users.roblox.com/v1/users/${userId}`));
+          const r = await fetch(`https://users.roproxy.com/v1/users/${userId}`);
           if (r.ok) {
             const j = await r.json();
             displayName = j.displayName;
             name = j.name;
           }
         } else {
-          const r = await fetch(proxy("https://users.roblox.com/v1/usernames/users"), {
+          const r = await fetch(`https://users.roproxy.com/v1/usernames/users`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ usernames: [identifier], excludeBannedUsers: false }),
@@ -62,9 +61,9 @@ const RobloxCard = ({ identifier, globalRadius = 50 }: RobloxCardProps) => {
         }
 
         const [friendsR, followersR, avatarR] = await Promise.all([
-          fetch(proxy(`https://friends.roblox.com/v1/users/${userId}/friends/count`)),
-          fetch(proxy(`https://friends.roblox.com/v1/users/${userId}/followers/count`)),
-          fetch(proxy(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png`)),
+          fetch(`https://friends.roproxy.com/v1/users/${userId}/friends/count`),
+          fetch(`https://friends.roproxy.com/v1/users/${userId}/followers/count`),
+          fetch(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png`),
         ]);
 
         const friends = friendsR.ok ? (await friendsR.json()).count ?? 0 : 0;
@@ -73,7 +72,7 @@ const RobloxCard = ({ identifier, globalRadius = 50 }: RobloxCardProps) => {
         const avatarUrl = avatarJson?.data?.[0]?.imageUrl ?? "";
 
         if (!cancelled) {
-          setData({ id: userId, name, displayName, avatarUrl, friends, followers });
+          setData({ id: userId, name, displayName: displayName || name, avatarUrl, friends, followers });
         }
       } catch (e) {
         console.error("Roblox card error", e);

@@ -519,17 +519,17 @@ const Profile = () => {
           />
         )}
 
-        {/* Social Cards - only for portfolio theme */}
+        {/* Social Cards - only for portfolio theme - constrained width */}
         {isPortfolioTheme && profile && (showContent || !hasAudio) && (
-          <div className="relative z-10 px-8 pb-4">
+          <div className="relative z-10 w-full max-w-2xl mx-auto px-4 pb-4">
             <SocialCards profileId={profile.id} theme={profile.theme} profileOpacity={profileOpacity} globalRadius={globalRadius} />
           </div>
         )}
         
         {/* Coding Badges Section - only for portfolio theme */}
         {isPortfolioTheme && profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
-          <div className="relative z-10 flex justify-center px-8 pb-8">
-            <div className="max-w-md">
+          <div className="relative z-10 flex justify-center px-4 pb-8">
+            <div className="w-full max-w-2xl">
               <CodingBadges badges={profile.coding_badges} glow={profile.glow_badges} globalRadius={globalRadius} />
             </div>
           </div>
@@ -537,7 +537,7 @@ const Profile = () => {
 
         {/* Projects - only for portfolio theme - NOW AFTER CODING BADGES */}
         {isPortfolioTheme && projects && projects.length > 0 && (showContent || !hasAudio) && (
-          <div className="relative z-10">
+          <div className="relative z-10 w-full max-w-4xl mx-auto">
             <ProjectsSection 
               projects={projects} 
               title={profile.projects_title}
