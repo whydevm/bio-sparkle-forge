@@ -26,6 +26,12 @@ interface DiscordUser {
     badge: string;
     identity_enabled: boolean;
   };
+  primary_guild?: {
+    identity_guild_id: string;
+    tag: string;
+    badge: string;
+    identity_enabled: boolean;
+  };
 }
 
 interface Activity {
