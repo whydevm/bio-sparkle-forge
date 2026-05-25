@@ -1,10 +1,20 @@
-import { X, User, Palette, Link, Diamond, Image, FileText, HelpCircle, ExternalLink, Share2, ImageIcon, QrCode } from "lucide-react";
+import { X, User, Palette, Link, Diamond, Image, FileText, HelpCircle, ExternalLink, Share2, ImageIcon, QrCode, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import QRCodeGenerator from "@/components/dashboard/QRCodeGenerator";
 import ProfileShareBanner from "@/components/dashboard/ProfileShareBanner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface DashboardSidebarProps {
   open: boolean;
@@ -19,10 +29,12 @@ const DashboardSidebar = ({ open, onClose, username, displayName, avatarUrl, bio
   const [accountExpanded, setAccountExpanded] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false);
   const [showShareBanner, setShowShareBanner] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setShowLogoutConfirm(false);
     navigate("/");
   };
 
