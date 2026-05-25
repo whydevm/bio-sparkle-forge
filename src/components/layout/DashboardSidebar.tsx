@@ -1,10 +1,20 @@
-import { X, User, Palette, Link, Diamond, Image, FileText, HelpCircle, ExternalLink, Share2, ImageIcon, QrCode } from "lucide-react";
+import { X, User, Palette, Link, Diamond, Image, FileText, HelpCircle, ExternalLink, Share2, ImageIcon, QrCode, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import QRCodeGenerator from "@/components/dashboard/QRCodeGenerator";
 import ProfileShareBanner from "@/components/dashboard/ProfileShareBanner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface DashboardSidebarProps {
   open: boolean;
@@ -19,10 +29,12 @@ const DashboardSidebar = ({ open, onClose, username, displayName, avatarUrl, bio
   const [accountExpanded, setAccountExpanded] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false);
   const [showShareBanner, setShowShareBanner] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setShowLogoutConfirm(false);
     navigate("/");
   };
 
@@ -102,9 +114,10 @@ const DashboardSidebar = ({ open, onClose, username, displayName, avatarUrl, bio
                   </Button>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-sm"
-                    onClick={handleLogout}
+                    className="w-full justify-start text-sm text-destructive hover:text-destructive"
+                    onClick={() => setShowLogoutConfirm(true)}
                   >
+                    <LogOut className="w-4 h-4 mr-2" />
                     Logout
                   </Button>
                 </div>
@@ -209,6 +222,27 @@ const DashboardSidebar = ({ open, onClose, username, displayName, avatarUrl, bio
         avatarUrl={avatarUrl}
         bio={bio}
       />
+
+      {/* Logout Confirmation */}
+      <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Log out of soul.gg?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You'll need to sign in again to access your dashboard, customizations, and profile settings.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLogout}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Log Out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
