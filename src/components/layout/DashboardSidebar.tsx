@@ -114,9 +114,10 @@ const DashboardSidebar = ({ open, onClose, username, displayName, avatarUrl, bio
                   </Button>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start text-sm"
-                    onClick={handleLogout}
+                    className="w-full justify-start text-sm text-destructive hover:text-destructive"
+                    onClick={() => setShowLogoutConfirm(true)}
                   >
+                    <LogOut className="w-4 h-4 mr-2" />
                     Logout
                   </Button>
                 </div>
@@ -221,6 +222,27 @@ const DashboardSidebar = ({ open, onClose, username, displayName, avatarUrl, bio
         avatarUrl={avatarUrl}
         bio={bio}
       />
+
+      {/* Logout Confirmation */}
+      <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Log out of soul.gg?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You'll need to sign in again to access your dashboard, customizations, and profile settings.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleLogout}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Log Out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
