@@ -39,6 +39,9 @@ const AudioManager = ({
   const [audioPreviewUrl, setAudioPreviewUrl] = useState<string | null>(null);
   const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [trackEdits, setTrackEdits] = useState<Record<string, { artist?: string; lrc?: string }>>({});
+  const [fetchingId, setFetchingId] = useState<string | null>(null);
   
   const audioInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
