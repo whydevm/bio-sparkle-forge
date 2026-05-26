@@ -16,6 +16,7 @@ interface MusicEditorProps {
 const MusicEditor = ({ profileId }: MusicEditorProps) => {
   const [music, setMusic] = useState<any[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Record<string, string>>({});
+  const [fetchingId, setFetchingId] = useState<string | null>(null);
 
   useEffect(() => {
     loadMusic();
