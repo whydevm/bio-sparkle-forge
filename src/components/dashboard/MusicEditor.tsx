@@ -152,7 +152,14 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
                 <Input
                   value={track.title}
                   onChange={(e) => updateMusic(track.id, "title", e.target.value)}
-                  placeholder="Audio title..."
+                  placeholder="Song title..."
+                  className="text-sm h-8"
+                />
+
+                <Input
+                  value={track.artist || ""}
+                  onChange={(e) => updateMusic(track.id, "artist", e.target.value)}
+                  placeholder="Artist (helps lyric matching)"
                   className="text-sm h-8"
                 />
 
@@ -195,6 +202,34 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
                   accept="image/*"
                   label="+ Cover"
                 />
+
+                {/* Lyrics */}
+                <div className="space-y-1 pt-1 border-t border-border/50">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs flex items-center gap-1">
+                      <Mic2 className="w-3 h-3" /> Synced Lyrics (LRC)
+                    </Label>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="h-6 text-[10px] gap-1"
+                      onClick={() => fetchLyrics(track.id)}
+                      disabled={fetchingId === track.id}
+                    >
+                      {fetchingId === track.id ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : null}
+                      Auto-fetch
+                    </Button>
+                  </div>
+                  <Textarea
+                    value={track.lrc || ""}
+                    onChange={(e) => updateMusic(track.id, "lrc", e.target.value)}
+                    placeholder="[00:12.34]First lyric line&#10;[00:18.20]Next line..."
+                    className="text-[11px] font-mono min-h-[60px]"
+                  />
+                </div>
               </div>
 
               <Button
