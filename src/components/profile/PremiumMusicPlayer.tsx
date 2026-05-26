@@ -255,7 +255,27 @@ const PremiumMusicPlayer = ({
             </div>
           )}
         </div>
+
+        {(currentMusic?.lrc) && (
+          <button
+            onClick={() => setShowLyrics((v) => !v)}
+            aria-label="Toggle lyrics"
+            className={`w-9 h-9 flex items-center justify-center rounded-full transition-colors ${
+              showLyrics ? 'text-white bg-white/20' : 'text-white/50 hover:text-white/80'
+            }`}
+          >
+            <Mic2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
+
+      {showLyrics && currentMusic?.lrc && (
+        <SyncedLyrics
+          lrc={currentMusic.lrc}
+          audioRef={audioRefInternal}
+          coverUrl={currentMusic.cover_url}
+        />
+      )}
 
       <audio
         ref={audioRefInternal}
