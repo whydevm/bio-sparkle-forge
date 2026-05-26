@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Shuffle, Music } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Shuffle, Music, Mic2 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
+import SyncedLyrics from "./SyncedLyrics";
 
 interface MusicItem {
   id: string;
@@ -8,6 +9,8 @@ interface MusicItem {
   url: string;
   type: string;
   cover_url?: string;
+  artist?: string | null;
+  lrc?: string | null;
 }
 
 interface PremiumMusicPlayerProps {
