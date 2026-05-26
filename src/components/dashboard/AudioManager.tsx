@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Music, Plus, Upload, Shuffle, Volume2, Pin, Image, Trash2, Play, X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Music, Plus, Upload, Shuffle, Volume2, Pin, Image, Trash2, Play, X, Mic2, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 
 interface AudioManagerProps {
   open: boolean;
