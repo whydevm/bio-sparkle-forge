@@ -38,12 +38,41 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
         id: crypto.randomUUID(),
         profile_id: profileId,
         title: "",
+        artist: "",
+        lrc: "",
         url: "",
         type: "youtube",
         order_index: music.length,
         isNew: true,
       },
     ]);
+  };
+
+  const fetchLyrics = async (id: string) => {
+    const track = music.find((t) => t.id === id);
+    if (!track?.title) {
+      toast.error("Add a song title first");
+      return;
+    }
+    setFetchingId(id);
+    try {
+      const { data, error } = await supabase.functions.invoke("fetch-lyrics", {
+        body: { title: track.title, artist: track.artist || undefined },
+      });
+      if (error) throw error;
+      if (data?.lrc) {
+        updateMusic(id, "lrc", data.lrc);
+        updateMusic(id, "lyrics_source", "lrclib");
+        toast.success("Synced lyrics found!");
+      } else if (data?.plain) {
+        toast.message("Only plain lyrics available — paste an LRC for sync");
+      } else {
+        toast.error("No lyrics found. Paste an LRC manually below.");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Lyrics fetch failed");
+    }
+    setFetchingId(null);
   };
 
   const removeMusic = async (id: string, isNew: boolean) => {
