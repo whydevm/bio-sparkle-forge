@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Mic2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import FileUpload from "@/components/FileUpload";
 
@@ -15,6 +16,7 @@ interface MusicEditorProps {
 const MusicEditor = ({ profileId }: MusicEditorProps) => {
   const [music, setMusic] = useState<any[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<Record<string, string>>({});
+  const [fetchingId, setFetchingId] = useState<string | null>(null);
 
   useEffect(() => {
     loadMusic();
@@ -37,12 +39,41 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
         id: crypto.randomUUID(),
         profile_id: profileId,
         title: "",
+        artist: "",
+        lrc: "",
         url: "",
         type: "youtube",
         order_index: music.length,
         isNew: true,
       },
     ]);
+  };
+
+  const fetchLyrics = async (id: string) => {
+    const track = music.find((t) => t.id === id);
+    if (!track?.title) {
+      toast.error("Add a song title first");
+      return;
+    }
+    setFetchingId(id);
+    try {
+      const { data, error } = await supabase.functions.invoke("fetch-lyrics", {
+        body: { title: track.title, artist: track.artist || undefined },
+      });
+      if (error) throw error;
+      if (data?.lrc) {
+        updateMusic(id, "lrc", data.lrc);
+        updateMusic(id, "lyrics_source", "lrclib");
+        toast.success("Synced lyrics found!");
+      } else if (data?.plain) {
+        toast.message("Only plain lyrics available — paste an LRC for sync");
+      } else {
+        toast.error("No lyrics found. Paste an LRC manually below.");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Lyrics fetch failed");
+    }
+    setFetchingId(null);
   };
 
   const removeMusic = async (id: string, isNew: boolean) => {
@@ -121,7 +152,14 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
                 <Input
                   value={track.title}
                   onChange={(e) => updateMusic(track.id, "title", e.target.value)}
-                  placeholder="Audio title..."
+                  placeholder="Song title..."
+                  className="text-sm h-8"
+                />
+
+                <Input
+                  value={track.artist || ""}
+                  onChange={(e) => updateMusic(track.id, "artist", e.target.value)}
+                  placeholder="Artist (helps lyric matching)"
                   className="text-sm h-8"
                 />
 
@@ -164,6 +202,34 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
                   accept="image/*"
                   label="+ Cover"
                 />
+
+                {/* Lyrics */}
+                <div className="space-y-1 pt-1 border-t border-border/50">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs flex items-center gap-1">
+                      <Mic2 className="w-3 h-3" /> Synced Lyrics (LRC)
+                    </Label>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      className="h-6 text-[10px] gap-1"
+                      onClick={() => fetchLyrics(track.id)}
+                      disabled={fetchingId === track.id}
+                    >
+                      {fetchingId === track.id ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : null}
+                      Auto-fetch
+                    </Button>
+                  </div>
+                  <Textarea
+                    value={track.lrc || ""}
+                    onChange={(e) => updateMusic(track.id, "lrc", e.target.value)}
+                    placeholder="[00:12.34]First lyric line&#10;[00:18.20]Next line..."
+                    className="text-[11px] font-mono min-h-[60px]"
+                  />
+                </div>
               </div>
 
               <Button
