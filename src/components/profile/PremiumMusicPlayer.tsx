@@ -36,6 +36,7 @@ const PremiumMusicPlayer = ({
   const [isMuted, setIsMuted] = useState(false);
   const [showVolume, setShowVolume] = useState(false);
   const [shuffleEnabled, setShuffleEnabled] = useState(shuffle);
+  const [showLyrics, setShowLyrics] = useState(false);
   const [playedTracks, setPlayedTracks] = useState<number[]>([]);
   const internalAudioRef = useRef<HTMLAudioElement>(null);
   const audioRefInternal = externalAudioRef || internalAudioRef;
