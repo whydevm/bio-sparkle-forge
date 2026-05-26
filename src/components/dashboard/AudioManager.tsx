@@ -147,6 +147,44 @@ const AudioManager = ({
     toast.success("Track removed");
   };
 
+  const fetchLyrics = async (id: string) => {
+    const track = music.find((t) => t.id === id);
+    if (!track?.title) { toast.error("Add a song title first"); return; }
+    const artist = trackEdits[id]?.artist ?? track.artist ?? "";
+    setFetchingId(id);
+    try {
+      const { data, error } = await supabase.functions.invoke("fetch-lyrics", {
+        body: { title: track.title, artist: artist || undefined },
+      });
+      if (error) throw error;
+      if (data?.lrc) {
+        setTrackEdits({ ...trackEdits, [id]: { artist, lrc: data.lrc } });
+        toast.success("Synced lyrics found!");
+      } else {
+        toast.error("No synced lyrics found. Paste an LRC manually.");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Lyrics fetch failed");
+    }
+    setFetchingId(null);
+  };
+
+  const saveTrackLyrics = async (id: string) => {
+    const edits = trackEdits[id] || {};
+    const { error } = await supabase.from("profile_music").update({
+      artist: edits.artist ?? null,
+      lrc: edits.lrc ?? null,
+      lyrics_source: edits.lrc ? "manual" : null,
+    }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Lyrics saved!");
+    loadMusic();
+  };
+    await supabase.from("profile_music").delete().eq("id", id);
+    loadMusic();
+    toast.success("Track removed");
+  };
+
   const handleCloseAddModal = () => {
     setShowAddModal(false);
     setNewTrack({ title: "", url: "", cover_url: "" });
