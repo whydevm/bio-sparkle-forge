@@ -144,9 +144,12 @@ export type Database = {
       }
       profile_music: {
         Row: {
+          artist: string | null
           cover_url: string | null
           created_at: string | null
           id: string
+          lrc: string | null
+          lyrics_source: string | null
           order_index: number | null
           profile_id: string
           title: string
@@ -154,9 +157,12 @@ export type Database = {
           url: string
         }
         Insert: {
+          artist?: string | null
           cover_url?: string | null
           created_at?: string | null
           id?: string
+          lrc?: string | null
+          lyrics_source?: string | null
           order_index?: number | null
           profile_id: string
           title: string
@@ -164,9 +170,12 @@ export type Database = {
           url: string
         }
         Update: {
+          artist?: string | null
           cover_url?: string | null
           created_at?: string | null
           id?: string
+          lrc?: string | null
+          lyrics_source?: string | null
           order_index?: number | null
           profile_id?: string
           title?: string
