@@ -180,10 +180,7 @@ const AudioManager = ({
     toast.success("Lyrics saved!");
     loadMusic();
   };
-    await supabase.from("profile_music").delete().eq("id", id);
-    loadMusic();
-    toast.success("Track removed");
-  };
+
 
   const handleCloseAddModal = () => {
     setShowAddModal(false);
