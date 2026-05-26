@@ -296,23 +296,69 @@ const AudioManager = ({
             {music.length > 0 ? (
               <div className="space-y-2">
                 {music.map((track) => (
-                  <div key={track.id} className="flex items-center gap-3 p-2 rounded-lg bg-background/50 border border-border">
-                    {track.cover_url ? (
-                      <img src={track.cover_url} alt={track.title} className="w-10 h-10 rounded-lg object-cover" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                        <Music className="w-5 h-5 text-muted-foreground" />
+                  <div key={track.id} className="rounded-lg bg-background/50 border border-border">
+                    <div className="flex items-center gap-3 p-2">
+                      {track.cover_url ? (
+                        <img src={track.cover_url} alt={track.title} className="w-10 h-10 rounded-lg object-cover" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                          <Music className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                      )}
+                      <span className="flex-1 text-sm truncate">{track.title}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setExpandedId(expandedId === track.id ? null : track.id)}
+                        className="h-8 w-8"
+                        title="Lyrics"
+                      >
+                        <Mic2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteTrack(track.id)}
+                        className="h-8 w-8 text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    {expandedId === track.id && (
+                      <div className="px-2 pb-2 space-y-2 border-t border-border/50 pt-2">
+                        <Input
+                          value={trackEdits[track.id]?.artist ?? track.artist ?? ""}
+                          onChange={(e) => setTrackEdits({ ...trackEdits, [track.id]: { ...trackEdits[track.id], artist: e.target.value, lrc: trackEdits[track.id]?.lrc ?? track.lrc ?? "" } })}
+                          placeholder="Artist (helps lyric matching)"
+                          className="h-8 text-xs"
+                        />
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-medium flex items-center gap-1">
+                            <Mic2 className="w-3 h-3" /> Synced Lyrics (LRC)
+                          </span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="h-6 text-[10px] gap-1"
+                            onClick={() => fetchLyrics(track.id)}
+                            disabled={fetchingId === track.id}
+                          >
+                            {fetchingId === track.id ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                            Auto-fetch
+                          </Button>
+                        </div>
+                        <Textarea
+                          value={trackEdits[track.id]?.lrc ?? track.lrc ?? ""}
+                          onChange={(e) => setTrackEdits({ ...trackEdits, [track.id]: { ...trackEdits[track.id], lrc: e.target.value, artist: trackEdits[track.id]?.artist ?? track.artist ?? "" } })}
+                          placeholder="[00:12.34]First lyric line&#10;[00:18.20]Next line..."
+                          className="text-[11px] font-mono min-h-[80px]"
+                        />
+                        <Button size="sm" className="w-full h-7 text-xs" onClick={() => saveTrackLyrics(track.id)}>
+                          Save Lyrics
+                        </Button>
                       </div>
                     )}
-                    <span className="flex-1 text-sm truncate">{track.title}</span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteTrack(track.id)}
-                      className="h-8 w-8 text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
                   </div>
                 ))}
               </div>
