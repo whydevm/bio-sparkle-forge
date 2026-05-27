@@ -11,6 +11,7 @@ interface MusicItem {
   cover_url?: string;
   artist?: string | null;
   lrc?: string | null;
+  apple_music_url?: string | null;
 }
 
 interface PremiumMusicPlayerProps {
