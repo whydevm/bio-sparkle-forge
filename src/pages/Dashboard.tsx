@@ -375,6 +375,25 @@ const Dashboard = () => {
                 </div>
               )}
 
+              {/* Flashing Browser Tab Title */}
+              <div className="space-y-2 pt-2 border-t border-border/50">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Flashing Tab Title</Label>
+                  <Switch
+                    checked={profile?.flashing_title ?? false}
+                    onCheckedChange={(checked) => updateProfile({ flashing_title: checked })}
+                  />
+                </div>
+                {profile?.flashing_title && (
+                  <Input
+                    value={profile?.flashing_title_text || ""}
+                    onChange={(e) => updateProfile({ flashing_title_text: e.target.value.slice(0, 50) })}
+                    placeholder="Alt text shown alternating with your username"
+                    className="bg-card/50 border-border text-sm"
+                  />
+                )}
+              </div>
+
               {/* Toggle options */}
               <div className="grid grid-cols-2 gap-3 pt-3">
                 <div className="flex items-center justify-between">
