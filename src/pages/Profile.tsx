@@ -49,15 +49,28 @@ const Profile = () => {
   // Click sounds - support custom sound URL
   useClickSound(profile?.click_sounds ?? false, profile?.click_sound_url);
 
-  // Set page title to username
+  // Set page title to username (with optional flashing animation)
   useEffect(() => {
-    if (profile?.username) {
-      document.title = profile.username;
+    if (!profile?.username) return;
+    const base = profile.username;
+    const alt = profile.flashing_title_text?.trim();
+    if (profile.flashing_title && alt) {
+      let toggle = false;
+      document.title = base;
+      const interval = setInterval(() => {
+        toggle = !toggle;
+        document.title = toggle ? alt : base;
+      }, 1200);
+      return () => {
+        clearInterval(interval);
+        document.title = "bio-sparkle-forge";
+      };
     }
+    document.title = base;
     return () => {
       document.title = "bio-sparkle-forge";
     };
-  }, [profile?.username]);
+  }, [profile?.username, profile?.flashing_title, profile?.flashing_title_text]);
 
   useEffect(() => {
     if (username) {
