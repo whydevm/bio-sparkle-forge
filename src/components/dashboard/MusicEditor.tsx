@@ -163,6 +163,13 @@ const MusicEditor = ({ profileId }: MusicEditorProps) => {
                   className="text-sm h-8"
                 />
 
+                <Input
+                  value={track.apple_music_url || ""}
+                  onChange={(e) => updateMusic(track.id, "apple_music_url", e.target.value)}
+                  placeholder="Apple Music link (optional)"
+                  className="text-sm h-8"
+                />
+
                 <div className="space-y-1">
                   <input
                     type="file"

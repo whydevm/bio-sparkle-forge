@@ -11,6 +11,7 @@ interface MusicItem {
   cover_url?: string;
   artist?: string | null;
   lrc?: string | null;
+  apple_music_url?: string | null;
 }
 
 interface PremiumMusicPlayerProps {
@@ -164,15 +165,27 @@ const PremiumMusicPlayer = ({
 
         {/* Title and progress */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-2 gap-2">
             <span className="text-sm font-semibold text-white truncate max-w-[160px]">
               {currentMusic?.title || "Untitled"}
             </span>
-            
-            {/* Track counter */}
-            <span className="text-xs text-white/50">
-              {currentTrack + 1}/{music.length}
-            </span>
+
+            <div className="flex items-center gap-2">
+              {currentMusic?.apple_music_url && (
+                <a
+                  href={currentMusic.apple_music_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] text-pink-400 hover:text-pink-300 font-semibold"
+                  title="Open in Apple Music"
+                >
+                  
+                </a>
+              )}
+              <span className="text-xs text-white/50">
+                {currentTrack + 1}/{music.length}
+              </span>
+            </div>
           </div>
 
           {/* Progress bar */}

@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      asset_favorites: {
+        Row: {
+          asset_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          asset_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          asset_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "asset_favorites_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assets: {
         Row: {
           asset_type: string
@@ -144,6 +173,7 @@ export type Database = {
       }
       profile_music: {
         Row: {
+          apple_music_url: string | null
           artist: string | null
           cover_url: string | null
           created_at: string | null
@@ -157,6 +187,7 @@ export type Database = {
           url: string
         }
         Insert: {
+          apple_music_url?: string | null
           artist?: string | null
           cover_url?: string | null
           created_at?: string | null
@@ -170,6 +201,7 @@ export type Database = {
           url: string
         }
         Update: {
+          apple_music_url?: string | null
           artist?: string | null
           cover_url?: string | null
           created_at?: string | null
@@ -313,6 +345,8 @@ export type Database = {
           entry_emoji_position: string | null
           entry_text: string | null
           entry_text_font: string | null
+          flashing_title: boolean | null
+          flashing_title_text: string | null
           global_radius: number | null
           glow_badges: boolean | null
           glow_socials: boolean | null
@@ -321,6 +355,7 @@ export type Database = {
           join_date_format: string | null
           join_time_format: string | null
           join_timezone: string | null
+          layout_config: Json | null
           link_colors: Json | null
           link_shiny: boolean | null
           location: string | null
@@ -393,6 +428,8 @@ export type Database = {
           entry_emoji_position?: string | null
           entry_text?: string | null
           entry_text_font?: string | null
+          flashing_title?: boolean | null
+          flashing_title_text?: string | null
           global_radius?: number | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
@@ -401,6 +438,7 @@ export type Database = {
           join_date_format?: string | null
           join_time_format?: string | null
           join_timezone?: string | null
+          layout_config?: Json | null
           link_colors?: Json | null
           link_shiny?: boolean | null
           location?: string | null
@@ -473,6 +511,8 @@ export type Database = {
           entry_emoji_position?: string | null
           entry_text?: string | null
           entry_text_font?: string | null
+          flashing_title?: boolean | null
+          flashing_title_text?: string | null
           global_radius?: number | null
           glow_badges?: boolean | null
           glow_socials?: boolean | null
@@ -481,6 +521,7 @@ export type Database = {
           join_date_format?: string | null
           join_time_format?: string | null
           join_timezone?: string | null
+          layout_config?: Json | null
           link_colors?: Json | null
           link_shiny?: boolean | null
           location?: string | null
