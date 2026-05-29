@@ -72,6 +72,23 @@ const Profile = () => {
     };
   }, [profile?.username, profile?.flashing_title, profile?.flashing_title_text]);
 
+  // Scroll-snap for portfolio theme (document scroll)
+  useEffect(() => {
+    const normalized = profile?.theme === "default" || profile?.theme === "minimal" || profile?.theme === "neon"
+      ? "basic"
+      : profile?.theme;
+    if (normalized !== "portfolio") return;
+    const html = document.documentElement;
+    const prev = html.style.scrollSnapType;
+    const prevBehavior = html.style.scrollBehavior;
+    html.style.scrollSnapType = "y mandatory";
+    html.style.scrollBehavior = "smooth";
+    return () => {
+      html.style.scrollSnapType = prev;
+      html.style.scrollBehavior = prevBehavior;
+    };
+  }, [profile?.theme]);
+
   useEffect(() => {
     if (username) {
       loadProfile();
