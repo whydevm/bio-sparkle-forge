@@ -72,6 +72,23 @@ const Profile = () => {
     };
   }, [profile?.username, profile?.flashing_title, profile?.flashing_title_text]);
 
+  // Scroll-snap for portfolio theme (document scroll)
+  useEffect(() => {
+    const normalized = profile?.theme === "default" || profile?.theme === "minimal" || profile?.theme === "neon"
+      ? "basic"
+      : profile?.theme;
+    if (normalized !== "portfolio") return;
+    const html = document.documentElement;
+    const prev = html.style.scrollSnapType;
+    const prevBehavior = html.style.scrollBehavior;
+    html.style.scrollSnapType = "y mandatory";
+    html.style.scrollBehavior = "smooth";
+    return () => {
+      html.style.scrollSnapType = prev;
+      html.style.scrollBehavior = prevBehavior;
+    };
+  }, [profile?.theme]);
+
   useEffect(() => {
     if (username) {
       loadProfile();
@@ -459,123 +476,147 @@ const Profile = () => {
           </div>
         )}
 
-        <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center p-4 pb-28 transition-opacity duration-700 ${
+        <div className={`relative z-10 transition-opacity duration-700 ${
           shouldShowSplash ? "opacity-0" : showContent || !hasAudio ? "opacity-100" : "opacity-0"
         }`}>
-          {/* Profile container */}
-          <div className="w-full max-w-xl space-y-6 flex flex-col items-center">
-            {isPortfolioTheme ? (
-              // Portfolio theme - centered layout
-              <PortfolioLayout
-                profile={profile}
-                links={links}
-                showContent={showContent}
-                hasAudio={!!hasAudio}
-                avatarRadius={avatarRadius}
-                globalRadius={globalRadius}
-                textColor={textColor}
-                showBadgesOnProfile={showBadgesOnProfile}
-              />
-            ) : (
-              // Basic theme - card layout with parallax support
-              parallaxEnabled ? (
-                <ParallaxContainer
-                  enabled={true}
-                  intensity={profile.parallax_intensity || 50}
-                  inverted={profile.parallax_inverted || false}
-                >
-                  <ProfileContent />
-                </ParallaxContainer>
-              ) : (
-                <ProfileContent />
-              )
-            )}
+          {isPortfolioTheme ? (
+            <>
+              {/* Section 1 — Hero (centered) */}
+              <section
+                className="min-h-screen w-full flex items-center justify-center p-4"
+                style={{ scrollSnapAlign: "start" }}
+              >
+                <div className="w-full max-w-xl">
+                  <PortfolioLayout
+                    profile={profile}
+                    links={links}
+                    showContent={showContent}
+                    hasAudio={!!hasAudio}
+                    avatarRadius={avatarRadius}
+                    globalRadius={globalRadius}
+                    textColor={textColor}
+                    showBadgesOnProfile={showBadgesOnProfile}
+                  />
+                </div>
+              </section>
 
-            {/* Music player - Sticky option or Premium bottom player */}
-            {music.length > 0 && profile.show_audio_player !== false && (
-              <>
-                {hasPremiumBadge ? (
-                  <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-lg px-4 z-40">
-                    <PremiumMusicPlayer 
-                      music={music} 
-                      audioRef={audioRef} 
-                      shuffle={profile.audio_shuffle}
-                      profileOpacity={profile.profile_opacity ?? 100}
+              {/* Section 2 — About + Social Cards + Skills (centered) */}
+              <section
+                id="about-section"
+                className="min-h-screen w-full flex flex-col items-center justify-center gap-8 p-4"
+                style={{ scrollSnapAlign: "start" }}
+              >
+                {hasAboutMe && (
+                  <div className="w-full max-w-2xl">
+                    <AboutMeSection
+                      aboutMe={profile.about_me}
+                      profileOpacity={profile.profile_opacity}
+                      profileBlur={profileBlur}
+                      titleColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
+                      textColor={profile.bio_color?.startsWith('#') ? profile.bio_color : undefined}
+                      description={(profile as any).about_me_description || (bioTexts.length > 1 ? bioTexts.slice(1).join(' ') : undefined)}
                       globalRadius={globalRadius}
                     />
                   </div>
+                )}
+                {profile && (
+                  <div className="w-full max-w-2xl">
+                    <SocialCards profileId={profile.id} theme={profile.theme} profileOpacity={profileOpacity} globalRadius={globalRadius} />
+                  </div>
+                )}
+                {profile.coding_badges && profile.coding_badges.length > 0 && (
+                  <div className="w-full max-w-2xl flex justify-center">
+                    <CodingBadges badges={profile.coding_badges} glow={profile.glow_badges} globalRadius={globalRadius} />
+                  </div>
+                )}
+              </section>
+
+              {/* Projects — optional 3rd section */}
+              {projects && projects.length > 0 && (
+                <section
+                  className="min-h-screen w-full flex items-center justify-center p-4"
+                  style={{ scrollSnapAlign: "start" }}
+                >
+                  <div className="w-full max-w-4xl">
+                    <ProjectsSection
+                      projects={projects}
+                      title={profile.projects_title}
+                      description={profile.projects_description}
+                    />
+                  </div>
+                </section>
+              )}
+
+              {/* Scroll indicator (fades on scroll) */}
+              {hasAboutMe && (showContent || !hasAudio) && (
+                <ScrollIndicator text={profile.scroll_text || "Scroll for more"} />
+              )}
+
+              {/* Bottom-left stats */}
+              {(hasEntered || !hasAudio) && (showContent || !hasAudio) && (
+                <ProfileStats
+                  viewCount={profile.view_count || 0}
+                  location={profile.location}
+                  createdAt={profile.created_at}
+                  profileOpacity={profile.profile_opacity}
+                  showViews={profile.show_views ?? true}
+                  showJoinDate={profile.show_join_date ?? true}
+                  showLikes={profile.show_likes ?? true}
+                  viewsAnimation={profile.views_animation ?? true}
+                  joinDateFormat={profile.join_date_format || "MMM dd, yyyy"}
+                  joinTimeFormat={profile.join_time_format || "12h"}
+                  uidNumber={profile.uid_number}
+                  profileId={profile.id}
+                />
+              )}
+            </>
+          ) : (
+            // Basic theme — single card layout
+            <div className="min-h-screen flex flex-col items-center justify-center p-4 pb-28">
+              <div className="w-full max-w-xl space-y-6 flex flex-col items-center">
+                {parallaxEnabled ? (
+                  <ParallaxContainer
+                    enabled={true}
+                    intensity={profile.parallax_intensity || 50}
+                    inverted={profile.parallax_inverted || false}
+                  >
+                    <ProfileContent />
+                  </ParallaxContainer>
                 ) : (
-                  <div className={profile.audio_sticky ? "fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-40" : ""}>
+                  <ProfileContent />
+                )}
+
+                {/* Music player as a separate card under main card */}
+                {music.length > 0 && profile.show_audio_player !== false && !hasPremiumBadge && !profile.audio_sticky && (
+                  <div className="w-full">
                     <MusicPlayer music={music} audioRef={audioRef} shuffle={profile.audio_shuffle} />
                   </div>
                 )}
-              </>
-            )}
-
-            {/* Scroll indicator - Larger and more prominent */}
-            {isPortfolioTheme && hasAboutMe && (showContent || !hasAudio) && (
-              <ScrollIndicator text={profile.scroll_text || "scroll for more"} />
-            )}
-          </div>
-        </div>
-
-        {/* About Me Section - only for portfolio theme (basic theme shows it in the card) */}
-        {isPortfolioTheme && hasAboutMe && (
-          <AboutMeSection
-            aboutMe={profile.about_me}
-            profileOpacity={profile.profile_opacity}
-            profileBlur={profileBlur}
-            titleColor={profile.display_name_color?.startsWith('#') ? profile.display_name_color : undefined}
-            textColor={profile.bio_color?.startsWith('#') ? profile.bio_color : undefined}
-            description={(profile as any).about_me_description || (bioTexts.length > 1 ? bioTexts.slice(1).join(' ') : undefined)}
-            globalRadius={globalRadius}
-          />
-        )}
-
-        {/* Social Cards - only for portfolio theme - constrained width */}
-        {isPortfolioTheme && profile && (showContent || !hasAudio) && (
-          <div className="relative z-10 w-full max-w-2xl mx-auto px-4 pb-4">
-            <SocialCards profileId={profile.id} theme={profile.theme} profileOpacity={profileOpacity} globalRadius={globalRadius} />
-          </div>
-        )}
-        
-        {/* Coding Badges Section - only for portfolio theme */}
-        {isPortfolioTheme && profile.coding_badges && profile.coding_badges.length > 0 && (showContent || !hasAudio) && (
-          <div className="relative z-10 flex justify-center px-4 pb-8">
-            <div className="w-full max-w-2xl">
-              <CodingBadges badges={profile.coding_badges} glow={profile.glow_badges} globalRadius={globalRadius} />
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Projects - only for portfolio theme - NOW AFTER CODING BADGES */}
-        {isPortfolioTheme && projects && projects.length > 0 && (showContent || !hasAudio) && (
-          <div className="relative z-10 w-full max-w-4xl mx-auto">
-            <ProjectsSection 
-              projects={projects} 
-              title={profile.projects_title}
-              description={profile.projects_description}
-            />
-          </div>
-        )}
-
-        {/* Stats in bottom left - only for portfolio theme */}
-        {isPortfolioTheme && (hasEntered || !hasAudio) && (showContent || !hasAudio) && (
-          <ProfileStats
-            viewCount={profile.view_count || 0}
-            location={profile.location}
-            createdAt={profile.created_at}
-            profileOpacity={profile.profile_opacity}
-            showViews={profile.show_views ?? true}
-            showJoinDate={profile.show_join_date ?? true}
-            showLikes={profile.show_likes ?? true}
-            viewsAnimation={profile.views_animation ?? true}
-            joinDateFormat={profile.join_date_format || "MMM dd, yyyy"}
-            joinTimeFormat={profile.join_time_format || "12h"}
-            uidNumber={profile.uid_number}
-            profileId={profile.id}
-          />
-        )}
+          {/* Music players for portfolio + sticky/premium for basic */}
+          {music.length > 0 && profile.show_audio_player !== false && (
+            <>
+              {hasPremiumBadge ? (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-lg px-4 z-40">
+                  <PremiumMusicPlayer
+                    music={music}
+                    audioRef={audioRef}
+                    shuffle={profile.audio_shuffle}
+                    profileOpacity={profile.profile_opacity ?? 100}
+                    globalRadius={globalRadius}
+                  />
+                </div>
+              ) : (isPortfolioTheme || profile.audio_sticky) ? (
+                <div className="fixed bottom-20 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-40">
+                  <MusicPlayer music={music} audioRef={audioRef} shuffle={profile.audio_shuffle} />
+                </div>
+              ) : null}
+            </>
+          )}
+        </div>
 
           </div>
         </ContextMenuTrigger>

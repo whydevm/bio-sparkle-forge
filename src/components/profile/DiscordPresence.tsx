@@ -382,20 +382,21 @@ const DiscordPresence = ({ userId, globalRadius = 50 }: DiscordPresenceProps) =>
             )}
           </div>
           
-          {/* Spotify listening - shows when listening to Spotify */}
+          {/* Spotify listening - bold "Listening to" style (image 4 reference) */}
           {isListeningToSpotify && presence.spotify && (
-            <div className="flex items-center gap-2 mt-1">
-              <img 
-                src={presence.spotify.album_art_url} 
+            <div className="flex items-center gap-3 mt-1.5">
+              <img
+                src={presence.spotify.album_art_url}
                 alt={presence.spotify.album}
-                className="w-8 h-8 rounded"
+                className="w-10 h-10 rounded-md object-cover flex-shrink-0 shadow-md"
               />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1">
-                  <FaSpotify className="w-3 h-3 text-[#1DB954] flex-shrink-0" />
-                  <span className="text-xs text-white/90 truncate font-medium">{presence.spotify.song}</span>
+              <div className="min-w-0 flex-1 leading-tight">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <FaSpotify className="w-3.5 h-3.5 text-[#1DB954] flex-shrink-0" />
+                  <span className="text-[13px] font-bold text-white">Listening to</span>
+                  <span className="text-[13px] font-bold text-white truncate">{presence.spotify.song}</span>
                 </div>
-                <span className="text-xs text-white/50 truncate block">by {presence.spotify.artist}</span>
+                <span className="text-xs text-white/60 truncate block">by {presence.spotify.artist}</span>
               </div>
             </div>
           )}
